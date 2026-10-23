@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Translate this sentence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 934px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .brand-logo {
+      font-weight: 900;
+      color: #58cc02;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Lesson Top Bar */
+    .lesson-bar {
+      padding: 12px 20px 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #afafaf;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-container {
+      flex: 1;
+      position: relative;
+    }
+
+    .streak-badge {
+      font-size: 11.5px;
+      font-weight: 900;
+      color: #ff9600;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      padding-left: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-bg {
+      height: 14px;
+      background: #e5e5e5;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 42%;
+      height: 100%;
+      background: #ffc800;
+      border-radius: 7px;
+    }
+
+    .heart-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff4b4b;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 24px;
+    }
+
+    /* Junior + Speech Bubble Prompt */
+    .speaker-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .junior-container {
+      width: 90px;
+      height: 130px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .speech-bubble {
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      box-shadow: 0 2px 0 #f0f0f0;
+      flex: 1;
+      margin-top: 10px;
+    }
+
+    .speech-bubble::before, .speech-bubble::after {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: -12px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+    .speech-bubble::before {
+      border-width: 8px 12px 8px 0;
+      border-color: transparent #e5e5e5 transparent transparent;
+      left: -13px;
+    }
+    .speech-bubble::after {
+      border-width: 7px 10px 7px 0;
+      border-color: transparent #ffffff transparent transparent;
+      left: -10px;
+    }
+
+    .speaker-audio-btn {
+      color: #1cb0f6;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .spanish-text {
+      font-size: 19px;
+      font-weight: 700;
+      color: #3c3c3c;
+      line-height: 1.4;
+    }
+
+    .vocab-hint {
+      border-bottom: 2px dotted #888888;
+      cursor: pointer;
+      padding-bottom: 1px;
+    }
+
+    /* Answers Slot Area */
+    .answer-line-area {
+      min-height: 90px;
+      border-top: 2px solid #e5e5e5;
+      border-bottom: 2px solid #e5e5e5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+      margin-bottom: 30px;
+    }
+
+    /* Word Bank Area */
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+    .word-chip {
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 10px 16px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #4b4b4b;
+      box-shadow: 0 3px 0 #e5e5e5;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+    .word-chip:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #e5e5e5;
+    }
+
+    .word-chip.placed {
+      background: #e5e5e5;
+      color: transparent;
+      border-color: #e5e5e5;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    /* Bottom Success Sheet (Green Drawer) */
+    .success-drawer {
+      background: #d7ffb8;
+      padding: 18px 20px 24px;
+      border-top: 2px solid #b8f28b;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .drawer-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 900;
+      color: #58a700;
+    }
+
+    .drawer-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #58a700;
+    }
+
+    .icon-action-btn {
+      background: none;
+      border: none;
+      color: #58a700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-continue {
+      width: 100%;
+      height: 50px;
+      background: #58cc02;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #46a302;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+    }
+    .btn-continue:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #46a302;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 14px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>1:55</span>
+      <span class="brand-logo">duolingo</span>
+      <div class="status-icons">
+        <span>5G e</span>
+        <svg width="22" height="12" viewBox="0 0 24 12" fill="#000000">
+          <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000000" stroke-width="2" fill="none"/>
+          <rect x="2" y="2" width="16" height="8" rx="1" fill="#000000"/>
+          <path d="M22 4v4" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Lesson Top Progress -->
+    <div class="lesson-bar">
+      <button class="close-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="progress-container">
+        <div class="streak-badge">7 IN A ROW</div>
+        <div class="progress-bg">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="heart-stat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>4</span>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <div class="title">Translate this sentence</div>
+
+      <!-- Speaker + Junior Row -->
+      <div class="speaker-section">
+        <!-- Junior Character Illustration -->
+        <div class="junior-container">
+          <svg viewBox="0 0 100 140" fill="none" style="width:100%; height:100%;">
+            <!-- Pedestal shadow -->
+            <ellipse cx="50" cy="132" rx="30" ry="8" fill="#e5e5e5"/>
+            <!-- Red Tracksuit Body -->
+            <path d="M30 65C28 65 24 75 22 92H70C68 75 64 65 62 65Z" fill="#ff4b4b"/>
+            <path d="M46 65V92H48V65H46Z" fill="#ffffff"/>
+            <!-- Red Shorts -->
+            <path d="M28 92H64L60 105H24L28 92Z" fill="#d92424"/>
+            <!-- Legs -->
+            <rect x="30" y="105" width="7" height="15" fill="#f8c9b3"/>
+            <rect x="48" y="105" width="7" height="15" fill="#f8c9b3"/>
+            <!-- Red/White sneakers -->
+            <ellipse cx="33" cy="122" rx="6" ry="3" fill="#ff4b4b"/>
+            <ellipse cx="52" cy="122" rx="6" ry="3" fill="#ff4b4b"/>
+            <!-- Head & Blonde Hair -->
+            <circle cx="48" cy="42" r="18" fill="#f8c9b3"/>
+            <path d="M32 38C30 20 50 15 62 25C66 22 68 30 65 38Z" fill="#ffc800"/>
+            <!-- Red Headband -->
+            <rect x="31" y="32" width="34" height="6" rx="2" fill="#ff4b4b"/>
+            <!-- Face -->
+            <ellipse cx="43" cy="42" rx="2.5" ry="3.5" fill="#3c3c3c"/>
+            <ellipse cx="54" cy="42" rx="2.5" ry="3.5" fill="#3c3c3c"/>
+            <path d="M44 48C46 52 50 52 52 48" stroke="#3c3c3c" stroke-width="2" stroke-linecap="round"/>
+            <!-- Left arm flexing high -->
+            <path d="M58 68C66 58 74 38 72 26C68 24 64 28 62 38L56 68Z" fill="#ff4b4b"/>
+            <circle cx="71" cy="24" r="5" fill="#f8c9b3"/>
+          </svg>
+        </div>
+
+        <!-- Speech Bubble with Spanish text -->
+        <div class="speech-bubble">
+          <div class="speaker-audio-btn">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          </div>
+          <div class="spanish-text">
+            <span class="vocab-hint" title="We">Nosotros</span>
+            <span class="vocab-hint" title="are">somos</span><br>
+            <span class="vocab-hint" title="men">hombres.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placed Answer Words Area -->
+      <div class="answer-line-area">
+        <div class="word-chip">We</div>
+        <div class="word-chip">are</div>
+        <div class="word-chip">men</div>
+      </div>
+
+      <!-- Word Bank -->
+      <div class="word-bank">
+        <div class="word-chip">ten</div>
+        <div class="word-chip placed">We</div>
+        <div class="word-chip">sorry</div>
+        <div class="word-chip">four</div>
+        <div class="word-chip placed">are</div>
+        <div class="word-chip placed">men</div>
+        <div class="word-chip">always</div>
+      </div>
+    </div>
+
+    <!-- Bottom Success Drawer -->
+    <div class="success-drawer">
+      <div class="drawer-top-row">
+        <div class="drawer-status">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#58cc02">
+            <circle cx="12" cy="12" r="11"/>
+            <polyline points="8 12 11 15 16 9" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Nice!</span>
+        </div>
+
+        <div class="drawer-actions">
+          <button class="icon-action-btn" title="Share">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <polyline points="16 6 12 2 8 6"></polyline>
+              <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+          </button>
+          <button class="icon-action-btn" title="Report">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-continue" onclick="alert('Continuing to next question!')">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

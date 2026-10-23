@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Path Section 2 Unit 10</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* iOS Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .battery-icon {
+      width: 24px;
+      height: 12px;
+      border: 2px solid #000000;
+      border-radius: 4px;
+      padding: 1px;
+      position: relative;
+    }
+    .battery-icon::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: 2px;
+      width: 2px;
+      height: 4px;
+      background: #000000;
+      border-radius: 0 1px 1px 0;
+    }
+    .battery-fill {
+      height: 100%;
+      width: 75%;
+      background: #ffc800;
+      border-radius: 1px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      padding: 10px 20px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #f0f0f0;
+      background: #ffffff;
+      z-index: 50;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    /* Flag Spanish */
+    .flag-es {
+      width: 28px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .flag-es .r { background: #ff4b4b; height: 26%; }
+    .flag-es .y { background: #ffc800; height: 48%; }
+
+    /* Unit Banner */
+    .unit-banner {
+      background: #00cd9c;
+      margin: 12px 16px 0;
+      border-radius: 20px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      box-shadow: 0 4px 0 #00aa80;
+      z-index: 40;
+    }
+
+    .unit-meta {
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .unit-title {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .guidebook-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Path Scroll Area */
+    .path-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 0 100px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    /* Individual Nodes */
+    .node-wrapper {
+      position: relative;
+      margin: 14px 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .path-node {
+      width: 76px;
+      height: 68px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+    }
+    .path-node:active {
+      transform: translateY(3px);
+    }
+
+    /* Golden Completed Node */
+    .node-gold {
+      background: #ffc800;
+      border-bottom: 7px solid #e5a500;
+      box-shadow: 0 4px 8px rgba(255, 200, 0, 0.3);
+      color: #ffffff;
+    }
+
+    /* Active Green Node */
+    .node-green {
+      background: #00cd9c;
+      border-bottom: 7px solid #00aa80;
+      box-shadow: 0 6px 12px rgba(0, 205, 156, 0.3);
+      color: #ffffff;
+    }
+
+    /* Locked Gray Nodes */
+    .node-gray {
+      background: #e5e5e5;
+      border-bottom: 7px solid #cecece;
+      color: #8c8c8c;
+    }
+
+    /* Popover Tooltip for Active Story */
+    .story-popover {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00cd9c;
+      border-radius: 20px;
+      padding: 16px 20px 18px;
+      width: 320px;
+      box-shadow: 0 8px 0 #00aa80, 0 12px 24px rgba(0,0,0,0.15);
+      z-index: 100;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    /* Caret pointing up to the green book node */
+    .story-popover::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 12px solid #00cd9c;
+    }
+
+    .popover-title {
+      font-size: 19px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .popover-btn {
+      width: 100%;
+      height: 48px;
+      background: #ffffff;
+      border: none;
+      border-radius: 16px;
+      color: #00aa80;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 0 #e5e5e5;
+      cursor: pointer;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .popover-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #e5e5e5;
+    }
+
+    /* Side Character & Decor */
+    .oscar-figure {
+      position: absolute;
+      right: 32px;
+      bottom: -60px;
+      width: 100px;
+      height: 120px;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 76px;
+      border-top: 2px solid #e5e5e5;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px 10px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .nav-icon-home {
+      border: 2px solid #1cb0f6;
+      border-radius: 12px;
+      padding: 4px 6px;
+      background: #e6f6ff;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>4:22</span>
+      <div class="status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#000000">
+          <rect x="0" y="8" width="3" height="4" rx="1"/>
+          <rect x="5" y="5" width="3" height="7" rx="1"/>
+          <rect x="10" y="2" width="3" height="10" rx="1"/>
+          <rect x="15" y="0" width="3" height="12" rx="1"/>
+        </svg>
+        <div class="battery-icon">
+          <div class="battery-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="flag-es">
+          <div class="r"></div><div class="y"></div><div class="r"></div>
+        </div>
+        <span>14</span>
+      </div>
+
+      <div class="stat-item" style="color: #afafaf;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#afafaf">
+          <path d="M12 2C8 6 7 9 7 12C7 15.5 9.5 18 12 18C14.5 18 17 15.5 17 12C17 9 16 6 12 2Z"/>
+        </svg>
+        <span>1</span>
+      </div>
+
+      <div class="stat-item" style="color: #1cb0f6;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1cb0f6">
+          <polygon points="6,3 18,3 22,9 12,21 2,9"/>
+        </svg>
+        <span>527</span>
+      </div>
+
+      <div class="stat-item" style="color: #ff4b4b;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>5</span>
+      </div>
+    </div>
+
+    <!-- Unit Banner -->
+    <div class="unit-banner">
+      <div>
+        <div class="unit-meta">SECTION 2, UNIT 10</div>
+        <div class="unit-title">Say where people are from</div>
+      </div>
+      <div class="guidebook-btn" onclick="alert('Open Guidebook')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
+          <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+          <line x1="8" y1="8" x2="16" y2="8"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+          <line x1="8" y1="16" x2="12" y2="16"></line>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Learning Path Winding Scroll -->
+    <div class="path-scroll">
+      <!-- Node 1: Completed Gold Star -->
+      <div class="node-wrapper" style="transform: translateX(-15px);">
+        <div class="path-node node-gold">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="#ffffff">
+            <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 2: Active Green Book Node with Open Popover -->
+      <div class="node-wrapper" style="transform: translateX(45px); margin-bottom: 120px;">
+        <div class="path-node node-green">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+        </div>
+
+        <!-- Story Popover Card -->
+        <div class="story-popover">
+          <div class="popover-title">Story: The Garden</div>
+          <button class="popover-btn" onclick="alert('Starting Story: The Garden (+25 XP)!')">START +25 XP</button>
+        </div>
+      </div>
+
+      <!-- Node 3: Locked Gray Star -->
+      <div class="node-wrapper" style="transform: translateX(40px);">
+        <div class="path-node node-gray">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 4: Locked Gray Video -->
+      <div class="node-wrapper" style="transform: translateX(-5px);">
+        <div class="path-node node-gray">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="2" y="5" width="14" height="14" rx="3"/>
+            <polygon points="16,10 22,7 22,17 16,14"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 5: Locked Gray Book -->
+      <div class="node-wrapper" style="transform: translateX(-45px);">
+        <div class="path-node node-gray">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 6: Locked Gray Chest & Oscar Figure -->
+      <div class="node-wrapper" style="transform: translateX(-50px);">
+        <div class="path-node node-gray" style="border-radius: 18px; width: 72px; height: 60px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="2" y="6" width="20" height="14" rx="3"/>
+            <path d="M11 11h2v3h-2z" fill="#ffffff"/>
+          </svg>
+        </div>
+
+        <!-- Oscar Figure Sketch -->
+        <div class="oscar-figure">
+          <svg viewBox="0 0 100 120" fill="none">
+            <ellipse cx="50" cy="95" rx="35" ry="12" fill="#d9d9d9"/>
+            <circle cx="50" cy="35" r="22" fill="#9e9e9e"/>
+            <!-- Moustache -->
+            <path d="M36 42C42 46 50 43 50 43C50 43 58 46 64 42C66 45 60 48 50 48C40 48 34 45 36 42Z" fill="#616161"/>
+            <!-- Torso -->
+            <path d="M30 60C30 55 70 55 70 60L72 90H28L30 60Z" fill="#b0b0b0"/>
+            <rect x="28" y="75" width="44" height="6" fill="#757575"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 7: Locked Gray Headphones -->
+      <div class="node-wrapper" style="transform: translateX(-40px);">
+        <div class="path-node node-gray">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <button class="nav-btn">
+        <div class="nav-icon-home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff9600">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+        </div>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffc800">
+          <rect x="3" y="7" width="18" height="14" rx="2" fill="#d99b00"/>
+          <path d="M2 7h20v4H2z" fill="#ffc800"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#1cb0f6">
+          <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.43-1.43z"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffc800">
+          <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#ce82ff">
+          <circle cx="12" cy="12" r="9"/>
+          <ellipse cx="9" cy="10" rx="2" ry="3" fill="#ffffff"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ce82ff">
+          <circle cx="12" cy="12" r="11"/>
+          <circle cx="8" cy="12" r="1.5" fill="#ffffff"/>
+          <circle cx="12" cy="12" r="1.5" fill="#ffffff"/>
+          <circle cx="16" cy="12" r="1.5" fill="#ffffff"/>
+        </svg>
+      </button>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

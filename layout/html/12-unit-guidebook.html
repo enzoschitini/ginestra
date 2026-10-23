@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Unit 1 Guidebook & Tips</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation */
+    .top-header {
+      padding: 48px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #f0f0f0;
+      background: #ffffff;
+      z-index: 20;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #afafaf;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Tabs */
+    .tab-nav {
+      display: flex;
+      border-bottom: 2px solid #e5e5e5;
+      background: #ffffff;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      text-align: center;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #afafaf;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #1cb0f6;
+      border-bottom-color: #1cb0f6;
+    }
+
+    /* Scrollable Container */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px 40px;
+    }
+
+    /* Mascot Header */
+    .guidebook-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .duo-guide-avatar {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 4px;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: #777777;
+    }
+
+    /* Category Title */
+    .category-label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #1cb0f6;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 16px;
+    }
+
+    /* Phrase Cards */
+    .phrases-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phrase-card {
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 0 #f0f0f0;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .phrase-card:hover {
+      background: #fcfcfc;
+    }
+
+    .speaker-blue-btn {
+      color: #1cb0f6;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .phrase-es {
+      font-size: 16px;
+      font-weight: 800;
+      color: #3c3c3c;
+      margin-bottom: 3px;
+    }
+
+    .phrase-en {
+      font-size: 14px;
+      font-weight: 600;
+      color: #888888;
+    }
+
+    /* Grammar Tip Section */
+    .tip-box {
+      background: #f7f9fa;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .tip-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #4b4b4b;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .highlight-masc {
+      color: #1cb0f6;
+      font-weight: 900;
+    }
+
+    .highlight-fem {
+      color: #ff4b4b;
+      font-weight: 900;
+    }
+
+    /* Gender Visual Cards */
+    .gender-cards-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .gender-card {
+      flex: 1;
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 16px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .gender-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #3c3c3c;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gender-sub {
+      font-size: 13px;
+      color: #888888;
+      font-weight: 600;
+    }
+
+    /* Conjugation Table */
+    .conjugation-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid #e5e5e5;
+      margin-bottom: 16px;
+    }
+
+    .conjugation-table th {
+      background: #ddf4ff;
+      color: #1899d6;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .conjugation-table td {
+      padding: 10px 12px;
+      border-top: 1.5px solid #f0f0f0;
+      font-size: 15px;
+      color: #3c3c3c;
+      font-weight: 800;
+    }
+
+    .verb-highlight {
+      color: #1cb0f6;
+      font-weight: 900;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 12px auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Top Navigation -->
+    <div class="top-header">
+      <button class="close-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div style="font-weight: 900; font-size: 17px; color: #3c3c3c;">Unit 1 Guidebook</div>
+      <div style="width: 24px;"></div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="showTab('phrases', this)">Key Phrases</button>
+      <button class="tab-btn" onclick="showTab('gender', this)">Tip: Gender</button>
+      <button class="tab-btn" onclick="showTab('verbs', this)">Tip: Verbs</button>
+    </div>
+
+    <!-- Scroll Content -->
+    <div class="scroll-content">
+      <!-- Mascot Header -->
+      <div class="guidebook-hero">
+        <svg class="duo-guide-avatar" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="42" fill="#58cc02"/>
+          <ellipse cx="38" cy="46" rx="9" ry="12" fill="#ffffff"/>
+          <ellipse cx="62" cy="46" rx="9" ry="12" fill="#ffffff"/>
+          <ellipse cx="39" cy="47" rx="5" ry="7" fill="#3c3c3c"/>
+          <ellipse cx="61" cy="47" rx="5" ry="7" fill="#3c3c3c"/>
+          <polygon points="50,52 44,58 56,58" fill="#ff9600"/>
+        </svg>
+        <div class="hero-title">Unit 1 Guidebook</div>
+        <div class="hero-subtitle">Explore grammar tips and key phrases for this unit</div>
+      </div>
+
+      <!-- Tab 1: Key Phrases -->
+      <div id="tab-phrases">
+        <div class="category-label">KEY PHRASES</div>
+        <div class="section-title">Form basic sentences</div>
+
+        <div class="phrases-list">
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">Un niño come manzanas.</div>
+              <div class="phrase-en">A boy eats apples.</div>
+            </div>
+          </div>
+
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">Una niña bebe agua.</div>
+              <div class="phrase-en">A girl drinks water.</div>
+            </div>
+          </div>
+
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">La mujer bebe leche.</div>
+              <div class="phrase-en">The woman drinks milk.</div>
+            </div>
+          </div>
+
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">El hombre come pan.</div>
+              <div class="phrase-en">The man eats bread.</div>
+            </div>
+          </div>
+
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">¿Tú comes pan?</div>
+              <div class="phrase-en">Do you eat bread?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Gender Tip -->
+      <div id="tab-gender" style="display:none;">
+        <div class="category-label">TIP</div>
+        <div class="section-title">Gender</div>
+
+        <div class="tip-box">
+          <p class="tip-text">
+            In Spanish, all nouns are either <span class="highlight-masc">masculine</span> or <span class="highlight-fem">feminine</span>.
+            Often, nouns end in <span class="highlight-masc">-o</span> if they're masculine and <span class="highlight-fem">-a</span> if they're feminine.
+          </p>
+
+          <div class="gender-cards-row">
+            <div class="gender-card">
+              <div class="gender-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1cb0f6"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+                <span>el niño</span>
+              </div>
+              <div class="gender-sub">the boy</div>
+            </div>
+
+            <div class="gender-card">
+              <div class="gender-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#1cb0f6"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+                <span>la niña</span>
+              </div>
+              <div class="gender-sub">the girl</div>
+            </div>
+          </div>
+
+          <p class="tip-text" style="margin-bottom: 0;">
+            Notice how you use <span class="highlight-masc">el</span> if the word is masculine and <span class="highlight-fem">la</span> if the word is feminine.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tab 3: Verbs Tip -->
+      <div id="tab-verbs" style="display:none;">
+        <div class="category-label">TIP</div>
+        <div class="section-title">I think, therefore...</div>
+
+        <div class="tip-box">
+          <p class="tip-text">
+            In English, verb forms change depending on who's doing the action. For example, we say <b>I am</b>, <b>you are</b>, and <b>she is</b>. In Spanish, you do the same thing.
+          </p>
+
+          <table class="conjugation-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Verb (ser)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>yo<br><span style="font-size:12px; color:#888;">I</span></td>
+                <td><span class="verb-highlight">soy</span><br><span style="font-size:12px; color:#888;">I am</span></td>
+              </tr>
+              <tr>
+                <td>tú<br><span style="font-size:12px; color:#888;">you</span></td>
+                <td><span class="verb-highlight">eres</span><br><span style="font-size:12px; color:#888;">you are</span></td>
+              </tr>
+              <tr>
+                <td>él<br><span style="font-size:12px; color:#888;">he</span></td>
+                <td><span class="verb-highlight">es</span><br><span style="font-size:12px; color:#888;">he is</span></td>
+              </tr>
+              <tr>
+                <td>ella<br><span style="font-size:12px; color:#888;">she</span></td>
+                <td><span class="verb-highlight">es</span><br><span style="font-size:12px; color:#888;">she is</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="phrase-card">
+            <div class="speaker-blue-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="phrase-es">Yo <span class="verb-highlight">soy</span> una niña. Tú <span class="verb-highlight">eres</span> un niño.</div>
+              <div class="phrase-en">I am a girl. You are a boy.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home Indicator -->
+    <div class="home-indicator"></div>
+  </div>
+
+  <script>
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-phrases').style.display = tabId === 'phrases' ? 'block' : 'none';
+      document.getElementById('tab-gender').style.display = tabId === 'gender' ? 'block' : 'none';
+      document.getElementById('tab-verbs').style.display = tabId === 'verbs' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

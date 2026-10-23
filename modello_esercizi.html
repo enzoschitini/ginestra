@@ -1,0 +1,705 @@
+<title>Esercizi Ginestra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Young+Serif&display=swap">
+<style>
+/* Layout: una colonna di lettura; ogni esercizio è una scheda con testo a sinistra e demo viva a destra.
+   Colore: inchiostro verde scuro su carta verdognola; giallo ginestra solo su badge, pulsanti primari e numeri. */
+:root{
+  --bg:#F1F4EC; --surface:#FAFBF6; --surface-2:#E6ECDF; --ink:#1B2A22; --ink-2:#4B5C52; --line:#C8D1C1;
+  --accent:#E4B400; --accent-ink:#1B2A22; --accent-text:#7D6100;
+  --ok:#1D7447; --ok-bg:#D9EFE2; --bad:#B03A2B; --bad-bg:#F5DDD8;
+  --f-display:"Young Serif",Georgia,"Times New Roman",serif;
+  --f-body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111712; --surface:#192119; --surface-2:#212B23; --ink:#E6ECE2; --ink-2:#A0B0A5; --line:#33423A;
+    --accent:#E9BF2B; --accent-ink:#171F19; --accent-text:#E9BF2B;
+    --ok:#74D3A0; --ok-bg:#1B3A2A; --bad:#F29481; --bad-bg:#40221C; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111712; --surface:#192119; --surface-2:#212B23; --ink:#E6ECE2; --ink-2:#A0B0A5; --line:#33423A;
+  --accent:#E9BF2B; --accent-ink:#171F19; --accent-text:#E9BF2B;
+  --ok:#74D3A0; --ok-bg:#1B3A2A; --bad:#F29481; --bad-bg:#40221C; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font:16px/1.55 var(--f-body); margin:0;
+  padding-block:32px 72px;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:clamp(2.4rem,7vw,3.8rem)}
+h2{font-size:clamp(1.5rem,3.6vw,2rem)}
+h3{font-size:1.35rem}
+p{margin:0}
+.lede{max-width:62ch;color:var(--ink-2);font-size:1.05rem;margin-top:14px}
+.meta{font:500 .78rem/1.4 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin-top:18px}
+section.block{margin-top:56px}
+section.block>p.sub{max-width:62ch;color:var(--ink-2);margin-top:10px}
+.label{font:500 .72rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+
+/* tabelle */
+.tbl{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.93rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .72rem/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td a{color:var(--ink);text-underline-offset:3px}
+td.num{font-family:var(--f-display);color:var(--accent-text);width:2.5rem}
+
+/* filtri */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.fchip{font:600 .88rem var(--f-body);min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* schede esercizio */
+.ex{margin-top:20px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:22px;scroll-margin-top:16px}
+.ex-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+.ex-num{font-family:var(--f-display);font-size:2.2rem;line-height:1;color:var(--accent-text)}
+.ex-title{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 220px}
+.ex-title i{font-family:var(--f-display);font-style:normal;color:var(--ink-2);font-size:.95rem}
+.badges{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.badge{font:500 .72rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:6px 9px;border-radius:5px;border:1px solid var(--line);color:var(--ink-2)}
+.badge.def{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dots{font-size:.8rem;letter-spacing:.15em;color:var(--ink-2)}
+.ex-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;margin-top:20px}
+@media (max-width:880px){.ex-grid{grid-template-columns:minmax(0,1fr)}}
+.how ul{margin:10px 0 0;padding-left:1.1rem;display:flex;flex-direction:column;gap:8px}
+.how li::marker{color:var(--accent-text)}
+.data{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font:400 .78rem var(--f-mono);padding:4px 8px;border-radius:5px;background:var(--surface-2);color:var(--ink)}
+.note{margin-top:16px;font-size:.92rem;color:var(--ink-2);max-width:60ch}
+.note b{color:var(--ink);font-weight:600}
+.demo{background:var(--surface-2);border-radius:10px;padding:16px;min-width:0;align-self:start}
+.demo-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
+.demo-body{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+/* componenti delle demo */
+.btn{font:600 .9rem var(--f-body);min-height:40px;padding:0 14px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.seg{display:inline-flex;gap:6px;flex-wrap:wrap}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opts.row{flex-direction:row;flex-wrap:wrap}
+.opt{font:500 .98rem var(--f-body);text-align:left;min-height:44px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;overflow-wrap:anywhere}
+.opts.row .opt{min-width:56px;text-align:center}
+.opt.sel{outline:2px solid var(--accent-text);outline-offset:1px}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok)}
+.opt.ok::after{content:" ✓";color:var(--ok);font-weight:700}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad)}
+.opt.bad::after{content:" ✗";color:var(--bad);font-weight:700}
+.opt:disabled{cursor:default}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two>div{display:flex;flex-direction:column;gap:8px;min-width:0}
+.prompt{font-size:1.1rem}
+.prompt .big{font-family:var(--f-display);font-size:1.5rem;display:block;margin-bottom:4px}
+.sentence{font-family:var(--f-display);font-size:1.25rem;line-height:1.4}
+.blank{display:inline-block;min-width:5ch;padding:0 6px;border-bottom:2px solid var(--accent-text);text-align:center;font-family:var(--f-display)}
+.blank.ok{background:var(--ok-bg);border-color:var(--ok)}
+.blank.bad{background:var(--bad-bg);border-color:var(--bad)}
+.fb{min-height:1.5em;font-size:.93rem;color:var(--ink-2)}
+.fb.good{color:var(--ok)} .fb.wrong{color:var(--bad)}
+.hintline{font-size:.9rem;color:var(--ink-2)}
+.prog{font:500 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.result{font-family:var(--f-display);font-size:1.3rem}
+input[type=text],textarea{width:100%;font:500 1.05rem var(--f-body);padding:10px 12px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+textarea{resize:vertical;min-height:84px}
+.field{display:flex;gap:8px;flex-wrap:wrap}
+.field input{flex:1 1 180px}
+.mem{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.card{min-height:72px;padding:6px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font:600 1.3rem var(--f-display);cursor:pointer;overflow-wrap:anywhere}
+.card.up{background:var(--surface);color:var(--ink);border-color:var(--line);font:500 .9rem var(--f-body)}
+.card.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ink);font:500 .9rem var(--f-body)}
+.line{min-height:52px;display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:2px dashed var(--line);border-radius:8px;align-items:center}
+.line:empty::before{content:"Tocca i pezzi qui sotto";color:var(--ink-2);font-size:.9rem}
+.bank{display:flex;flex-wrap:wrap;gap:6px}
+.tile{font:600 1rem var(--f-body);min-height:44px;min-width:44px;padding:0 12px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.words{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--f-display);font-size:1.2rem}
+.w{padding:4px 7px;border-radius:6px;border:1px solid transparent;background:transparent;font:inherit;color:var(--ink);cursor:pointer}
+.w:hover{border-color:var(--line)}
+.w.ok{background:var(--ok-bg);border-color:var(--ok)}
+.w.bad{background:var(--bad-bg);border-color:var(--bad)}
+.hang{display:flex;gap:8px;flex-wrap:wrap;font:600 1.6rem var(--f-mono);letter-spacing:.1em}
+.hang span{min-width:1ch;border-bottom:2px solid var(--ink)}
+.lives{font:500 .95rem var(--f-mono);color:var(--bad);letter-spacing:.1em}
+.keys{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.keys .opt{text-align:center;padding:4px;text-transform:uppercase;min-height:40px}
+.mock{border:1px dashed var(--ink-2);border-radius:8px;padding:12px;background:var(--surface)}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter>i{display:block;height:100%;background:var(--ok)}
+.meter.mid>i{background:var(--accent)} .meter.low>i{background:var(--bad)}
+
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:520px){.two{grid-template-columns:1fr}.ex{padding:16px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="label">Progetto Ginestra · documentazione</p>
+    <h1 style="margin-top:12px">Esercizi del glossario</h1>
+    <p class="lede">Questa pagina raccoglie gli esercizi dell'app di ripasso. I primi tre erano già definiti; gli altri dieci sono proposte da valutare. Ogni demo è interattiva e usa parole vere del glossario di Gianni Rodari, cosi puoi provare il comportamento prima di programmarlo.</p>
+    <p class="meta">13 esercizi · 3 definiti · 10 proposti · dati di esempio: Rodari, giugno 2025</p>
+  </header>
+
+  <section class="block" id="mapa">
+    <h2>Mappa degli esercizi</h2>
+    <p class="sub">Usa i filtri per vedere solo un gruppo. La tabella e le schede qui sotto seguono lo stesso filtro.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filtra gli esercizi"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>Esercizio</th><th>Gruppo</th><th>Stato</th><th>Dati del glossario</th></tr></thead>
+      <tbody id="index-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="block" id="dati">
+    <h2>Cosa fa ogni colonna</h2>
+    <p class="sub">Gli esercizi non conservano un contenuto proprio. Tutto arriva dal glossario, ed è la scelta delle colonne a decidere cosa si può esercitare.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Colonna</th><th>Ruolo negli esercizi</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag">Personaggio</span></td><td>Filtra per foglio di quaderno. Permette di ripassare solo il foglio di Rodari, per esempio.</td></tr>
+        <tr><td><span class="tag">Parola/Espressione</span></td><td>La parola o l'espressione in italiano, con l'articolo. Serve da domanda o da risposta.</td></tr>
+        <tr><td><span class="tag">Nota</span></td><td>Traduzione in portoghese. Quando il quaderno porta una spiegazione in italiano al posto della traduzione, la spiegazione resta qui e la voce non entra negli esercizi di traduzione.</td></tr>
+        <tr><td><span class="tag">Spiegazione</span></td><td>Definizione in italiano. È l'indizio dell'Indovinello e dell'Impiccato.</td></tr>
+        <tr><td><span class="tag">Tags</span></td><td>Classe grammaticale, genere, tema e marche come <span class="tag">cognato</span>. Scelgono alternative plausibili e l'articolo.</td></tr>
+        <tr><td><span class="tag">Varianti</span></td><td>Registra le letture incerte. Le voci con <span class="tag">da verificare</span> restano fuori finché non vengono ricontrollate sul quaderno.</td></tr>
+        <tr><td><span class="tag">Data</span></td><td>Viene dal riassunto.csv. Permette di ripassare prima i fogli più vecchi.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="block" id="esercizi">
+    <h2>Schede</h2>
+    <p class="sub">Tocca «Ricomincia» per rifare la demo da capo.</p>
+    <div id="cards"></div>
+  </section>
+</div>
+
+<script>
+/* ---------- utilità ---------- */
+function h(tag,attrs){
+  var e=document.createElement(tag);
+  attrs=attrs||{};
+  Object.keys(attrs).forEach(function(k){
+    var v=attrs[k];
+    if(k==='class')e.className=v;
+    else if(k.indexOf('on')===0)e.addEventListener(k.slice(2),v);
+    else if(v!==false&&v!=null)e.setAttribute(k,v===true?'':v);
+  });
+  for(var i=2;i<arguments.length;i++){
+    [].concat(arguments[i]).forEach(function(x){
+      if(x==null||x===false)return;
+      e.append(x.nodeType?x:document.createTextNode(x));
+    });
+  }
+  return e;
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+var ART=/^(il |lo |la |l'|i |gli |le |un |una |uno )/i;
+function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[’‘`´]/g,"'").replace(/\s+/g,' ').trim();}
+function noArt(s){return s.replace(ART,'');}
+function lev(a,b){
+  var m=a.length,n=b.length,d=[],i,j;
+  for(i=0;i<=m;i++){d[i]=[i];}
+  for(j=1;j<=n;j++){d[0][j]=j;}
+  for(i=1;i<=m;i++)for(j=1;j<=n;j++){
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  }
+  return d[m][n];
+}
+function restartBtn(fn){return h('button',{class:'btn',type:'button',onclick:fn},'Rifai');}
+
+/* ---------- scelta multipla (usata in vari esercizi) ---------- */
+function mcq(root,items){
+  var i=0,score=0;
+  function show(){
+    root.replaceChildren();
+    if(i>=items.length){
+      root.append(h('p',{class:'result'},'Risultato: '+score+' su '+items.length+'.'),
+        restartBtn(function(){i=0;score=0;show();}));
+      return;
+    }
+    var it=items[i],done=false;
+    var prompt=h('div',{class:'prompt'},typeof it.q==='function'?it.q():it.q);
+    var fb=h('p',{class:'fb',role:'status','aria-live':'polite'});
+    var hint=it.hint?h('p',{class:'hintline',hidden:true},it.hint):null;
+    var choices=it.fixed?it.choices:shuffle(it.choices);
+    var list=h('div',{class:'opts'+(it.row?' row':'')});
+    var next=h('button',{class:'btn primary',type:'button',hidden:true,onclick:function(){i++;show();}},
+      i===items.length-1?'Vedi il risultato':'Avanti');
+    var btns=choices.map(function(c){
+      var b=h('button',{class:'opt',type:'button'},c);
+      b.addEventListener('click',function(){
+        if(done)return;done=true;
+        var ok=c===it.answer;if(ok)score++;
+        b.classList.add(ok?'ok':'bad');
+        btns.forEach(function(x){if(x.textContent===it.answer)x.classList.add('ok');x.disabled=true;});
+        var bl=prompt.querySelector('.blank');
+        if(bl){bl.textContent=it.answer;bl.classList.add(ok?'ok':'bad');}
+        fb.className='fb '+(ok?'good':'wrong');
+        fb.textContent=(ok?'Esatto. ':'Risposta: '+it.answer+'. ')+(it.explain||'');
+        next.hidden=false;next.focus();
+      });
+      return b;
+    });
+    list.append.apply(list,btns);
+    root.append(h('p',{class:'prog'},'Domanda '+(i+1)+' di '+items.length),prompt);
+    if(hint)root.append(h('button',{class:'btn ghost',type:'button',onclick:function(){hint.hidden=!hint.hidden;}},'Indizio'),hint);
+    root.append(list,fb,next);
+  }
+  show();
+}
+
+/* ---------- risposta scritta (Scrivi la parola e Dettato) ---------- */
+function speak(text,rate){
+  if(!('speechSynthesis' in window))return false;
+  try{
+    var u=new SpeechSynthesisUtterance(text);u.lang='it-IT';u.rate=rate||0.85;
+    var v=(speechSynthesis.getVoices()||[]).filter(function(x){return x.lang&&x.lang.toLowerCase().indexOf('it')===0;})[0];
+    if(v)u.voice=v;
+    speechSynthesis.cancel();speechSynthesis.speak(u);return true;
+  }catch(e){return false;}
+}
+function typeAnswer(root,items,audio){
+  var i=0,score=0,uid=root.id||'demo';
+  function show(){
+    root.replaceChildren();
+    if(i>=items.length){
+      root.append(h('p',{class:'result'},'Risultato: '+score+' su '+items.length+'.'),
+        restartBtn(function(){i=0;score=0;show();}));
+      return;
+    }
+    var it=items[i],done=false;
+    var input=h('input',{id:uid+'-in-'+i,type:'text',autocomplete:'off',autocapitalize:'off',spellcheck:'false',placeholder:'Scrivi in italiano'});
+    var fb=h('p',{class:'fb',role:'status','aria-live':'polite'});
+    var next=h('button',{class:'btn primary',type:'button',hidden:true,onclick:function(){i++;show();}},
+      i===items.length-1?'Vedi il risultato':'Avanti');
+    function check(){
+      if(done)return;
+      var n=norm(input.value);if(!n)return;
+      var a=norm(it.answer),hasArt=ART.test(a),typedArt=ART.test(n),ok=false,msg;
+      if(n===a||(noArt(n)===noArt(a)&&!typedArt)){
+        ok=true;msg='Esatto.'+(hasArt&&!typedArt?' Con l\'articolo: '+it.answer+'.':'');
+      }else if(noArt(n)===noArt(a)){msg='Parola giusta, articolo sbagliato. Corretto: '+it.answer+'.';}
+      else if(lev(noArt(n),noArt(a))<=2){msg='Quasi. Corretto: '+it.answer+'.';}
+      else{msg='Risposta: '+it.answer+'.';}
+      done=true;if(ok)score++;
+      fb.className='fb '+(ok?'good':'wrong');fb.textContent=msg;
+      input.disabled=true;next.hidden=false;next.focus();
+    }
+    input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();check();}});
+    var hintEl=h('p',{class:'hintline',hidden:true});
+    var raw=it.answer.replace(ART,'');
+    hintEl.textContent=raw.charAt(0)+' '+new Array(raw.length).join('_ ')+'('+raw.length+' lettere)';
+    root.append(h('p',{class:'prog'},'Domanda '+(i+1)+' di '+items.length));
+    if(audio){
+      var supported='speechSynthesis' in window;
+      root.append(h('div',{class:'seg'},
+        h('button',{class:'btn primary',type:'button',disabled:!supported,onclick:function(){speak(it.answer,0.85);}},'Ascolta'),
+        h('button',{class:'btn',type:'button',disabled:!supported,onclick:function(){speak(it.answer,0.55);}},'Più lento')),
+        h('p',{class:'hintline'},supported?'Se il browser non ha una voce italiana, la lettura esce con l\'accento di un\'altra lingua.':'Questo browser non ha la sintesi vocale.'));
+    }else{
+      root.append(h('div',{class:'prompt'},h('span',{class:'big'},it.prompt),'Come si dice in italiano?'));
+    }
+    root.append(h('label',{class:'label','for':input.id},'La tua risposta'),
+      h('div',{class:'field'},input,h('button',{class:'btn primary',type:'button',onclick:check},'Verifica')),
+      h('button',{class:'btn ghost',type:'button',onclick:function(){hintEl.hidden=!hintEl.hidden;}},'Indizio: prima lettera'),
+      hintEl,fb,next);
+  }
+  show();
+}
+
+/* ---------- montare i pezzi (Lettere mischiate e Frase da ricostruire) ---------- */
+function builder(root,items,join){
+  var i=0;
+  function show(){
+    root.replaceChildren();
+    if(i>=items.length){
+      root.append(h('p',{class:'result'},'Tutto montato.'),restartBtn(function(){i=0;show();}));
+      return;
+    }
+    var it=items[i],locked=false,answer=[],order;
+    do{order=shuffle(it.tokens.map(function(t,k){return {t:t,k:k};}));}
+    while(order.length>1&&order.every(function(o,k){return o.k===k;}));
+    var line=h('div',{class:'line'}),bank=h('div',{class:'bank'});
+    var fb=h('p',{class:'fb',role:'status','aria-live':'polite'});
+    var next=h('button',{class:'btn primary',type:'button',hidden:true,onclick:function(){i++;show();}},'Avanti');
+    order.forEach(function(o){
+      o.el=h('button',{class:'tile',type:'button'},o.t);
+      o.el.addEventListener('click',function(){
+        if(locked)return;
+        var idx=answer.indexOf(o);
+        if(idx>=0)answer.splice(idx,1);else answer.push(o);
+        draw();
+      });
+    });
+    function draw(){
+      line.replaceChildren.apply(line,answer.map(function(o){return o.el;}));
+      bank.replaceChildren.apply(bank,order.filter(function(o){return answer.indexOf(o)<0;}).map(function(o){return o.el;}));
+      fb.className='fb';fb.textContent='';
+      if(answer.length===order.length){
+        var s=answer.map(function(o){return o.t;}).join(join);
+        if(s===it.tokens.join(join)){locked=true;fb.className='fb good';fb.textContent='Esatto: '+s+'.';next.hidden=false;next.focus();}
+        else{fb.className='fb wrong';fb.textContent='Non ancora. Tocca un pezzo sopra per rimetterlo giù.';}
+      }
+    }
+    root.append(h('p',{class:'prog'},'Domanda '+(i+1)+' di '+items.length),
+      h('p',{class:'hintline'},it.hint),line,bank,
+      h('button',{class:'btn ghost',type:'button',onclick:function(){if(!locked){answer.length=0;draw();}}},'Pulisci'),fb,next);
+    draw();
+  }
+  show();
+}
+
+/* ---------- demo ---------- */
+function demoAssoc(root){
+  var pairs=[['Il cavatappi','O saca-rolhas'],['La scodella','A tigela'],['Inginocchiato','Ajoelhado'],['La zanzariera','O mosquiteiro'],['Il cacciavite','A chave de fenda']];
+  var dir='it';
+  function build(){
+    root.replaceChildren();
+    var sel=null,solved=0,errors=0;
+    var status=h('p',{class:'fb',role:'status','aria-live':'polite'},'Scegli una parola da ogni lato.');
+    var L=pairs.map(function(p,i){return {t:dir==='it'?p[0]:p[1],i:i};});
+    var R=shuffle(pairs.map(function(p,i){return {t:dir==='it'?p[1]:p[0],i:i};}));
+    function mk(side,item){
+      var b=h('button',{class:'opt',type:'button'},item.t);
+      b.addEventListener('click',function(){
+        if(b.disabled)return;
+        if(sel&&sel.side!==side){
+          if(sel.item.i===item.i){
+            b.classList.add('ok');sel.b.classList.remove('sel');sel.b.classList.add('ok');
+            b.disabled=true;sel.b.disabled=true;sel=null;solved++;
+            status.className='fb good';
+            status.textContent=solved===pairs.length?'Completato, con '+errors+(errors===1?' errore.':' errori.'):'Coppia giusta. '+solved+' su '+pairs.length+'.';
+          }else{
+            errors++;var old=sel.b;sel=null;old.classList.remove('sel');
+            b.classList.add('bad');old.classList.add('bad');
+            status.className='fb wrong';status.textContent='Questa coppia non combacia. Errori: '+errors+'.';
+            setTimeout(function(){b.classList.remove('bad');old.classList.remove('bad');},600);
+          }
+        }else{
+          if(sel)sel.b.classList.remove('sel');
+          sel={side:side,item:item,b:b};b.classList.add('sel');
+        }
+      });
+      return b;
+    }
+    var lc=h('div'),rc=h('div');
+    L.forEach(function(x){lc.append(mk('l',x));});
+    R.forEach(function(x){rc.append(mk('r',x));});
+    root.append(
+      h('div',{class:'seg'},
+        h('button',{class:'btn','aria-pressed':String(dir==='it'),type:'button',onclick:function(){dir='it';build();}},'Italiano → Portoghese'),
+        h('button',{class:'btn','aria-pressed':String(dir==='pt'),type:'button',onclick:function(){dir='pt';build();}},'Portoghese → Italiano')),
+      h('div',{class:'two'},lc,rc),status);
+    lc.className='';rc.className='';
+    [lc,rc].forEach(function(c){c.style.display='flex';c.style.flexDirection='column';c.style.gap='8px';});
+  }
+  build();
+}
+function demoCloze(root){
+  function blank(){return h('span',{class:'blank'},'______');}
+  mcq(root,[
+    {q:function(){return h('p',{class:'sentence'},'Per la festa, Maria si è ',blank(),' con il suo vestito migliore.');},
+     answer:'agghindata',choices:['agghindata','accovacciata','appoggiata'],
+     hint:'Nota del quaderno: Se arrumar (vestirsi con cura).',explain:'Agghindarsi: vestirsi con molta cura.'},
+    {q:function(){return h('p',{class:'sentence'},'Un serpente l\'ha ',blank(),'.');},
+     answer:'morsa',choices:['morsa','rasa','appoggiata'],
+     hint:'Nota del quaderno: Uma cobra a mordeu.',explain:'Morsa: participio di mordere, concorda con «l\'» femminile.'},
+    {q:function(){return h('p',{class:'sentence'},'Tutto il vicinato voleva avere il doppio ',blank(),'.');},
+     answer:'cancello',choices:['cancello','cavatappi','soffitto'],
+     hint:'Nota del quaderno: Toda a vizinhança queria ter o portão duplo.',explain:'Cancello: il portone d\'ingresso.'}
+  ]);
+}
+function demoIndovinello(root){
+  mcq(root,[
+    {q:function(){return h('p',{class:'sentence'},'«Utensile a rete o con fori per separare i liquidi dai solidi.»');},
+     answer:'Il colino',choices:['Il colino','Il cavatappi','Lo spremiagrumi','La scodella'],
+     explain:'Alternative prese dalla tag utensili (cucina).'},
+    {q:function(){return h('p',{class:'sentence'},'«Casa isolata in campagna, di solito semplice e un po\' rustica.»');},
+     answer:'Il casolare',choices:['Il casolare','Il camerino','La zanzariera','Un gregge di pecore'],
+     explain:'Casolare viene dalla tag campagna; le altre sono di teatro, casa e campo.'},
+    {q:function(){return h('p',{class:'sentence'},'«Con le ginocchia appoggiate a terra.»');},
+     answer:'Inginocchiato',choices:['Inginocchiato','Appoggiato','Stravaccato','Accovacciato'],
+     explain:'Tutte le opzioni vengono dalla tag posizioni del corpo.'}
+  ]);
+}
+function demoVF(root){
+  mcq(root,[
+    {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},'Il cavatappi'),'significa «O saca-rolhas».');},
+     answer:'Vero',choices:['Vero','Falso'],fixed:true,row:true,explain:'Il cavatappi = O saca-rolhas.'},
+    {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},'La scodella'),'significa «A panela».');},
+     answer:'Falso',choices:['Vero','Falso'],fixed:true,row:true,explain:'La scodella = A tigela. A panela sarebbe la pentola.'},
+    {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},'Accovacciata'),'significa «Agachada».');},
+     answer:'Vero',choices:['Vero','Falso'],fixed:true,row:true,explain:'Accovacciata = Agachada.'},
+    {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},'La muffa'),'significa «O mofo».');},
+     answer:'Vero',choices:['Vero','Falso'],fixed:true,row:true,explain:'La muffa = O mofo.'}
+  ]);
+}
+function demoMemory(root){
+  var pairs=[['Il colino','O filtro'],['La muffa','O mofo'],['La scodella','A tigela'],['Il manico','O cabo']];
+  var cards=shuffle(pairs.reduce(function(a,p,i){return a.concat([{t:p[0],i:i,u:0},{t:p[1],i:i,u:1}]);},[]));
+  var open=[],moves=0,found=0,lock=false;
+  var status=h('p',{class:'fb',role:'status','aria-live':'polite'},'Gira due carte.');
+  var grid=h('div',{class:'mem'});
+  cards.forEach(function(c){
+    var b=h('button',{class:'card',type:'button','aria-label':'Carta coperta'},'?');
+    c.el=b;
+    b.addEventListener('click',function(){
+      if(lock||c.up||c.ok)return;
+      c.up=true;b.className='card up';b.textContent=c.t;b.setAttribute('aria-label',c.t);open.push(c);
+      if(open.length===2){
+        moves++;
+        var a=open[0],d=open[1];
+        if(a.i===d.i){
+          a.ok=d.ok=true;a.el.className=d.el.className='card ok';open=[];found++;
+          status.className='fb good';
+          status.textContent=found===pairs.length?'Completato in '+moves+' mosse.':'Coppia trovata. '+found+' su '+pairs.length+'.';
+        }else{
+          lock=true;status.className='fb wrong';status.textContent='Non combaciano.';
+          setTimeout(function(){
+            [a,d].forEach(function(x){x.up=false;x.el.className='card';x.el.textContent='?';x.el.setAttribute('aria-label','Carta coperta');});
+            open=[];lock=false;
+          },900);
+        }
+      }
+    });
+    grid.append(b);
+  });
+  root.append(grid,status);
+}
+function demoModi(root){
+  function word(w,ans,choices,why){
+    return {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},w),'Qual è la traduzione?');},answer:ans,choices:choices,explain:why};
+  }
+  function expr(e,ans,choices,why){
+    return {q:function(){return h('p',{class:'prompt'},h('span',{class:'big'},e),'Cosa significa?');},answer:ans,choices:choices,explain:why};
+  }
+  mcq(root,[
+    word('Il cavatappi','O saca-rolhas',['O saca-rolhas','O abridor de garrafas','O coador'],'Il cavatappi è l\'attrezzo per togliere il tappo di sughero dalle bottiglie.'),
+    word('La scodella','A tigela',['A tigela','A panela','A travessa'],'La scodella è fonda e rotonda, senza manici.'),
+    expr('Metto le mani avanti','Essere pronti alle critiche e conseguenze',['Essere pronti alle critiche e conseguenze','Applaudire con entusiasmo','Dare una mano a qualcuno'],'Viene dalla nota scritta sul quaderno.'),
+    expr('Saltare all\'occhio','Essere così evidente da notarsi subito',['Essere così evidente da notarsi subito','Chiudere gli occhi per riposare','Saltare una riga leggendo'],'In portoghese: saltar aos olhos.')
+  ]);
+}
+function demoScrivi(root){
+  typeAnswer(root,[
+    {prompt:'O saca-rolhas',answer:'il cavatappi'},
+    {prompt:'A tigela',answer:'la scodella'},
+    {prompt:'O mosquiteiro',answer:'la zanzariera'},
+    {prompt:'A chave de fenda',answer:'il cacciavite'}
+  ],false);
+}
+function demoImpiccato(root){
+  var words=[
+    {w:'persiana',s:'Imposta di legno o plastica a lamelle che protegge la finestra dal sole.'},
+    {w:'scodella',s:'Recipiente fondo e rotondo, senza manici, per zuppe e latte.'},
+    {w:'zanzariera',s:'Rete sottile applicata alla finestra o al letto per tenere lontane le zanzare.'}
+  ];
+  var k=0;
+  function play(){
+    root.replaceChildren();
+    var it=words[k%words.length],guessed={},lives=6,over=false;
+    var shown=h('div',{class:'hang','aria-label':'Parola nascosta'});
+    var lv=h('p',{class:'lives'});
+    var fb=h('p',{class:'fb',role:'status','aria-live':'polite'});
+    var keys=h('div',{class:'keys'});
+    var next=h('button',{class:'btn primary',type:'button',hidden:true,onclick:function(){k++;play();}},'Prossima parola');
+    function draw(){
+      shown.replaceChildren.apply(shown,it.w.split('').map(function(c){return h('span',{},guessed[c]||over?c.toUpperCase():' ');}));
+      lv.textContent='Vite: '+new Array(lives+1).join('●')+new Array(7-lives).join('○');
+      lv.setAttribute('aria-label','Vite: '+lives+' su 6');
+    }
+    'abcdefghilmnopqrstuvz'.split('').forEach(function(c){
+      var b=h('button',{class:'opt',type:'button'},c);
+      b.addEventListener('click',function(){
+        if(over||b.disabled)return;
+        b.disabled=true;
+        if(it.w.indexOf(c)>=0){guessed[c]=true;b.classList.add('ok');}
+        else{lives--;b.classList.add('bad');}
+        var won=it.w.split('').every(function(x){return guessed[x];});
+        if(won||lives===0){
+          over=true;draw();
+          fb.className='fb '+(won?'good':'wrong');
+          fb.textContent=won?'Esatto: '+it.w+'.':'Finite le vite. La parola era '+it.w+'.';
+          keys.querySelectorAll('button').forEach(function(x){x.disabled=true;});next.hidden=false;
+        }else draw();
+      });
+      keys.append(b);
+    });
+    root.append(h('p',{class:'prompt'},'«'+it.s+'»'),shown,lv,keys,fb,next);
+    draw();
+  }
+  play();
+}
+function demoMischiate(root){
+  builder(root,[
+    {tokens:'scodella'.split(''),hint:'Indizio: A tigela'},
+    {tokens:'colino'.split(''),hint:'Indizio: O filtro'},
+    {tokens:'persiana'.split(''),hint:'Indizio: A persiana'}
+  ],'');
+}
+function demoArticolo(root){
+  var art=['il','lo','la',"l'",'i','le'];
+  function item(word,ans,why){
+    return {q:function(){return h('p',{class:'sentence'},h('span',{class:'blank'},'___'),' '+word);},
+      answer:ans,choices:art,fixed:true,row:true,explain:why};
+  }
+  mcq(root,[
+    item('cacciavite','il','Maschile singolare che inizia per c.'),
+    item('spremiagrumi','lo','Maschile che inizia con s più consonante vuole lo.'),
+    item('stoviglie','le','Femminile plurale.'),
+    item('impugnatura',"l'",'Femminile che inizia per vocale vuole l\'.'),
+    item('zanzariera','la','Femminile singolare che inizia per consonante.')
+  ]);
+}
+function demoRicostruire(root){
+  builder(root,[
+    {tokens:'Il soffitto sembra una barca rovesciata'.split(' '),hint:'Nota del quaderno: il soffitto parece um barco virado de cabeça para baixo.'},
+    {tokens:"Un serpente l'ha morsa".split(' '),hint:'Nota del quaderno: Uma cobra a mordeu.'}
+  ],' ');
+}
+function demoErrore(root){
+  var items=[
+    {t:'Il cacciavite serve per togliere il tappo di sughero.'.split(' '),wrong:1,fix:'cavatappi',why:'Il cacciavite avvita le viti. Chi toglie i tappi di sughero è il cavatappi.'},
+    {t:'Per cuocere la pasta uso la padella alta e profonda.'.split(' '),wrong:6,fix:'pentola',why:'La padella è larga e bassa. La pentola è alta e profonda.'}
+  ];
+  var i=0;
+  function show(){
+    root.replaceChildren();
+    if(i>=items.length){root.append(h('p',{class:'result'},'Tutti gli errori trovati.'),restartBtn(function(){i=0;show();}));return;}
+    var it=items[i],done=false;
+    var fb=h('p',{class:'fb',role:'status','aria-live':'polite'});
+    var next=h('button',{class:'btn primary',type:'button',hidden:true,onclick:function(){i++;show();}},'Avanti');
+    var words=h('div',{class:'words'});
+    it.t.forEach(function(w,k){
+      var b=h('button',{class:'w',type:'button'},w);
+      b.addEventListener('click',function(){
+        if(done)return;
+        if(k===it.wrong){
+          done=true;b.classList.add('ok');fb.className='fb good';fb.textContent='Esatto. Correzione: '+it.fix+'. '+it.why;next.hidden=false;next.focus();
+        }else{b.classList.add('bad');fb.className='fb wrong';fb.textContent='Questa parola è giusta. Cercane un\'altra.';}
+      });
+      words.append(b);
+    });
+    root.append(h('p',{class:'prog'},'Domanda '+(i+1)+' di '+items.length),h('p',{class:'hintline'},'Tocca la parola sbagliata.'),words,fb,next);
+  }
+  show();
+}
+function demoDettato(root){
+  typeAnswer(root,[{answer:'il cavatappi'},{answer:'la zanzariera'},{answer:'sfavillare'}],true);
+}
+/* ---------- catalogo ---------- */
+var CATS={rec:'Riconoscere',rec2:'Ricordare',fra:'Capire le frasi',ouv:'Ascoltare e parlare'};
+var EX=[
+ {n:1,t:'Associazione',it:'Associazione',cat:'rec',def:1,d:1,demo:demoAssoc,
+  data:['Parola/Espressione','Nota'],
+  how:['Due colonne: parole in italiano da un lato, traduzioni dall\'altro, in ordine diverso.','Tocca una parola e poi la traduzione. La coppia giusta si blocca; l\'errore entra nel punteggio.','Funziona in entrambi i sensi: italiano → portoghese e portoghese → italiano.'],
+  note:'<b>Turno di 5 o 6 coppie.</b> Le voci la cui Nota è una spiegazione in italiano, come «Padella» e «Pentola», restano fuori perché non hanno una traduzione da associare.'},
+ {n:2,t:'Completare frasi',it:'Completare frasi',cat:'fra',def:1,d:2,demo:demoCloze,
+  data:['Parola/Espressione','Tags','Frase d\'esempio'],
+  how:['Una frase con uno spazio vuoto e tre opzioni.','La parola mancante viene dal glossario. Le opzioni sbagliate hanno la stessa classe grammaticale.','Indizio opzionale con il riferimento alla nota del quaderno.'],
+  note:'<b>Manca materiale.</b> Solo 12 delle 58 voci sono frasi. Per le altre serve una frase di esempio: colonna nuova nel glossario o frase generata da Claude.'},
+ {n:3,t:'Indovinello',it:'Indovinello',cat:'rec',def:1,d:2,demo:demoIndovinello,
+  data:['Spiegazione','Parola/Espressione','Tags'],
+  how:['La Spiegazione, la descrizione in italiano, appare come indizio.','Scegli la parola giusta tra quattro.','Le alternative sbagliate condividono le tag con la risposta, quindi sembrano tutte possibili.'],
+  note:'<b>Prima dell\'uso</b>, l\'app controlla che la Spiegazione non contenga la parola stessa, altrimenti la risposta appare nella domanda.'},
+ {n:4,t:'Vero o falso',it:'Vero o falso',cat:'rec',def:0,d:1,demo:demoVF,
+  data:['Parola/Espressione','Nota'],
+  how:['Una parola appare con una traduzione. Può essere giusta o scambiata con quella di un\'altra voce.','Risposta in un tocco. Se sbagli, l\'app mostra la coppia corretta.'],
+  note:'<b>Buon riscaldamento.</b> Ogni domanda richiede pochi secondi, quindi ne entrano venti per turno.'},
+ {n:5,t:'Gioco della memoria',it:'Memory',cat:'rec',def:0,d:1,demo:demoMemory,
+  data:['Parola/Espressione','Nota'],
+  how:['Carte coperte. Girane due per volta.','Se sono parola e traduzione della stessa coppia, restano scoperte.'],
+  note:'<b>Da 4 a 8 coppie.</b> Conta le mosse invece del tempo, per non mettere fretta.'},
+ {n:6,t:'Scegli la traduzione',it:'Scegli la traduzione',cat:'rec',def:0,d:2,demo:demoModi,
+  data:['Parola/Espressione','Nota','Tags'],
+  how:['Una parola o un\'espressione in italiano appare con tre opzioni: una sola è giusta.','Per le parole si sceglie la traduzione in portoghese; per i modi di dire, il significato in italiano.','Le alternative sbagliate vengono dalla stessa classe grammaticale, così la risposta non si indovina dalla forma.'],
+  note:'<b>Vale per parole e modi di dire.</b> Per le parole la risposta è la traduzione del quaderno; per i modi di dire, la spiegazione in italiano.'},
+ {n:7,t:'Scrivi la parola',it:'Scrivi la parola',cat:'rec2',def:0,d:3,demo:demoScrivi,
+  data:['Nota','Parola/Espressione'],
+  how:['Appare la traduzione in portoghese; tu scrivi la parola in italiano.','Accetta maiuscole o minuscole, con o senza accento e con o senza articolo.','Fino a due lettere sbagliate conta come «quasi», e l\'app mostra la forma corretta.'],
+  note:'<b>È più difficile che scegliere.</b> Ricordare senza opzioni fissa meglio l\'ortografia. L\'indizio mostra la prima lettera e la lunghezza della parola.'},
+ {n:8,t:'Impiccato',it:'Impiccato',cat:'rec2',def:0,d:2,demo:demoImpiccato,
+  data:['Spiegazione','Parola/Espressione'],
+  how:['La Spiegazione appare come indizio e la parola si rivela lettera per lettera.','Sei errori permessi. La tastiera ha le 21 lettere dell\'alfabeto italiano.'],
+  note:'<b>Le parole lunghe funzionano meglio.</b> Con parole di quattro lettere il gioco finisce prima di insegnare qualcosa.'},
+ {n:9,t:'Lettere mischiate',it:'Lettere mischiate',cat:'rec2',def:0,d:2,demo:demoMischiate,
+  data:['Parola/Espressione','Nota'],
+  how:['Le lettere arrivano fuori ordine. Toccale nella sequenza giusta.','La traduzione in portoghese appare come indizio.','Tocca una lettera già messa per rimetterla giù.'],
+  note:'<b>Controlla il risultato, non la posizione.</b> Parole con lettere ripetute, come «scodella», accettano qualsiasi ordine che formi la parola.'},
+ {n:10,t:'Articolo e genere',it:'Articolo e genere',cat:'rec2',def:0,d:2,demo:demoArticolo,
+  data:['Parola/Espressione','Tags'],
+  how:['La parola appare senza articolo. Scegli tra il, lo, la, l\', i e le.','L\'articolo è già scritto nella colonna Parola/Espressione; l\'app lo separa soltanto.','Genere e numero vengono dalle tag maschile, femminile e plurale.'],
+  note:'<b>Allena la regola di lo e l\'.</b> La scelta dipende dalla prima lettera della parola, e il glossario porta già esempi.'},
+ {n:11,t:'Frase da ricostruire',it:'Frase da ricostruire',cat:'fra',def:0,d:3,demo:demoRicostruire,
+  data:['Parola/Espressione (frasi)','Nota'],
+  how:['Le parole di una frase arrivano mescolate. Toccale nell\'ordine giusto.','La traduzione in portoghese appare come indizio.'],
+  note:'<b>Solo frasi complete.</b> Vale lo stesso limite dell\'esercizio 2: poche voci sono frasi.'},
+ {n:12,t:'Trova l\'errore',it:'Trova l\'errore',cat:'fra',def:0,d:3,demo:demoErrore,
+  data:['Parola/Espressione','Spiegazione','Nota'],
+  how:['Una frase contiene una parola del glossario al posto sbagliato.','Tocca la parola scorretta. L\'app spiega la differenza.'],
+  note:'<b>Sfrutta coppie che si confondono</b>, come «padella» (larga e bassa) e «pentola» (alta e profonda), che sono sul quaderno.'},
+ {n:13,t:'Dettato',it:'Dettato',cat:'ouv',def:0,d:3,demo:demoDettato,
+  data:['Parola/Espressione'],
+  how:['L\'app legge la parola in italiano e tu la scrivi.','C\'è un pulsante per ascoltarla più lentamente.'],
+  note:'<b>Usa la voce del browser.</b> La qualità dipende dalle voci italiane installate sul dispositivo.'},
+
+];
+
+/* ---------- montaggio della pagina ---------- */
+function dots(d){return new Array(d+1).join('●')+new Array(4-d).join('○');}
+var cardsEl=document.getElementById('cards'),idx=document.getElementById('index-body');
+EX.forEach(function(ex){
+  var body=h('div',{class:'demo-body',id:'demo-'+ex.n});
+  var art=h('article',{class:'ex',id:'ex-'+ex.n,'data-ex':'1','data-cat':ex.cat,'data-def':String(ex.def)},
+    h('div',{class:'ex-head'},
+      h('span',{class:'ex-num','aria-hidden':'true'},String(ex.n)),
+      h('div',{class:'ex-title'},h('h3',{},ex.t)),
+      h('div',{class:'badges'},
+        h('span',{class:'badge'+(ex.def?' def':'')},ex.def?'Definito':'Proposta'),
+        h('span',{class:'badge'},CATS[ex.cat]),
+        h('span',{class:'dots','aria-label':'Difficoltà '+ex.d+' su 3',title:'Difficoltà'},dots(ex.d)))),
+    h('div',{class:'ex-grid'},
+      (function(){
+        var how=h('div',{class:'how'},h('p',{class:'label'},'Come funziona'),h('ul',{},ex.how.map(function(x){return h('li',{},x);})),
+          h('p',{class:'label',style:'margin-top:18px'},'Dati del glossario'),
+          h('div',{class:'data'},ex.data.map(function(x){return h('span',{class:'tag'},x);})));
+        var note=h('p',{class:'note'});note.innerHTML=ex.note;how.append(note);return how;
+      })(),
+      h('div',{class:'demo'},
+        h('div',{class:'demo-top'},h('span',{class:'label'},'Prova'),
+          h('button',{class:'btn ghost',type:'button',onclick:function(){body.replaceChildren();ex.demo(body);}},'Ricomincia')),
+        body)));
+  cardsEl.append(art);
+  ex.demo(body);
+  idx.append(h('tr',{'data-ex':'1','data-cat':ex.cat,'data-def':String(ex.def)},
+    h('td',{class:'num'},String(ex.n)),
+    h('td',{},h('a',{href:'#ex-'+ex.n,onclick:function(e){e.preventDefault();document.getElementById('ex-'+ex.n).scrollIntoView({behavior:'smooth',block:'start'});}},ex.t)),
+    h('td',{},CATS[ex.cat]),
+    h('td',{},ex.def?'Definito':'Proposta'),
+    h('td',{},ex.data.join(', '))));
+});
+
+var FILTERS=[{k:'all',l:'Tutti (13)'},{k:'def',l:'Già definiti (3)'}].concat(Object.keys(CATS).map(function(k){
+  var c=EX.filter(function(e){return e.cat===k;}).length;return {k:k,l:CATS[k]+' ('+c+')'};}));
+var fbox=document.getElementById('filters');
+function applyFilter(k){
+  document.querySelectorAll('[data-ex]').forEach(function(el){
+    el.hidden=!(k==='all'||(k==='def'?el.dataset.def==='1':el.dataset.cat===k));
+  });
+  fbox.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.k===k));});
+}
+FILTERS.forEach(function(f){
+  var b=h('button',{class:'fchip',type:'button','data-k':f.k,onclick:function(){applyFilter(f.k);}},f.l);
+  fbox.append(b);
+});
+applyFilter('all');
+</script>

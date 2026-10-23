@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Speak this sentence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 36px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Top Lesson Header */
+    .lesson-header {
+      padding: 16px 20px 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #afafaf;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 14px;
+      background: #e5e5e5;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 16%;
+      height: 100%;
+      background: #58cc02;
+      border-radius: 7px;
+    }
+
+    .heart-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff4b4b;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 28px;
+    }
+
+    /* Mascot Bear + Speech Bubble */
+    .speaker-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 34px;
+    }
+
+    .bear-avatar {
+      width: 105px;
+      height: 140px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .speech-bubble {
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+      box-shadow: 0 2px 0 #f0f0f0;
+      flex: 1;
+      margin-top: 10px;
+    }
+
+    .speech-bubble::before, .speech-bubble::after {
+      content: '';
+      position: absolute;
+      top: 26px;
+      left: -12px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+    .speech-bubble::before {
+      border-width: 8px 12px 8px 0;
+      border-color: transparent #e5e5e5 transparent transparent;
+      left: -13px;
+    }
+    .speech-bubble::after {
+      border-width: 7px 10px 7px 0;
+      border-color: transparent #ffffff transparent transparent;
+      left: -10px;
+    }
+
+    .speaker-icon-btn {
+      color: #1cb0f6;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .spanish-phrase {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3c3c3c;
+      line-height: 1.45;
+    }
+
+    .dotted-hint {
+      border-bottom: 2px dotted #888888;
+      cursor: pointer;
+      padding-bottom: 1px;
+    }
+
+    /* Waveform Recording Box */
+    .waveform-card {
+      border: 2px solid #e5e5e5;
+      border-radius: 20px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 3px 0 #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .waveform-card:hover {
+      background: #fafafa;
+    }
+
+    .wave-bar {
+      width: 6px;
+      background: #1cb0f6;
+      border-radius: 3px;
+      animation: wavePulse 1.2s infinite ease-in-out;
+    }
+
+    @keyframes wavePulse {
+      0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+
+    .wave-bar:nth-child(1) { height: 18px; animation-delay: 0.1s; }
+    .wave-bar:nth-child(2) { height: 26px; animation-delay: 0.3s; }
+    .wave-bar:nth-child(3) { height: 40px; animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { height: 52px; animation-delay: 0.4s; }
+    .wave-bar:nth-child(5) { height: 32px; animation-delay: 0.15s; }
+    .wave-bar:nth-child(6) { height: 24px; animation-delay: 0.35s; }
+    .wave-bar:nth-child(7) { height: 18px; animation-delay: 0.25s; }
+    .wave-bar:nth-child(8) { height: 12px; animation-delay: 0.45s; }
+
+    /* Footer */
+    .footer {
+      padding: 16px 20px 34px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cant-speak-link {
+      background: none;
+      border: none;
+      color: #afafaf;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .cant-speak-link:hover {
+      color: #777777;
+    }
+
+    .btn-continue-disabled {
+      width: 100%;
+      height: 50px;
+      background: #e5e5e5;
+      border: none;
+      border-radius: 16px;
+      color: #afafaf;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:08</span>
+      <div class="status-icons">
+        <span>5G</span>
+        <svg width="22" height="12" viewBox="0 0 24 12" fill="#000000">
+          <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000000" stroke-width="2" fill="none"/>
+          <rect x="2" y="2" width="16" height="8" rx="1" fill="#000000"/>
+          <path d="M22 4v4" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Lesson Header -->
+    <div class="lesson-header">
+      <button class="close-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill"></div>
+      </div>
+
+      <div class="heart-stat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>4</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="title">Speak this sentence</div>
+
+      <!-- Bear Falstaff Section -->
+      <div class="speaker-section">
+        <!-- Falstaff Illustration -->
+        <div class="bear-avatar">
+          <svg viewBox="0 0 110 145" fill="none" style="width:100%; height:100%;">
+            <!-- Shadow -->
+            <ellipse cx="55" cy="138" rx="35" ry="7" fill="#e5e5e5"/>
+            <!-- Bear Body -->
+            <path d="M22 60C18 75 14 110 24 135H86C96 110 92 75 88 60Z" fill="#a0603f"/>
+            <!-- Crossed Arms -->
+            <path d="M20 75C20 75 55 105 85 85" stroke="#7d4428" stroke-width="12" stroke-linecap="round"/>
+            <path d="M85 80C85 80 50 110 25 90" stroke="#8d5032" stroke-width="12" stroke-linecap="round"/>
+            <!-- Cyan Scarf -->
+            <path d="M22 65C35 55 75 55 88 65C88 78 75 85 55 80C35 85 22 78 22 65Z" fill="#00cd9c"/>
+            <path d="M60 74L70 95H55L50 78Z" fill="#00b085"/>
+            <!-- Bear Head -->
+            <ellipse cx="55" cy="45" rx="28" ry="32" fill="#a0603f"/>
+            <!-- Round Ears -->
+            <circle cx="30" cy="20" r="9" fill="#a0603f"/>
+            <circle cx="30" cy="20" r="5" fill="#7d4428"/>
+            <circle cx="80" cy="20" r="9" fill="#a0603f"/>
+            <circle cx="80" cy="20" r="5" fill="#7d4428"/>
+            <!-- Snout -->
+            <ellipse cx="55" cy="54" rx="12" ry="14" fill="#d99968"/>
+            <!-- Black Nose -->
+            <path d="M49 46H61L55 52Z" fill="#2b2b2b"/>
+            <!-- Grumpy Eyes / Eyebrows -->
+            <line x1="38" y1="36" x2="48" y2="40" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>
+            <line x1="72" y1="36" x2="62" y2="40" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="44" cy="41" rx="2" ry="3" fill="#2b2b2b"/>
+            <ellipse cx="66" cy="41" rx="2" ry="3" fill="#2b2b2b"/>
+          </svg>
+        </div>
+
+        <!-- Speech Bubble -->
+        <div class="speech-bubble">
+          <div class="speaker-icon-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          </div>
+          <div class="spanish-phrase">
+            <span class="dotted-hint">El</span> <span class="dotted-hint">señor</span> <span class="dotted-hint">Pérez</span> <span class="dotted-hint">a</span><br>
+            <span class="dotted-hint">veces</span> <span class="dotted-hint">trabaja</span> <span class="dotted-hint">en</span> <span class="dotted-hint">dos</span><br>
+            <span class="dotted-hint">universidades.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated Waveform Card -->
+      <div class="waveform-card" onclick="alert('Listening to your microphone...')">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button class="cant-speak-link" onclick="alert('Disabled speech exercises for 15 minutes')">CAN'T SPEAK NOW</button>
+      <button class="btn-continue-disabled">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

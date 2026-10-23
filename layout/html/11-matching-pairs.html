@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Tap the matching pairs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .brand-logo {
+      font-weight: 900;
+      color: #58cc02;
+      font-size: 17px;
+      letter-spacing: -0.3px;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Lesson Top Bar */
+    .lesson-bar {
+      padding: 14px 20px 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #afafaf;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 14px;
+      background: #e5e5e5;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 25%;
+      height: 100%;
+      background: #58cc02;
+      border-radius: 7px;
+    }
+
+    .heart-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ff4b4b;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 30px;
+    }
+
+    /* Pairs 2-Column Grid */
+    .pairs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .pair-tile {
+      height: 68px;
+      border: 2px solid #e5e5e5;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 3px 0 #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #3c3c3c;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: all 0.12s ease;
+    }
+
+    .pair-tile:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #e5e5e5;
+    }
+
+    /* Completed / Disabled Pair Tile */
+    .pair-tile.completed {
+      border-color: #f0f0f0;
+      background: #ffffff;
+      color: #d0d0d0;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    /* Matched / Active Selected Green Tile */
+    .pair-tile.matched-active {
+      border-color: #a4e478;
+      background: #e7ffcf;
+      color: #58a700;
+      box-shadow: 0 3px 0 #8ad058;
+    }
+
+    /* Sparkle Diamonds */
+    .sparkle {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: #78c800;
+      transform: rotate(45deg);
+      opacity: 0.65;
+    }
+    .sp-top-right { top: 10px; right: 12px; }
+    .sp-bottom-left { bottom: 10px; left: 12px; }
+    .sp-mid-top { top: 12px; left: 35%; }
+
+    /* Audio Waves inside tile */
+    .tile-audio {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1cb0f6;
+    }
+
+    .audio-waves-bars {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .audio-waves-bars span {
+      display: inline-block;
+      width: 3.5px;
+      background: #1cb0f6;
+      border-radius: 2px;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 16px 20px 34px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cant-listen-link {
+      background: none;
+      border: none;
+      color: #afafaf;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .cant-listen-link:hover {
+      color: #777777;
+    }
+
+    .btn-continue-disabled {
+      width: 100%;
+      height: 50px;
+      background: #e5e5e5;
+      border: none;
+      border-radius: 16px;
+      color: #afafaf;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:08</span>
+      <span class="brand-logo">duolingo</span>
+      <div class="status-icons">
+        <span>5G</span>
+        <svg width="22" height="12" viewBox="0 0 24 12" fill="#000000">
+          <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000000" stroke-width="2" fill="none"/>
+          <rect x="2" y="2" width="16" height="8" rx="1" fill="#000000"/>
+          <path d="M22 4v4" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Lesson Header -->
+    <div class="lesson-bar">
+      <button class="close-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill"></div>
+      </div>
+
+      <div class="heart-stat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>4</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="title">Tap the matching pairs</div>
+
+      <div class="pairs-grid">
+        <!-- Row 1 Left: ciudades (completed) -->
+        <div class="pair-tile completed">
+          ciudades
+        </div>
+
+        <!-- Row 1 Right: to write -->
+        <div class="pair-tile" onclick="tapTile(this)">
+          to write
+        </div>
+
+        <!-- Row 2 Left: dormir (matched active with sparkles) -->
+        <div class="pair-tile matched-active">
+          <div class="sparkle sp-top-right"></div>
+          <div class="sparkle sp-bottom-left"></div>
+          <div class="sparkle sp-mid-top"></div>
+          dormir
+        </div>
+
+        <!-- Row 2 Right: to sleep (matched active with sparkles) -->
+        <div class="pair-tile matched-active">
+          <div class="sparkle sp-top-right"></div>
+          <div class="sparkle sp-bottom-left"></div>
+          to sleep
+        </div>
+
+        <!-- Row 3 Left: Audio 1 -->
+        <div class="pair-tile" onclick="tapTile(this)">
+          <div class="tile-audio">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+            </svg>
+            <div class="audio-waves-bars">
+              <span style="height: 6px;"></span>
+              <span style="height: 12px;"></span>
+              <span style="height: 22px;"></span>
+              <span style="height: 16px;"></span>
+              <span style="height: 8px;"></span>
+              <span style="height: 14px;"></span>
+              <span style="height: 4px;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3 Right: cities (completed) -->
+        <div class="pair-tile completed">
+          cities
+        </div>
+
+        <!-- Row 4 Left: Audio 2 -->
+        <div class="pair-tile" onclick="tapTile(this)">
+          <div class="tile-audio">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+            </svg>
+            <div class="audio-waves-bars">
+              <span style="height: 4px;"></span>
+              <span style="height: 10px;"></span>
+              <span style="height: 18px;"></span>
+              <span style="height: 24px;"></span>
+              <span style="height: 12px;"></span>
+              <span style="height: 16px;"></span>
+              <span style="height: 6px;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4 Right: also -->
+        <div class="pair-tile" onclick="tapTile(this)">
+          also
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button class="cant-listen-link" onclick="alert('Listening exercises paused for 15 minutes')">CAN'T LISTEN NOW</button>
+      <button class="btn-continue-disabled">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <script>
+    function tapTile(el) {
+      if (el.classList.contains('completed')) return;
+      el.classList.toggle('matched-active');
+    }
+  </script>
+</body>
+</html>
