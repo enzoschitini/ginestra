@@ -274,6 +274,12 @@
     .sparkle { position: absolute; width: 7px; height: 7px; background: #78c800; transform: rotate(45deg); opacity: .65; }
     .sp-a { top: 10px; right: 12px; } .sp-b { bottom: 10px; left: 12px; } .sp-c { top: 12px; left: 35%; }
 
+    .btn-ghost {
+      display: block; margin: 14px auto 0; padding: 10px 20px;
+      border: 2px solid #e5e5e5; border-radius: 16px; background: #fff; box-shadow: 0 3px 0 #e5e5e5;
+      font: inherit; font-size: 14px; font-weight: 800; color: #1899d6; text-transform: uppercase; letter-spacing: .8px; cursor: pointer;
+    }
+    .btn-ghost:disabled { color: #afafaf; cursor: default; }
     .mem-card { min-height: 78px; font-size: 15px; }
     .mem-card.down { background: #58cc02; border-color: #58cc02; box-shadow: 0 3px 0 #46a302; color: #fff; font-size: 26px; }
     .mem-card.up { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
@@ -975,15 +981,15 @@ var EX = [
       var c = coverSet(1, pool, size, used), set = c.set;
       if (set.length < 4) break;
       used = used.concat(set);
-      items.push(stamp({ dir: i % 2 ? 'pt' : 'it', pairs: set.map(function (r) { return [disp(r), r.trad]; }) },
+      items.push(stamp({ pairs: set.map(function (r) { return [disp(r), r.trad]; }) },
         set.map(function (r) { return r.id; }), c.wrap));
     }
     return items;
   },
   title: 'Tocca le coppie corrispondenti',
   render: function (item, ctx) {
-    var L = item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[0] : p[1], i: i }; });
-    var R = shuffle(item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[1] : p[0], i: i }; }));
+    var L = item.pairs.map(function (p, i) { return { t: p[1], i: i }; });
+    var R = shuffle(item.pairs.map(function (p, i) { return { t: p[0], i: i }; }));
     var sel = null, solved = 0, errors = 0, grid = h('div', { class: 'pairs-grid' });
     function mk(side, o) {
       var b = h('button', { class: 'pair-tile', type: 'button' }, o.t);
@@ -1009,7 +1015,7 @@ var EX = [
       return b;
     }
     item.pairs.forEach(function (p, k) { grid.append(mk('l', L[k]), mk('r', R[k])); });
-    ctx.body.append(h('p', { class: 'hint-line' }, item.dir === 'it' ? 'Italiano → Portoghese' : 'Portoghese → Italiano'), grid);
+    ctx.body.append(h('p', { class: 'hint-line' }, 'Portoghese → Italiano'), grid);
   }
 },
 
@@ -1122,7 +1128,19 @@ var EX = [
       });
       grid.append(b);
     });
-    ctx.body.append(grid, counter);
+    var reveal = h('button', { class: 'btn-ghost', type: 'button' }, 'Svela le parole');
+    reveal.addEventListener('click', function () {
+      if (ctx.isDone() || lock) return;
+      lock = true; reveal.disabled = true;
+      cards.forEach(function (c) { if (!c.ok && !c.up) { c.el.className = 'pair-tile mem-card up'; c.el.textContent = c.t; } });
+      setTimeout(function () {
+        cards.forEach(function (c) {
+          if (!c.ok && !c.up) { c.el.className = 'pair-tile mem-card down'; c.el.textContent = '?'; }
+        });
+        lock = false; reveal.disabled = false;
+      }, 3000);
+    });
+    ctx.body.append(grid, counter, reveal);
   }
 },
 
