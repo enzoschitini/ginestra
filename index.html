@@ -350,19 +350,6 @@
     .drawer.bad .btn-main { background: #ff4b4b; box-shadow: 0 4px 0 #ea2b2b; }
     .drawer.bad .btn-main:active { box-shadow: 0 1px 0 #ea2b2b; }
 
-    /* modale di uscita */
-    .modal-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,.6); z-index: 150;
-      display: flex; align-items: center; justify-content: center; padding: 24px;
-    }
-    .modal-overlay[hidden] { display: none; }
-    .quit-modal {
-      background: #fff; border-radius: 28px; padding: 28px 24px; width: 100%;
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .quit-modal .mascot { width: 100px; margin-bottom: 16px; }
-    .quit-title { font-size: 19px; font-weight: 900; color: #3c3c3c; margin-bottom: 24px; line-height: 1.35; }
     .btn-blue {
       width: 100%; height: 50px; background: #1cb0f6; border: none; border-radius: 16px; color: #fff;
       font-size: 15px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
@@ -494,6 +481,12 @@
     .sheet-status { font-size: 13px; font-weight: 700; color: #777; margin-top: -6px; }
     .fld { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #afafaf; }
     .fld select { width: 100%; border: 2px solid #e5e5e5; border-radius: 12px; padding: 11px 12px; font-size: 15px; font-weight: 700; color: #3c3c3c; background: #fff; font-family: inherit; text-transform: none; letter-spacing: 0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; text-transform: none; letter-spacing: 0; }
+    .chip { border: 2px solid #e5e5e5; border-bottom-width: 3px; border-radius: 12px; background: #fff; color: #3c3c3c; font: inherit; font-size: 13px; font-weight: 800; padding: 6px 10px; cursor: pointer; }
+    .chip small { color: #afafaf; font-weight: 700; margin-left: 4px; }
+    .chip.on { background: #ddf4ff; border-color: #84d8ff; color: #1cb0f6; } .chip.on small { color: #1cb0f6; }
+    .chip:disabled { opacity: .4; cursor: default; }
+    .f-reset { align-self: flex-start; margin-top: 0; }
     #foglio-info .cover { margin: 0; background: #f7f7f7; border: 2px solid #e5e5e5; color: #3c3c3c; }
     #foglio-info .cover-t { color: #afafaf; }
     #cover-box .cover { margin: 0; background: #f7f7f7; border: 2px solid #e5e5e5; color: #3c3c3c; }
@@ -551,22 +544,16 @@
             <div class="sheet" role="dialog" aria-label="Impostazioni">
               <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
               <div class="sheet-status" id="data-status"></div>
-              <label class="fld">Foglio<select id="sel-foglio"></select></label>
+              <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
+              <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
+              <div class="fld">Categoria<div class="chips" id="f-cat"></div></div>
+              <button class="cover-b f-reset" id="f-reset" type="button">Azzera filtri</button>
               <label class="fld">Domande per lezione<select id="sel-n"><option value="5">5</option><option value="8">8</option><option value="10">10</option><option value="20">20</option><option value="tutte">Tutte le voci</option></select></label>
-              <label class="fld">Categoria<select id="sel-cat"></select></label>
               <div id="foglio-info"></div>
               <div id="cover-box"></div>
             </div>
           </div>
 
-          <div class="modal-overlay" id="modal" hidden>
-            <div class="quit-modal">
-              <div class="mascot" id="modal-mascot"></div>
-              <div class="quit-title">Aspetta, non andare! Perderai i progressi se esci adesso</div>
-              <button class="btn-blue" id="keep" type="button">Continua a imparare</button>
-              <button class="btn-link" id="end" type="button">Termina la sessione</button>
-            </div>
-          </div>
         </div>
       </div>
     </main>
@@ -736,7 +723,7 @@ var ICON = {"stella": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEcAAABBCAY
 /* ======================================================
    DATI: il glossario (CSV) è l'unica fonte degli esercizi
    ====================================================== */
-var ROWS = [], FOGLIO = '', CAT = '', NQ = 5, SUMM = {};
+var ROWS = [], FILT = { pers: [], per: [], cat: [] }, NQ = 5, SUMM = {};
 
 /* il confronto ignora accenti, maiuscole e punteggiatura (tranne l'apostrofo) */
 norm = function (s) {
@@ -806,7 +793,7 @@ function take(a, n) { return shuffle(a).slice(0, n); }
    Una voce si segna come vista quando la domanda viene mostrata. Quando tutte le voci
    idonee sono state viste, il giro ricomincia da capo. */
 var SEEN = {}, STORE = '';
-function seenOf(n) { var k = n + '|' + FOGLIO + (CAT ? '|' + CAT : ''); return (SEEN[k] = SEEN[k] || {}); }
+function seenOf(n) { var k = n + '|' + ['pers', 'per', 'cat'].map(function (g) { return FILT[g].slice().sort().join(';'); }).join('|'); return (SEEN[k] = SEEN[k] || {}); }
 function saveSeen() { try { localStorage.setItem(STORE, JSON.stringify(SEEN)); } catch (e) {} }
 function loadSeen() { SEEN = {}; try { SEEN = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { SEEN = {}; } }
 function hashText(t) { var h = 5381, i = 0; for (; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0; return h.toString(36); }
@@ -847,7 +834,13 @@ function roundsFor(poolLen, size, perRound) {
 function answerText(r) { return !r.lemma ? '' : r.art ? r.art + (/'$/.test(r.art) ? '' : ' ') + r.lemma : r.lemma; }
 function disp(r) { return cap(answerText(r)); }
 function shown(r) { return r.tipo === 'parola' ? disp(r) : r.text; }
-function inFoglio(r) { return (!FOGLIO || r.pers === FOGLIO) && (!CAT || r.tagList.indexOf(CAT) >= 0); }
+/* filtri: tra gruppi vale «e», dentro un gruppo vale «o» */
+function periodOf(r) { return (SUMM[r.pers] || {}).data || ''; }
+function inFoglio(r) {
+  return (!FILT.pers.length || FILT.pers.indexOf(r.pers) >= 0) &&
+    (!FILT.per.length || FILT.per.indexOf(periodOf(r)) >= 0) &&
+    (!FILT.cat.length || FILT.cat.some(function (t) { return r.tagList.indexOf(t) >= 0; }));
+}
 /* una voce è idonea a un esercizio se non è «da verificare» e il nome dell'esercizio non è in «Escludi da» */
 function ok(r, key) { return !r.uncertain && inFoglio(r) && r.esc.split(/[;,\s]+/).indexOf(key) < 0; }
 function words(key) { return ROWS.filter(function (r) { return r.tipo === 'parola' && r.lemma && ok(r, key); }); }
@@ -1468,13 +1461,17 @@ function showTraining() {
     h('div', { class: 'tr-bar' }, search, toggle), count, list);
   $('body').scrollTop = 0; document.querySelector('.content').scrollTop = 0;
   paint();
-  $('modal').hidden = true; $('sheet').hidden = true;
+  $('sheet').hidden = true;
 }
 
 /* ---------- Home: sessioni (stellina) ed esercizi (libretto) ---------- */
 var HOME = { n: -1, name: 'Home', items: [], pool: function () { return []; }, needs: '' };
 function setMode(v) { VIEW = v; document.body.classList.toggle('mode-ex', v === 'ex'); }
-function subtitle() { return (FOGLIO || 'Tutti i fogli') + (CAT ? ' · ' + catLabel(CAT) : '') + ' · ' + ROWS.filter(inFoglio).length + ' voci'; }
+function subtitle() {
+  var n = FILT.pers.length + FILT.per.length + FILT.cat.length;
+  var what = FILT.pers.length === 1 && !FILT.per.length && !FILT.cat.length ? FILT.pers[0] : n ? n + (n === 1 ? ' filtro' : ' filtri') : 'Tutti i fogli';
+  return what + ' · ' + ROWS.filter(inFoglio).length + ' voci';
+}
 function setTop(t) { $('top-title').textContent = t; $('top-sub').textContent = subtitle(); }
 function tabB(id, label, icon, go) {
   return h('button', { class: 'tabb' + (VIEW === id ? ' on' : ''), type: 'button', 'aria-label': label, 'aria-current': VIEW === id ? 'page' : 'false', onclick: go },
@@ -1508,7 +1505,7 @@ function showHome() {
   out.push(h('p', { class: 'hm-note' }, 'Prima di cominciare puoi ripassare le voci in Allenamento.'));
   b.replaceChildren.apply(b, out);
   document.querySelector('.content').scrollTop = 0;
-  $('modal').hidden = true; $('sheet').hidden = true;
+  $('sheet').hidden = true;
 }
 
 /* segna le voci della domanda come viste; se la domanda apre un nuovo giro, azzera prima il giro */
@@ -1542,7 +1539,6 @@ function load(n) {
   cur._wrapped = false;
   qi = 0; hearts = 5; score = 0;
   $('hearts').textContent = hearts;
-  $('modal').hidden = true;
   $('sheet').hidden = true;
   cur.items = cur.gen();
   if (!cur.items.length) showEmpty(); else showQ();
@@ -1577,36 +1573,51 @@ function buildSidebar() { renderCover(); }
 
 function setStatus(msg) { $('data-status').textContent = msg; }
 
-function fillFoglio() {
-  var sel = $('sel-foglio'), names = [];
-  ROWS.forEach(function (r) { if (r.pers && names.indexOf(r.pers) < 0) names.push(r.pers); });
-  sel.replaceChildren(h('option', { value: '' }, 'Tutti i fogli'));
-  names.forEach(function (nm) { sel.append(h('option', { value: nm }, nm + (SUMM[nm] && SUMM[nm].data ? ' (' + SUMM[nm].data + ')' : ''))); });
-  if (names.indexOf(FOGLIO) < 0) FOGLIO = '';
-  sel.value = FOGLIO;
-}
-
 /* categorie del riassunto → tag del glossario */
 var CATS = [['Sostantivi', 'sostantivo'], ['Verbi', 'verbo'], ['Aggettivi', 'aggettivo'], ['Avverbi', 'avverbio'], ['Espressioni / modi di dire', 'espressione'],
   ['Oggetti', 'oggetti'], ['Sentimenti ed emozioni', 'sentimenti ed emozioni'], ['Persone e ruoli', 'persone e ruoli'], ['Luoghi e ambienti', 'luoghi e ambienti'],
   ['Azioni e movimenti', 'azioni e movimenti'], ['Concetti astratti', 'concetti astratti'], ['Natura e animali', 'natura e animali'], ['Cibo e bevande', 'cibo e bevande'],
-  ['Corpo e salute', 'corpo e salute'], ['Tempo e quantità', 'tempo e quantità'], ['Falsi amici', 'falsi amici']];
-function catLabel(tag) { var c = CATS.filter(function (x) { return x[1] === tag; })[0]; return c ? c[0] : cap(tag); }
-function fillCat() {
-  var sel = $('sel-cat'), have = {};
-  ROWS.forEach(function (r) { r.tagList.forEach(function (t) { have[t] = 1; }); });
-  sel.replaceChildren(h('option', { value: '' }, 'Tutte le categorie'));
-  CATS.forEach(function (c) { if (have[c[1]]) sel.append(h('option', { value: c[1] }, c[0])); });
-  if (!have[CAT]) CAT = '';
-  sel.value = CAT;
+  ['Corpo e salute', 'corpo e salute'], ['Tempo e quantità', 'tempo e quantità']];
+var MESI = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+function periodLabel(d) { var m = /^(\d{4})-(\d{2})$/.exec(d); return m ? MESI[+m[2] - 1] + ' ' + m[1] : d; }
+
+function chipGroup(boxId, group, opts) {
+  var box = $(boxId);
+  box.replaceChildren.apply(box, opts.map(function (o) {
+    var on = FILT[group].indexOf(o.v) >= 0;
+    return h('button', { class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), disabled: !o.n && !on,
+      onclick: function () {
+        var i = FILT[group].indexOf(o.v);
+        if (i >= 0) FILT[group].splice(i, 1); else FILT[group].push(o.v);
+        filtersChanged();
+      } }, o.l, h('small', {}, String(o.n)));
+  }));
+}
+function fillFilters() {
+  var pers = [], per = [], cnt = { pers: {}, per: {}, cat: {} };
+  ROWS.forEach(function (r) {
+    if (r.pers && pers.indexOf(r.pers) < 0) pers.push(r.pers);
+    var d = periodOf(r); if (d && per.indexOf(d) < 0) per.push(d);
+    cnt.pers[r.pers] = (cnt.pers[r.pers] || 0) + 1;
+    cnt.per[d] = (cnt.per[d] || 0) + 1;
+    r.tagList.forEach(function (t) { cnt.cat[t] = (cnt.cat[t] || 0) + 1; });
+  });
+  per.sort();
+  /* un filtro che non esiste più nei dati si toglie */
+  FILT.pers = FILT.pers.filter(function (v) { return pers.indexOf(v) >= 0; });
+  FILT.per = FILT.per.filter(function (v) { return per.indexOf(v) >= 0; });
+  chipGroup('f-pers', 'pers', pers.map(function (v) { return { v: v, l: v, n: cnt.pers[v] || 0 }; }));
+  chipGroup('f-per', 'per', per.map(function (v) { return { v: v, l: periodLabel(v), n: cnt.per[v] || 0 }; }));
+  chipGroup('f-cat', 'cat', CATS.map(function (c) { return { v: c[1], l: c[0], n: cnt.cat[c[1]] || 0 }; }));
+  $('f-reset').hidden = !(FILT.pers.length + FILT.per.length + FILT.cat.length);
 }
 function renderInfo() {
-  var s = SUMM[FOGLIO], box = $('foglio-info');
-  if (!FOGLIO || !s) return box.replaceChildren();
-  box.replaceChildren(h('div', { class: 'cover' },
-    h('div', { class: 'cover-t' }, s.data ? 'Foglio · ' + s.data : 'Foglio'),
-    h('div', { class: 'cover-n' }, s.spieg)));
+  var box = $('foglio-info'), sel = FILT.pers.filter(function (p) { return SUMM[p]; });
+  box.replaceChildren.apply(box, sel.length === 1 ? [h('div', { class: 'cover' },
+    h('div', { class: 'cover-t' }, 'Foglio · ' + periodLabel(SUMM[sel[0]].data)),
+    h('div', { class: 'cover-n' }, SUMM[sel[0]].spieg))] : []);
 }
+function filtersChanged() { fillFilters(); renderInfo(); renderCover(); refreshView(); $('sheet').hidden = false; }
 
 function applyCSV(text, label) {
   var info;
@@ -1615,7 +1626,7 @@ function applyCSV(text, label) {
   var skipped = ROWS.filter(function (r) { return r.uncertain; }).length;
   setStatus((label || 'glossario') + ' · ' + ROWS.length + ' voci' + (skipped ? ' · ' + skipped + ' «da verificare» escluse' : '') +
     (info.hasNew ? '' : ' · mancano le colonne Tipo e Lemma: nessun esercizio disponibile'));
-  fillFoglio(); fillCat(); renderInfo();
+  fillFilters(); renderInfo();
   buildSidebar();
   return true;
 }
@@ -1645,6 +1656,9 @@ function loadData() {
   return Promise.all([fetchText('glossario.csv'), fetchText('riassunto.csv').catch(function () { return ''; })]).catch(function () { return local; }).then(function (res) {
     loadSummary(res[1]);
     applyCSV(res[0], 'glossario.csv');
+    /* all'avvio parte dall'ultimo foglio del glossario: meno voci da preparare, app più veloce */
+    var last = ROWS.length ? ROWS[ROWS.length - 1].pers : '';
+    if (last && !FILT.pers.length && !FILT.per.length && !FILT.cat.length) { FILT.pers = [last]; fillFilters(); renderInfo(); renderCover(); }
     showHome();
   }).catch(function (e) {
     setStatus('Impossibile caricare i dati (' + e.message + '). Esegui «node sync-dati.js» nella cartella per creare dati.js, oppure avvia «python -m http.server» e apri http://localhost:8000.');
@@ -1653,15 +1667,11 @@ function loadData() {
 }
 
 (function () {
-  $('modal-mascot').innerHTML = mascotSvg(true);
-  $('close').addEventListener('click', function () { $('modal').hidden = false; });
-  $('keep').addEventListener('click', function () { $('modal').hidden = true; });
-  $('end').addEventListener('click', function () { showHome(); });
+  $('close').addEventListener('click', function () { showHome(); });
   $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
   $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
   $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
-  $('sel-foglio').addEventListener('change', function () { FOGLIO = this.value; renderInfo(); renderCover(); refreshView(); });
-  $('sel-cat').addEventListener('change', function () { CAT = this.value; renderCover(); refreshView(); });
+  $('f-reset').addEventListener('click', function () { FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
   $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
   cur = EX[0];
   loadData();
