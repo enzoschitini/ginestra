@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Lesson Exercises & Feedback Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Step Selector Pills for Demo */
+    .mode-switcher {
+      position: absolute;
+      top: 50px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px;
+      border-radius: 14px;
+      z-index: 200;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      background: #f0f0f0;
+      color: #555555;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      background: #1cb0f6;
+      color: #ffffff;
+    }
+
+    /* Top Lesson Bar */
+    .lesson-bar {
+      padding: 96px 20px 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #afafaf;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 14px;
+      background: #e5e5e5;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 60%;
+      height: 100%;
+      background: #ffc800;
+      border-radius: 7px;
+    }
+
+    /* Exercise Content */
+    .content {
+      flex: 1;
+      padding: 10px 20px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 24px;
+    }
+
+    /* Prompt section */
+    .prompt-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .prompt-bubble {
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #3c3c3c;
+      box-shadow: 0 2px 0 #f0f0f0;
+      position: relative;
+    }
+
+    /* Multiple Choice Meaning Cards */
+    .options-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .choice-card {
+      border: 2px solid #e5e5e5;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #3c3c3c;
+      box-shadow: 0 3px 0 #e5e5e5;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .choice-card:hover {
+      background: #fcfcfc;
+    }
+    .choice-card.selected {
+      background: #ddf4ff;
+      border-color: #84d8ff;
+      color: #1899d6;
+      box-shadow: 0 3px 0 #84d8ff;
+    }
+
+    /* Red Drawer (Mistake / Wrong answer) */
+    .error-drawer {
+      background: #ffdfe0;
+      padding: 18px 20px 24px;
+      border-top: 2px solid #ffb8b8;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .error-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .error-header {
+      font-size: 18px;
+      font-weight: 900;
+      color: #ea2b2b;
+    }
+
+    .error-solution {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ea2b2b;
+    }
+
+    .error-meaning {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #777777;
+    }
+
+    .btn-red-continue {
+      width: 100%;
+      height: 50px;
+      background: #ff4b4b;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #ea2b2b;
+      cursor: pointer;
+    }
+
+    /* Green Encouragement Drawer */
+    .encourage-drawer {
+      background: #ffffff;
+      padding: 20px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .bush-duo {
+      width: 180px;
+      height: 100px;
+      position: relative;
+    }
+
+    .btn-green-continue {
+      width: 100%;
+      height: 50px;
+      background: #58cc02;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #46a302;
+      cursor: pointer;
+    }
+
+    /* Quit Modal Overlay */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 150;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .quit-modal {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 28px 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .crying-duo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 16px;
+    }
+
+    .quit-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: #3c3c3c;
+      margin-bottom: 24px;
+      line-height: 1.35;
+    }
+
+    .btn-keep-learning {
+      width: 100%;
+      height: 50px;
+      background: #1cb0f6;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #1899d6;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .btn-end-session {
+      background: none;
+      border: none;
+      color: #1cb0f6;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 12px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Switcher to preview each screen variation from Lessons.png -->
+    <div class="mode-switcher">
+      <button class="mode-btn active" onclick="setScreen('meaning', this)">Meaning</button>
+      <button class="mode-btn" onclick="setScreen('error', this)">Red Mistake</button>
+      <button class="mode-btn" onclick="setScreen('encourage', this)">Motivation</button>
+      <button class="mode-btn" onclick="setScreen('quit', this)">Quit Dialog</button>
+    </div>
+
+    <!-- Top Lesson Bar -->
+    <div class="lesson-bar">
+      <button class="close-btn" onclick="setScreen('quit', document.querySelectorAll('.mode-btn')[3])">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Content for 'meaning' / 'error' -->
+    <div class="content">
+      <div id="exercise-meaning-view">
+        <div class="title">Select the correct meaning</div>
+
+        <div class="prompt-row">
+          <!-- Bear with scarf asking "water" -->
+          <svg width="70" height="70" viewBox="0 0 80 80" fill="none">
+            <ellipse cx="40" cy="40" rx="30" ry="32" fill="#a0603f"/>
+            <circle cx="20" cy="20" r="7" fill="#a0603f"/>
+            <circle cx="60" cy="20" r="7" fill="#a0603f"/>
+            <path d="M15 50C25 45 55 45 65 50C65 58 55 62 40 60C25 62 15 58 15 50Z" fill="#00cd9c"/>
+            <ellipse cx="40" cy="45" rx="10" ry="11" fill="#d99968"/>
+            <path d="M35 40H45L40 44Z" fill="#2b2b2b"/>
+          </svg>
+
+          <div class="prompt-bubble">
+            water
+          </div>
+        </div>
+
+        <div class="options-col">
+          <div class="choice-card" onclick="selectCard(this)">niño</div>
+          <div class="choice-card selected" onclick="selectCard(this)">agua</div>
+          <div class="choice-card" onclick="selectCard(this)">pan</div>
+        </div>
+      </div>
+
+      <div id="exercise-missing-view" style="display:none;">
+        <div class="title">Listen for the missing word</div>
+        <div style="font-size: 20px; font-weight: 700; color: #3c3c3c; margin: 20px 0;">
+          Yo bebo, tú <span style="display:inline-block; width:50px; border-bottom: 2px solid #afafaf;"></span>, él bebe.
+        </div>
+      </div>
+    </div>
+
+    <!-- Red Mistake Drawer -->
+    <div id="red-error-drawer" class="error-drawer" style="display:none;">
+      <div class="error-title-row">
+        <div class="error-header">Correct solution:</div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ea2b2b" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg>
+      </div>
+      <div class="error-solution">Yo bebo, tú bebes, él bebe.</div>
+      <div class="error-meaning"><b>Meaning:</b> I drink, you drink, he drinks.</div>
+      <button class="btn-red-continue" onclick="setScreen('encourage', document.querySelectorAll('.mode-btn')[2])">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+
+    <!-- Green Encouragement Drawer (Duo in Bush) -->
+    <div id="green-encourage-drawer" class="encourage-drawer" style="display:none;">
+      <div class="prompt-bubble" style="max-width: 280px; text-align: center; margin-bottom: 12px;">
+        Even when you make a mistake, you're still learning!
+      </div>
+      <div class="bush-duo">
+        <svg viewBox="0 0 160 90" fill="none" style="width:100%; height:100%;">
+          <!-- Green bush -->
+          <ellipse cx="80" cy="65" rx="60" ry="22" fill="#58cc02"/>
+          <ellipse cx="50" cy="55" rx="30" ry="25" fill="#58cc02"/>
+          <ellipse cx="110" cy="55" rx="30" ry="25" fill="#58cc02"/>
+          <ellipse cx="80" cy="45" rx="35" ry="26" fill="#46a302"/>
+          <!-- Duo peeking -->
+          <ellipse cx="80" cy="38" rx="22" ry="22" fill="#58cc02"/>
+          <ellipse cx="72" cy="34" rx="7" ry="9" fill="#ffffff"/>
+          <ellipse cx="88" cy="34" rx="7" ry="9" fill="#ffffff"/>
+          <ellipse cx="73" cy="35" rx="4" ry="5" fill="#3c3c3c"/>
+          <ellipse cx="87" cy="35" rx="4" ry="5" fill="#3c3c3c"/>
+          <polygon points="80,39 76,43 84,43" fill="#ff9600"/>
+        </svg>
+      </div>
+      <button class="btn-green-continue" onclick="setScreen('meaning', document.querySelectorAll('.mode-btn')[0])">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+
+    <!-- Quit Modal Dialog -->
+    <div id="quit-modal" class="modal-overlay" style="display:none;">
+      <div class="quit-modal">
+        <!-- Crying Duo Mascot -->
+        <svg class="crying-duo" viewBox="0 0 100 100" fill="none">
+          <ellipse cx="50" cy="52" rx="38" ry="40" fill="#58cc02"/>
+          <!-- Sad closed crying eyes -->
+          <path d="M34 48C38 43 44 43 48 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>
+          <path d="M52 48C56 43 62 43 66 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>
+          <!-- Large tears falling -->
+          <path d="M32 54C32 54 28 62 28 68C28 73 32 76 36 76C40 76 44 73 44 68C44 62 40 54 40 54Z" fill="#1cb0f6"/>
+          <path d="M68 54C68 54 64 62 64 68C64 73 68 76 72 76C76 76 80 73 80 68C80 62 76 54 76 54Z" fill="#1cb0f6"/>
+          <!-- Sad beak -->
+          <polygon points="50,56 44,64 56,64" fill="#ff9600"/>
+        </svg>
+
+        <div class="quit-title">
+          Wait, don't go! You'll lose your progress if you quit now
+        </div>
+
+        <button class="btn-keep-learning" onclick="setScreen('meaning', document.querySelectorAll('.mode-btn')[0])">KEEP LEARNING</button>
+        <button class="btn-end-session" onclick="alert('Session ended.')">END SESSION</button>
+      </div>
+    </div>
+
+    <!-- Default bottom check button (for meaning view) -->
+    <div id="default-footer" style="padding: 16px 20px 28px; background: #ffffff;">
+      <button class="btn-green-continue" onclick="setScreen('error', document.querySelectorAll('.mode-btn')[1])">CHECK</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <script>
+    function setScreen(mode, btn) {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('exercise-meaning-view').style.display = (mode === 'meaning' || mode === 'quit') ? 'block' : 'none';
+      document.getElementById('exercise-missing-view').style.display = (mode === 'error') ? 'block' : 'none';
+
+      document.getElementById('red-error-drawer').style.display = mode === 'error' ? 'flex' : 'none';
+      document.getElementById('green-encourage-drawer').style.display = mode === 'encourage' ? 'flex' : 'none';
+      document.getElementById('quit-modal').style.display = mode === 'quit' ? 'flex' : 'none';
+      document.getElementById('default-footer').style.display = (mode === 'meaning') ? 'block' : 'none';
+    }
+
+    function selectCard(el) {
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</body>
+</html>

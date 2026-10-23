@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Path Section 2 Unit 9 (Emotions)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 170px;
+      height: 36px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #ce82ff;
+    }
+
+    /* iOS Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      padding: 16px 20px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #f0f0f0;
+      background: #ffffff;
+      z-index: 50;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .flag-es {
+      width: 28px;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .flag-es .r { background: #ff4b4b; height: 26%; }
+    .flag-es .y { background: #ffc800; height: 48%; }
+
+    /* Purple Unit Banner */
+    .unit-banner-purple {
+      background: #ce82ff;
+      margin: 12px 16px 0;
+      border-radius: 20px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      box-shadow: 0 4px 0 #a450e6;
+      z-index: 40;
+    }
+
+    .unit-meta {
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .unit-title {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .guidebook-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Path Scroll Area */
+    .path-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 0 100px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    .node-wrapper {
+      position: relative;
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Purple Path Nodes */
+    .node-purple {
+      width: 76px;
+      height: 66px;
+      border-radius: 50%;
+      background: #ce82ff;
+      border-bottom: 7px solid #a450e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(164, 80, 230, 0.25);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .node-purple:active {
+      transform: translateY(3px);
+    }
+
+    /* Lily Characters */
+    .lily-kneeling {
+      position: absolute;
+      right: 56px;
+      top: -30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lily-standing {
+      position: absolute;
+      left: 56px;
+      top: -30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    /* Floating Scroll-Down Button */
+    .floating-down-btn {
+      position: absolute;
+      bottom: 96px;
+      right: 24px;
+      width: 50px;
+      height: 50px;
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 16px;
+      box-shadow: 0 4px 0 #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1cb0f6;
+      cursor: pointer;
+      z-index: 50;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 76px;
+      border-top: 2px solid #e5e5e5;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px 10px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .nav-icon-home {
+      border: 2px solid #1cb0f6;
+      border-radius: 12px;
+      padding: 4px 6px;
+      background: #e6f6ff;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      </svg>
+      <div style="display:flex; gap:3px;">
+        <span style="display:inline-block; width:3px; height:12px; background:#ce82ff; border-radius:1px;"></span>
+        <span style="display:inline-block; width:3px; height:18px; background:#ce82ff; border-radius:1px;"></span>
+        <span style="display:inline-block; width:3px; height:8px; background:#ce82ff; border-radius:1px;"></span>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>1:50</span>
+      <div class="status-icons">
+        <span>5G e</span>
+        <svg width="22" height="12" viewBox="0 0 24 12" fill="#000000">
+          <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000000" stroke-width="2" fill="none"/>
+          <rect x="2" y="2" width="14" height="8" rx="1" fill="#000000"/>
+          <path d="M22 4v4" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="flag-es">
+          <div class="r"></div><div class="y"></div><div class="r"></div>
+        </div>
+        <span>14</span>
+      </div>
+
+      <div class="stat-item" style="color: #afafaf;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#afafaf">
+          <path d="M12 2C8 6 7 9 7 12C7 15.5 9.5 18 12 18C14.5 18 17 15.5 17 12C17 9 16 6 12 2Z"/>
+        </svg>
+        <span>2</span>
+      </div>
+
+      <div class="stat-item" style="color: #1cb0f6;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1cb0f6">
+          <polygon points="6,3 18,3 22,9 12,21 2,9"/>
+        </svg>
+        <span>532</span>
+      </div>
+
+      <div class="stat-item" style="color: #ff4b4b;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>5</span>
+      </div>
+    </div>
+
+    <!-- Unit Banner -->
+    <div class="unit-banner-purple">
+      <div>
+        <div class="unit-meta">SECTION 2, UNIT 9</div>
+        <div class="unit-title">Describe emotions</div>
+      </div>
+      <div class="guidebook-btn" onclick="alert('Open Guidebook')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
+          <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+          <line x1="8" y1="8" x2="16" y2="8"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+          <line x1="8" y1="16" x2="12" y2="16"></line>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Purple Path Winding Scroll -->
+    <div class="path-scroll">
+      <!-- Node 1: Book -->
+      <div class="node-wrapper" style="transform: translateX(-40px);">
+        <div class="node-purple">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 2: Headphones -->
+      <div class="node-wrapper" style="transform: translateX(-65px);">
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 3: Star with Lily Kneeling on right -->
+      <div class="node-wrapper" style="transform: translateX(-45px);">
+        <div class="node-purple">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+            <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/>
+          </svg>
+        </div>
+
+        <!-- Lily Kneeling Illustration -->
+        <div class="lily-kneeling">
+          <svg width="80" height="85" viewBox="0 0 80 85" fill="none">
+            <!-- Shadow pedestal -->
+            <ellipse cx="40" cy="72" rx="36" ry="12" fill="#eeeeee"/>
+            <!-- Purple Hair Back -->
+            <path d="M22 28C22 14 32 10 42 10C54 10 62 16 62 34L62 55L52 50L44 48L32 50L22 55Z" fill="#a450e6"/>
+            <!-- Face -->
+            <ellipse cx="42" cy="30" rx="14" ry="13" fill="#ffe4d6"/>
+            <!-- Purple Bangs Hair Front -->
+            <path d="M24 24C24 14 34 10 44 10C56 10 60 16 60 28C56 22 48 20 42 28C36 22 28 22 24 24Z" fill="#9034d6"/>
+            <path d="M40 24L48 40L42 40L38 24Z" fill="#9034d6"/>
+            <!-- Eyes focused downward on phone -->
+            <ellipse cx="36" cy="33" rx="2" ry="1" fill="#3c3c3c"/>
+            <ellipse cx="48" cy="33" rx="2" ry="1" fill="#3c3c3c"/>
+            <!-- Body / Purple Hoodie -->
+            <path d="M30 42C26 52 24 64 28 72H56C60 64 58 52 54 42Z" fill="#3a2f4c"/>
+            <!-- Knees Pants -->
+            <path d="M28 65C34 62 44 60 56 68L50 74L30 74Z" fill="#805ad5"/>
+            <!-- Pink Smartphone in hands -->
+            <rect x="36" y="46" width="16" height="10" rx="2" transform="rotate(-15 36 46)" fill="#ff4081"/>
+          </svg>
+          <div class="star-rating">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Node 4: Video Camera -->
+      <div class="node-wrapper" style="transform: translateX(0px);">
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <rect x="2" y="5" width="14" height="14" rx="3"/>
+            <polygon points="16,10 22,7 22,17 16,14"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 5: Book -->
+      <div class="node-wrapper" style="transform: translateX(40px);">
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 6: Headphones -->
+      <div class="node-wrapper" style="transform: translateX(65px);">
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 7: Microphone with Lily standing on left -->
+      <div class="node-wrapper" style="transform: translateX(45px);">
+        <!-- Lily Standing Illustration -->
+        <div class="lily-standing">
+          <svg width="85" height="110" viewBox="0 0 85 110" fill="none">
+            <!-- Shadow pedestal -->
+            <ellipse cx="42" cy="98" rx="28" ry="8" fill="#eeeeee"/>
+            <!-- Purple Hair Back -->
+            <path d="M24 22C24 10 36 6 48 6C60 6 68 12 68 30L68 62L58 56L48 54L34 56L24 62Z" fill="#a450e6"/>
+            <!-- Face -->
+            <ellipse cx="46" cy="28" rx="14" ry="14" fill="#ffe4d6"/>
+            <!-- Hair Front -->
+            <path d="M26 22C26 12 38 8 48 8C60 8 66 14 66 26C62 20 54 18 48 26C42 20 34 20 26 22Z" fill="#9034d6"/>
+            <path d="M46 22L54 42L48 42L44 22Z" fill="#9034d6"/>
+            <!-- Purple Eyes bored squint -->
+            <line x1="40" y1="30" x2="44" y2="30" stroke="#8a30d9" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="50" y1="30" x2="54" y2="30" stroke="#8a30d9" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Purple eye shadow -->
+            <ellipse cx="42" cy="28" rx="3" ry="1.5" fill="#ce82ff" opacity="0.6"/>
+            <ellipse cx="52" cy="28" rx="3" ry="1.5" fill="#ce82ff" opacity="0.6"/>
+            <!-- Dark purple clothing / holding coats -->
+            <path d="M36 44C36 44 48 40 56 44L58 76H34L36 44Z" fill="#4a3b63"/>
+            <!-- Purple pants -->
+            <path d="M38 76L36 94H42L46 76H38Z" fill="#805ad5"/>
+            <path d="M48 76L46 94H52L54 76H48Z" fill="#805ad5"/>
+            <!-- Dark Jackets hanging -->
+            <path d="M22 60L16 88L26 92L32 68Z" fill="#302640"/>
+            <path d="M60 56L68 84L60 86L54 62Z" fill="#302640"/>
+          </svg>
+          <div class="star-rating">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#e5e5e5"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+          </div>
+        </div>
+
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node 8: Dumbbell -->
+      <div class="node-wrapper" style="transform: translateX(0px);">
+        <div class="node-purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#ffffff">
+            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.43-1.43z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Down Button -->
+    <div class="floating-down-btn" onclick="alert('Scroll down to current lesson')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <button class="nav-btn">
+        <div class="nav-icon-home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ff9600">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+        </div>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffc800">
+          <rect x="3" y="7" width="18" height="14" rx="2" fill="#d99b00"/>
+          <path d="M2 7h20v4H2z" fill="#ffc800"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#1cb0f6">
+          <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.43-1.43z"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffc800">
+          <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#ce82ff">
+          <circle cx="12" cy="12" r="9"/>
+          <ellipse cx="9" cy="10" rx="2" ry="3" fill="#ffffff"/>
+        </svg>
+      </button>
+
+      <button class="nav-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#ce82ff">
+          <circle cx="12" cy="12" r="11"/>
+          <circle cx="8" cy="12" r="1.5" fill="#ffffff"/>
+          <circle cx="12" cy="12" r="1.5" fill="#ffffff"/>
+          <circle cx="16" cy="12" r="1.5" fill="#ffffff"/>
+        </svg>
+      </button>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

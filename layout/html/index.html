@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo UI Showcase - All Screens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Bar */
+    header {
+      background: #1e293b;
+      padding: 16px 28px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .duo-logo {
+      width: 38px;
+      height: 38px;
+      background: #58cc02;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 24px;
+      color: #ffffff;
+      box-shadow: 0 3px 0 #46a302;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .brand-sub {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .open-direct-btn {
+      background: #58cc02;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 3px 0 #46a302;
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .open-direct-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #46a302;
+    }
+
+    /* Main Container */
+    .app-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: 360px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      overflow-y: auto;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 12px 10px 4px;
+    }
+
+    .screen-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      background: #0f172a;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      color: #cbd5e1;
+    }
+
+    .screen-item:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    .screen-item.active {
+      background: #1e3a5f;
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
+    .screen-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #334155;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .screen-item.active .screen-num {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .screen-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .screen-name {
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .screen-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    /* Right Preview Stage */
+    .stage {
+      flex: 1;
+      background: #0b1120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+    }
+
+    .preview-frame {
+      width: 430px;
+      height: 932px;
+      max-height: 90vh;
+      border-radius: 48px;
+      border: 12px solid #1e293b;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+      background: #ffffff;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        max-height: 220px;
+        border-right: none;
+        border-bottom: 1px solid #334155;
+      }
+      .preview-frame {
+        width: 100%;
+        max-width: 430px;
+        height: 750px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="duo-logo">D</div>
+      <div>
+        <div class="brand-title">Duolingo Screens Showcase</div>
+        <div class="brand-sub">Pixel-perfect high-fidelity recreations</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a id="open-new-tab" class="open-direct-btn" href="01-get-started.html" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+        Open Standalone Screen
+      </a>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <!-- Left Screen List -->
+    <div class="sidebar">
+      <div class="section-label">Onboarding & Profile</div>
+      
+      <div class="screen-item active" onclick="loadScreen('01-get-started.html', 'Get Started (Unit 1 Lesson 1)', this)">
+        <div class="screen-num">01</div>
+        <div class="screen-info">
+          <div class="screen-name">Get Started</div>
+          <div class="screen-desc">Duo with notepad: "Get ready for Unit 1"</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('02-language-selection.html', 'Language Selection', this)">
+        <div class="screen-num">02</div>
+        <div class="screen-info">
+          <div class="screen-name">Language Selection</div>
+          <div class="screen-desc">Course switcher: French, Spanish, German</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('03-where-to-start.html', 'Where to start', this)">
+        <div class="screen-num">03</div>
+        <div class="screen-info">
+          <div class="screen-name">Where to start</div>
+          <div class="screen-desc">Start from scratch vs Find my level</div>
+        </div>
+      </div>
+
+      <div class="section-label">Progress & Quests</div>
+
+      <div class="screen-item" onclick="loadScreen('04-quest-completion.html', 'Quest Completion', this)">
+        <div class="screen-num">04</div>
+        <div class="screen-info">
+          <div class="screen-name">Quest Completion</div>
+          <div class="screen-desc">1 Quest complete, streak chest & challenges</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('05-streak-progress.html', '12 Day Streak Progress', this)">
+        <div class="screen-num">05</div>
+        <div class="screen-info">
+          <div class="screen-name">Streak Progress</div>
+          <div class="screen-desc">Big flame, 12 day streak calendar card</div>
+        </div>
+      </div>
+
+      <div class="section-label">Path Map & Sections</div>
+
+      <div class="screen-item" onclick="loadScreen('06-path-story.html', 'Path Section 2 Unit 10', this)">
+        <div class="screen-num">06</div>
+        <div class="screen-info">
+          <div class="screen-name">Path: Section 2 Unit 10</div>
+          <div class="screen-desc">Story: The Garden popover, Oscar, gold star</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('07-path-emotions.html', 'Path Section 2 Unit 9 (Emotions)', this)">
+        <div class="screen-num">07</div>
+        <div class="screen-info">
+          <div class="screen-name">Path: Section 2 Unit 9</div>
+          <div class="screen-desc">Purple unit, Lily characters, fast scroll</div>
+        </div>
+      </div>
+
+      <div class="section-label">Lessons & Exercises</div>
+
+      <div class="screen-item" onclick="loadScreen('08-lesson-complete.html', 'Lesson Complete', this)">
+        <div class="screen-num">08</div>
+        <div class="screen-info">
+          <div class="screen-name">Lesson Complete</div>
+          <div class="screen-desc">Duo & Oscar fist-bump, 25 XP, 75% accuracy</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('09-translate-sentence.html', 'Translate Sentence', this)">
+        <div class="screen-num">09</div>
+        <div class="screen-info">
+          <div class="screen-name">Translate Sentence</div>
+          <div class="screen-desc">Junior, word bank chips, "Nice!" bottom drawer</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('10-speak-sentence.html', 'Speak Sentence', this)">
+        <div class="screen-num">10</div>
+        <div class="screen-info">
+          <div class="screen-name">Speak Sentence</div>
+          <div class="screen-desc">Bear Falstaff, animated audio recording waves</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('11-matching-pairs.html', 'Matching Pairs', this)">
+        <div class="screen-num">11</div>
+        <div class="screen-info">
+          <div class="screen-name">Matching Pairs</div>
+          <div class="screen-desc">Sparkling matched tiles, audio cards grid</div>
+        </div>
+      </div>
+
+      <div class="section-label">Guidebooks & Feedback</div>
+
+      <div class="screen-item" onclick="loadScreen('12-unit-guidebook.html', 'Unit 1 Guidebook & Grammar Tips', this)">
+        <div class="screen-num">12</div>
+        <div class="screen-info">
+          <div class="screen-name">Unit 1 Guidebook</div>
+          <div class="screen-desc">Key phrases, Gender rules & Verb conjugations</div>
+        </div>
+      </div>
+
+      <div class="screen-item" onclick="loadScreen('13-lesson-exercises-feedback.html', 'Lesson Exercises & Feedback', this)">
+        <div class="screen-num">13</div>
+        <div class="screen-info">
+          <div class="screen-name">Feedback & Quit Dialogs</div>
+          <div class="screen-desc">Red mistake alert, Duo in bush, Crying quit modal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Live Preview Stage -->
+    <div class="stage">
+      <div class="preview-frame">
+        <iframe id="screen-iframe" src="01-get-started.html"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadScreen(url, title, el) {
+      document.querySelectorAll('.screen-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('screen-iframe').src = url;
+      document.getElementById('open-new-tab').href = url;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Streak Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 36px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    /* Main Content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 24px 20px;
+    }
+
+    /* Big Flame Illustration */
+    .flame-wrapper {
+      position: relative;
+      width: 130px;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .flame-svg {
+      width: 120px;
+      height: 130px;
+    }
+
+    /* Giant 12 Number */
+    .streak-number {
+      font-size: 104px;
+      font-weight: 900;
+      line-height: 0.95;
+      color: #ff9600;
+      text-align: center;
+      margin-bottom: 2px;
+      letter-spacing: -3px;
+    }
+
+    .streak-label {
+      font-size: 24px;
+      font-weight: 900;
+      color: #ff9600;
+      margin-bottom: 40px;
+    }
+
+    /* Calendar Days Card */
+    .streak-card {
+      width: 100%;
+      border: 2px solid #e5e5e5;
+      border-radius: 20px;
+      padding: 20px 16px 20px;
+      box-shadow: 0 3px 0 #f0f0f0;
+    }
+
+    .days-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .day-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .day-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ff9600;
+    }
+
+    .day-name.muted {
+      color: #8c8c8c;
+    }
+
+    /* Day Indicators */
+    .check-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ff9600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .today-pin {
+      width: 32px;
+      height: 36px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e5e5e5;
+    }
+
+    /* Motivational Subtext */
+    .streak-desc {
+      border-top: 1.5px solid #f0f0f0;
+      padding-top: 16px;
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #555555;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 20px 24px 34px;
+      background: #ffffff;
+    }
+
+    .btn-commit {
+      width: 100%;
+      height: 52px;
+      background: #1cb0f6;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 0 #1899d6;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+      text-transform: uppercase;
+    }
+
+    .btn-commit:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1899d6;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 16px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Flame Graphic -->
+      <div class="flame-wrapper">
+        <svg class="flame-svg" viewBox="0 0 100 110" fill="none">
+          <!-- Oval Base Shadow -->
+          <ellipse cx="50" cy="100" rx="34" ry="10" fill="#ffefa6"/>
+          
+          <!-- Outer Flame (Orange) -->
+          <path d="M50 10C50 10 30 28 30 55C30 58 30.5 61 31.5 64C28 60 25 55 25 50C16 62 18 78 28 88C34 94 42 98 50 98C58 98 66 94 72 88C82 78 84 62 75 50C75 55 72 60 68.5 64C69.5 61 70 58 70 55C70 28 50 10 50 10Z" fill="#ff9600"/>
+          
+          <!-- Inner Core (Yellow) -->
+          <path d="M50 42C43 52 42 62 42 70C42 80 46 86 50 86C54 86 58 80 58 70C58 62 57 52 50 42Z" fill="#ffc800"/>
+        </svg>
+      </div>
+
+      <!-- Streak Number -->
+      <div class="streak-number">12</div>
+      <div class="streak-label">day streak</div>
+
+      <!-- Week Calendar Card -->
+      <div class="streak-card">
+        <div class="days-row">
+          <!-- Friday -->
+          <div class="day-col">
+            <span class="day-name">Fr</span>
+            <div class="check-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Saturday -->
+          <div class="day-col">
+            <span class="day-name">Sa</span>
+            <div class="check-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Sunday -->
+          <div class="day-col">
+            <span class="day-name">Su</span>
+            <div class="check-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Monday (Pinned / Today) -->
+          <div class="day-col">
+            <span class="day-name muted">Mo</span>
+            <div class="today-pin">
+              <!-- Speech bubble pin shape -->
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+                <path d="M17 2C9 2 4 7 4 15C4 20 8 24 13 25L17 31L21 25C26 24 30 20 30 15C30 7 25 2 17 2Z" fill="#1cb0f6"/>
+                <polyline points="23 12 15 20 11 16" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Tuesday -->
+          <div class="day-col">
+            <span class="day-name">Tu</span>
+            <div class="check-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Wednesday -->
+          <div class="day-col">
+            <span class="day-name muted">We</span>
+            <div class="empty-circle"></div>
+          </div>
+
+          <!-- Thursday -->
+          <div class="day-col">
+            <span class="day-name muted">Th</span>
+            <div class="empty-circle"></div>
+          </div>
+        </div>
+
+        <p class="streak-desc">
+          Practise each day so your streak won't reset
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button class="btn-commit" onclick="alert('Streak confirmed! Keep learning every day!')">I'M COMMITED</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

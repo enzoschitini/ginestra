@@ -274,6 +274,12 @@
     .sparkle { position: absolute; width: 7px; height: 7px; background: #78c800; transform: rotate(45deg); opacity: .65; }
     .sp-a { top: 10px; right: 12px; } .sp-b { bottom: 10px; left: 12px; } .sp-c { top: 12px; left: 35%; }
 
+    .btn-ghost {
+      display: block; margin: 14px auto 0; padding: 10px 20px;
+      border: 2px solid #e5e5e5; border-radius: 16px; background: #fff; box-shadow: 0 3px 0 #e5e5e5;
+      font: inherit; font-size: 14px; font-weight: 800; color: #1899d6; text-transform: uppercase; letter-spacing: .8px; cursor: pointer;
+    }
+    .btn-ghost:disabled { color: #afafaf; cursor: default; }
     .mem-card { min-height: 78px; font-size: 15px; }
     .mem-card.down { background: #58cc02; border-color: #58cc02; box-shadow: 0 3px 0 #46a302; color: #fff; font-size: 26px; }
     .mem-card.up { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
@@ -344,19 +350,6 @@
     .drawer.bad .btn-main { background: #ff4b4b; box-shadow: 0 4px 0 #ea2b2b; }
     .drawer.bad .btn-main:active { box-shadow: 0 1px 0 #ea2b2b; }
 
-    /* modale di uscita */
-    .modal-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,.6); z-index: 150;
-      display: flex; align-items: center; justify-content: center; padding: 24px;
-    }
-    .modal-overlay[hidden] { display: none; }
-    .quit-modal {
-      background: #fff; border-radius: 28px; padding: 28px 24px; width: 100%;
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .quit-modal .mascot { width: 100px; margin-bottom: 16px; }
-    .quit-title { font-size: 19px; font-weight: 900; color: #3c3c3c; margin-bottom: 24px; line-height: 1.35; }
     .btn-blue {
       width: 100%; height: 50px; background: #1cb0f6; border: none; border-radius: 16px; color: #fff;
       font-size: 15px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
@@ -488,7 +481,14 @@
     .sheet-status { font-size: 13px; font-weight: 700; color: #777; margin-top: -6px; }
     .fld { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #afafaf; }
     .fld select { width: 100%; border: 2px solid #e5e5e5; border-radius: 12px; padding: 11px 12px; font-size: 15px; font-weight: 700; color: #3c3c3c; background: #fff; font-family: inherit; text-transform: none; letter-spacing: 0; }
-    .btn-up { display: block; text-align: center; padding: 13px; border-radius: 14px; border: 2px solid #84d8ff; border-bottom-width: 4px; background: #ddf4ff; color: #1cb0f6; font-weight: 900; font-size: 14px; letter-spacing: .6px; text-transform: uppercase; cursor: pointer; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; text-transform: none; letter-spacing: 0; }
+    .chip { border: 2px solid #e5e5e5; border-bottom-width: 3px; border-radius: 12px; background: #fff; color: #3c3c3c; font: inherit; font-size: 13px; font-weight: 800; padding: 6px 10px; cursor: pointer; }
+    .chip small { color: #afafaf; font-weight: 700; margin-left: 4px; }
+    .chip.on { background: #ddf4ff; border-color: #84d8ff; color: #1cb0f6; } .chip.on small { color: #1cb0f6; }
+    .chip:disabled { opacity: .4; cursor: default; }
+    .f-reset { align-self: flex-start; margin-top: 0; }
+    #foglio-info .cover { margin: 0; background: #f7f7f7; border: 2px solid #e5e5e5; color: #3c3c3c; }
+    #foglio-info .cover-t { color: #afafaf; }
     #cover-box .cover { margin: 0; background: #f7f7f7; border: 2px solid #e5e5e5; color: #3c3c3c; }
     #cover-box .cover-t { color: #afafaf; }
     #cover-box .cover-d summary { color: #b45309; }
@@ -544,26 +544,23 @@
             <div class="sheet" role="dialog" aria-label="Impostazioni">
               <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
               <div class="sheet-status" id="data-status"></div>
-              <label class="fld">Foglio<select id="sel-foglio"></select></label>
+              <label class="fld">Suoni<select id="sel-snd"><option value="1">Attivi</option><option value="0">Disattivati</option></select></label>
+              <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
+              <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
+              <div class="fld">Categoria<div class="chips" id="f-cat"></div></div>
+              <button class="cover-b f-reset" id="f-reset" type="button">Azzera filtri</button>
               <label class="fld">Domande per lezione<select id="sel-n"><option value="5">5</option><option value="8">8</option><option value="10">10</option><option value="20">20</option><option value="tutte">Tutte le voci</option></select></label>
-              <label class="btn-up" for="csv-file">Carica un CSV</label><input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+              <div id="foglio-info"></div>
               <div id="cover-box"></div>
             </div>
           </div>
 
-          <div class="modal-overlay" id="modal" hidden>
-            <div class="quit-modal">
-              <div class="mascot" id="modal-mascot"></div>
-              <div class="quit-title">Aspetta, non andare! Perderai i progressi se esci adesso</div>
-              <button class="btn-blue" id="keep" type="button">Continua a imparare</button>
-              <button class="btn-link" id="end" type="button">Termina la sessione</button>
-            </div>
-          </div>
         </div>
       </div>
     </main>
   </div>
 
+<script src="dati.js" onerror="void 0"></script>
 <script>
 /* ---------- utilità ---------- */
 function h(tag, attrs) {
@@ -604,6 +601,34 @@ function speak(text, rate) {
     if (v) u.voice = v;
     speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
   } catch (e) { return false; }
+}
+/* ---------- suoni (sintetizzati con Web Audio, nessun file) ---------- */
+var SOUND_ON = true, AC = null;
+try { SOUND_ON = localStorage.getItem('ginestra-suoni') !== '0'; } catch (e) {}
+function tone(t0, f0, f1, dur, type, vol) {
+  var o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f0, t0);
+  if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function sfx(ok) {
+  if (!SOUND_ON) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    var t = AC.currentTime + 0.02;
+    if (ok) { /* arpeggio do-mi-sol, limpido */
+      [523.25, 659.25, 783.99].forEach(function (f, i) { tone(t + i * 0.09, f, f, 0.28, 'triangle', 0.28); });
+      tone(t + 0.27, 1046.5, 1046.5, 0.4, 'sine', 0.22);
+    } else { /* ronzio stonato che cala */
+      tone(t, 155, 70, 0.55, 'sawtooth', 0.32);
+      tone(t, 164, 74, 0.55, 'square', 0.18);
+      tone(t + 0.12, 110, 55, 0.45, 'sawtooth', 0.2);
+    }
+  } catch (e) {}
 }
 function svg(html) { var d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 
@@ -727,8 +752,7 @@ var ICON = {"stella": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEcAAABBCAY
 /* ======================================================
    DATI: il glossario (CSV) è l'unica fonte degli esercizi
    ====================================================== */
-var CSV_TEXT = "Personaggio,Parola/Espressione,Nota,Spiegazione,Tags,Varianti,Tipo,Articolo,Lemma,Traduzione,Trad_Fonte,Frase,Frase_PT,Vuoto,Alternative,Confondibile con,Escludi da\nGianni Rodari,L'impugnatura,A empunhadura (o punho),\"La parte di un oggetto che si stringe in mano per usarlo, come una spada o una racchetta.\",\"sostantivo, femminile, oggetti, sport, presa, attrezzi\",-,parola,l',impugnatura,A empunhadura,quaderno,Tieni bene l'impugnatura della racchetta.,Segure bem a empunhadura da raquete.,impugnatura,armatura;apertura;avventura,,\nGianni Rodari,Il manico,O cabo,\"La parte di un utensile che serve per afferrarlo, come quello della pentola o della scopa.\",\"sostantivo, maschile, oggetti, cucina, utensili, casa\",-,parola,il,manico,O cabo,quaderno,Il manico della scopa si è rotto.,O cabo da vassoura quebrou.,manico,coperchio;cassetto;bicchiere,,\nGianni Rodari,Hanno creato un tutt'uno,Eles formaram um todo único,Si sono uniti così bene da formare un'unica cosa.,\"espressione, concetti astratti, passato prossimo, unione, frase d'esempio\",-,frase,,,,,Hanno creato un tutt'uno,Eles formaram um todo único,tutt'uno,tuttofare;tutta;tuttavia,,\nGianni Rodari,Metto le mani avanti,Essere pronti alle critiche e conseguenze,Giustificarsi in anticipo per evitare critiche o problemi.,\"espressione, concetti astratti, modo di dire, prudenza, figurato\",-,espressione,,,Prevenir-se antes das críticas,aggiunta,Metto le mani avanti: forse il progetto non è perfetto.,Eu me previno: talvez o projeto não seja perfeito.,avanti,indietro;sopra;sotto,,\nGianni Rodari,Fare lo spello,Ficar babando de vontade (provvisoria),Significato incerto: nella frase d'esempio sembra indicare un desiderio intenso verso qualcosa.,\"espressione, sentimenti ed emozioni, desiderio, informale, da verificare\",\"Lettura incerta: la parola dopo \"\"lo\"\" non è leggibile con certezza\",espressione,,,,,,,,,,\nGianni Rodari,Fare delle commissioni,Compiti quotidiani fuori casa,\"Sbrigare piccole faccende fuori casa, come andare in posta o fare acquisti.\",\"espressione, azioni e movimenti, vita quotidiana, faccende, commercio\",-,espressione,,,Fazer recados,aggiunta,Questa mattina devo fare delle commissioni in centro.,Esta manhã preciso fazer uns recados no centro.,commissioni,colazioni;decisioni;canzoni,,\nGianni Rodari,La maglietta a maniche corte,A camiseta de manga curta,Indumento per il busto con maniche che arrivano sopra il gomito.,\"sostantivo, femminile, oggetti, abbigliamento, estate, quotidiano\",-,parola,la,maglietta a maniche corte,A camiseta de manga curta,quaderno,D'estate porto volentieri una maglietta a maniche corte.,No verão uso com prazer uma camiseta de manga curta.,maglietta a maniche corte,sciarpa di lana;giacca a vento;maglia di lana,,\nGianni Rodari,Una città quasi rasa al suolo,Distruggere tutto,\"Una città quasi completamente distrutta, con gli edifici abbattuti.\",\"espressione, luoghi e ambienti, modo di dire, distruzione, guerra, figurato\",-,espressione,,,Uma cidade quase arrasada,aggiunta,Dopo la guerra restava una città quasi rasa al suolo.,Depois da guerra restava uma cidade quase arrasada.,rasa al suolo,piena di gente;tutta illuminata;molto rumorosa,,\nGianni Rodari,Atrocità,Atrocidade,Azione molto crudele e spietata.,\"sostantivo, femminile, concetti astratti, cognato, violenza, registro formale\",-,parola,l',atrocità,A atrocidade,quaderno,L'atrocità del gesto ha scioccato tutti.,A atrocidade do gesto chocou todos.,atrocità,autorità;università;attività,,\nGianni Rodari,Saltare all'occhio,Saltar aos olhos,Essere così evidente da notarsi subito.,\"espressione, concetti astratti, modo di dire, cognato, evidenza, figurato\",-,espressione,,,Saltar aos olhos,quaderno,Il suo errore saltava subito all'occhio.,O erro dele saltava logo aos olhos.,occhio,orecchio;orizzonte;ombrello,,\nGianni Rodari,Il bambino faceva lo spello al giocattolo nuovo in vetrina,A criança ficava babando pelo brinquedo novo na vitrine (provvisoria),Il bambino guardava il giocattolo con grande desiderio (interpretazione provvisoria).,\"espressione, sentimenti ed emozioni, persone e ruoli, frase d'esempio, imperfetto, da verificare\",\"Vedi \"\"Fare lo spello\"\"\",frase,,,,,,,,,,\nGianni Rodari,Puoi fare lo spelling del tuo nome,Você pode soletrar o seu nome,Dire il proprio nome lettera per lettera.,\"espressione, concetti astratti, frase d'esempio, anglicismo, alfabeto, comunicazione\",-,frase,,,,,Puoi fare lo spelling del tuo nome,Você pode soletrar o seu nome,spelling,specchio;spettacolo;sbaglio,,\nGianni Rodari,Padella,Larghe e poco profonde,\"Recipiente basso e largo con un manico lungo, usato per friggere e saltare.\",\"sostantivo, femminile, oggetti, cucina, utensili, cottura\",-,parola,la,padella,A frigideira,aggiunta,Per friggere le uova uso la padella larga e bassa.,Para fritar os ovos uso a frigideira larga e rasa.,padella,zanzariera;persiana;valigia,pentola,\nGianni Rodari,Pentola,Alte e profonde,\"Recipiente alto e capiente, usato per bollire e cuocere.\",\"sostantivo, femminile, oggetti, cucina, utensili, cottura\",-,parola,la,pentola,A panela,aggiunta,Per cuocere la pasta uso la pentola alta e profonda.,Para cozinhar a massa uso a panela alta e funda.,pentola,busta;valigia;scrivania,padella,\nGianni Rodari,La muffa,O mofo,Strato di funghi che si forma su cibo o pareti umide.,\"sostantivo, femminile, natura e animali, casa, umidità, igiene\",-,parola,la,muffa,O mofo,quaderno,Sul pane vecchio è comparsa la muffa.,No pão velho apareceu mofo.,muffa,nebbia;vernice;ruggine,,\nGianni Rodari,Il faro teatrale,O refletor de teatro,Proiettore luminoso che illumina il palco.,\"sostantivo, maschile, oggetti, teatro, luci, spettacolo\",-,parola,il,faro teatrale,O refletor de teatro,quaderno,Il faro teatrale illumina l'attore sul palco.,O refletor de teatro ilumina o ator no palco.,faro,sipario;costume;camerino,,\nGianni Rodari,Il costume dei protagonisti,O figurino dos protagonistas,L'abito di scena indossato dai personaggi principali.,\"sostantivo, maschile, oggetti, persone e ruoli, falsi amici, teatro, abbigliamento\",-,parola,il,costume dei protagonisti,O figurino dos protagonistas,quaderno,Il costume dei protagonisti è stato cucito a mano.,O figurino dos protagonistas foi costurado à mão.,costume,faro;sipario;camerino,,\nGianni Rodari,Il camerino,\"O camarim (o \"\"o provador\"\", a seconda del contesto)\",\"Stanza dove gli artisti si preparano, oppure cabina dove si provano i vestiti in negozio.\",\"sostantivo, maschile, luoghi e ambienti, falsi amici, teatro, negozio\",-,parola,il,camerino,O camarim,quaderno,Prima dello spettacolo l'attrice aspetta nel camerino.,Antes do espetáculo a atriz espera no camarim.,camerino,sipario;biglietto;copione,,\nGianni Rodari,Le zollette di zucchero,Os cubinhos de açúcar,\"Piccoli cubetti di zucchero pressato, usati per addolcire caffè e tè.\",\"sostantivo, plurale, cibo e bevande, oggetti, diminutivo, colazione\",-,parola,le,zollette di zucchero,Os cubinhos de açúcar,quaderno,Nel tè metto due zollette di zucchero.,No chá coloco dois cubinhos de açúcar.,zollette,fettine;gocce;ruote,,\nGianni Rodari,Borsa marsupio,A pochete,Borsetta che si porta legata in vita.,\"sostantivo, femminile, oggetti, abbigliamento, accessori, viaggio\",-,parola,la,borsa marsupio,A pochete,quaderno,In viaggio porto la borsa marsupio legata in vita.,Em viagem levo a pochete amarrada na cintura.,borsa marsupio,busta della spesa;valigia pesante;scatola vuota,,\nGianni Rodari,La busta della spesa,A sacola de compras,Sacchetto in cui si mettono gli acquisti al supermercato.,\"sostantivo, femminile, oggetti, spesa, supermercato, quotidiano\",-,parola,la,busta della spesa,A sacola de compras,quaderno,Al supermercato metto la frutta nella busta della spesa.,No supermercado coloco a fruta na sacola de compras.,busta,scarpa;vite;tazza,,\nGianni Rodari,Il reparto ortofrutta,A seção de hortifrúti,La zona del negozio dove si vendono frutta e verdura.,\"sostantivo, maschile, luoghi e ambienti, cibo e bevande, supermercato, spesa\",-,parola,il,reparto ortofrutta,A seção de hortifrúti,quaderno,Le mele si trovano nel reparto ortofrutta.,As maçãs ficam na seção de hortifrúti.,reparto,garage;teatro;cinema,,\nGianni Rodari,I chicchi di caffè,Os grãos de café,\"I semi della pianta del caffè, da macinare per preparare la bevanda.\",\"sostantivo, plurale, cibo e bevande, natura e animali, caffè, colazione\",-,parola,i,chicchi di caffè,Os grãos de café,quaderno,Macino i chicchi di caffè ogni mattina.,Moo os grãos de café toda manhã.,chicchi,sassi;fili;cubetti,,\nGianni Rodari,Il colino,\"O filtro (anche \"\"o coador\"\")\",Utensile a rete o con fori per separare i liquidi dai solidi.,\"sostantivo, maschile, oggetti, cucina, utensili, diminutivo\",-,parola,il,colino,O filtro,quaderno,Scolo la pasta con il colino.,Escorro a massa com o coador.,colino,cavatappi;cacciavite;manico,,\nGianni Rodari,La persiana,A persiana,Imposta di legno o plastica a lamelle che protegge la finestra dal sole.,\"sostantivo, femminile, oggetti, casa, finestra, cognato\",-,parola,la,persiana,A persiana,quaderno,La persiana protegge la finestra dal sole.,A persiana protege a janela do sol.,persiana,scodella;muffa;busta,zanzariera,\nGianni Rodari,La tapparella,A persiana de enrolar,Serranda avvolgibile che copre la finestra.,\"sostantivo, femminile, oggetti, casa, finestra, da verificare\",\"Sul foglio sembra scritto \"\"topparella\"\"\",parola,la,tapparella,A persiana de enrolar,quaderno,,,,,,\nGianni Rodari,La zanzariera,\"O mosquiteiro, a tela mosquiteira\",Rete sottile applicata alla finestra o al letto per tenere lontane le zanzare.,\"sostantivo, femminile, oggetti, casa, finestra, insetti\",-,parola,la,zanzariera,O mosquiteiro,quaderno,La zanzariera tiene lontane le zanzare dalla finestra.,O mosquiteiro mantém os mosquitos longe da janela.,zanzariera,tazza;carta;scarpa,persiana,\nGianni Rodari,Lo spremiagrumi,Espremedor de frutas,\"Utensile per estrarre il succo da arance, limoni e altri agrumi.\",\"sostantivo, maschile, oggetti, cucina, utensili, composto\",-,parola,lo,spremiagrumi,O espremedor de frutas,quaderno,Con lo spremiagrumi preparo il succo d'arancia.,Com o espremedor de frutas preparo o suco de laranja.,spremiagrumi,scolapasta;stuzzicadenti;zaino,,\nGianni Rodari,Inginocchiato,Ajoelhado,Con le ginocchia appoggiate a terra.,\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, cognato\",-,parola,,inginocchiato,Ajoelhado,quaderno,Prega inginocchiato davanti all'altare.,Reza ajoelhado diante do altar.,inginocchiato,stravaccato;cucinato;spedito,,\nGianni Rodari,Appoggiato,Apoiado,\"Sostenuto da qualcosa, con il peso poggiato su una superficie.\",\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, cognato\",-,parola,,appoggiato,Apoiado,quaderno,Il ragazzo è appoggiato al muro.,O rapaz está apoiado na parede.,appoggiato,inginocchiato;cucinato;dimenticato,,\nGianni Rodari,\"Ritta, in piedi\",Reta; em pé,In posizione eretta e dritta sulle gambe.,\"aggettivo, corpo e salute, azioni e movimenti, postura, femminile, doppia voce\",-,parola,,\"ritta, in piedi\",\"Reta, em pé\",quaderno,La statua è ritta in piedi nel giardino.,\"A estátua está reta, em pé, no jardim.\",ritta,stravaccata;inginocchiata;accovacciata,,scrivi;impiccato;mischiate;dettato;articolo\nGianni Rodari,Stravaccato,Molto sdraiato,Sdraiato o sprofondato in modo molto rilassato e scomposto.,\"aggettivo, corpo e salute, azioni e movimenti, colloquiale, riposo, da verificare\",\"Sul foglio sembra \"\"strazzaccato\"\"; altre ipotesi: strapazzato, stracciato\",parola,,stravaccato,,,,,,,,\nGianni Rodari,Accovacciata,Agachada,Seduta sui talloni con le gambe piegate e vicina al suolo.,\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, femminile\",-,parola,,accovacciata,Agachada,quaderno,La bambina si è accovacciata per guardare le formiche.,A menina se agachou para olhar as formigas.,accovacciata,cucinata;spedita;stampata,,\nGianni Rodari,Semi-accovacciata,Semiagachada,A metà strada tra la posizione in piedi e quella accovacciata.,\"aggettivo, corpo e salute, azioni e movimenti, postura, femminile, prefisso semi-\",-,parola,,semi-accovacciata,Semiagachada,quaderno,\"Resta semi-accovacciata, con le ginocchia appena piegate.\",\"Fica semiagachada, com os joelhos apenas dobrados.\",semi-accovacciata,semi-cucinata;semi-spedita;semi-stampata,,\nGianni Rodari,Le apribottiglie,O abridor de garrafas,Attrezzo per togliere il tappo a corona dalle bottiglie.,\"sostantivo, plurale, oggetti, cucina, utensili, composto\",\"Nel quaderno «Le apribottiglie»; in italiano apribottiglie è di solito maschile invariabile (l'apribottiglie, gli apribottiglie): da ricontrollare. Per ora fuori da Articolo e genere\",parola,le,apribottiglie,O abridor de garrafas,quaderno,Per togliere il tappo a corona uso l'apribottiglie.,Para tirar a tampa de coroa uso o abridor de garrafas.,apribottiglie,ombrello;orologio;ascensore,,articolo\nGianni Rodari,Il cavatappi,O saca-rolhas,Attrezzo a spirale per togliere il tappo di sughero dalle bottiglie di vino.,\"sostantivo, maschile, oggetti, cucina, utensili, composto\",-,parola,il,cavatappi,O saca-rolhas,quaderno,Il cavatappi serve per togliere il tappo di sughero.,O saca-rolhas serve para tirar a rolha de cortiça.,cavatappi,pettine;lenzuolo;bastone,cacciavite,\nGianni Rodari,Le stoviglie,A louça,\"Piatti, bicchieri, posate e pentole usati a tavola e in cucina.\",\"sostantivo, plurale, oggetti, cucina, tavola, collettivo\",-,parola,le,stoviglie,A louça,quaderno,Dopo cena lavo le stoviglie.,Depois do jantar lavo a louça.,stoviglie,nuvole;montagne;stagioni,,\nGianni Rodari,Il coperchio per la pentola,A tampa da panela,Parte che chiude la pentola per trattenere calore e vapore.,\"sostantivo, maschile, oggetti, cucina, utensili, cottura\",-,parola,il,coperchio per la pentola,A tampa da panela,quaderno,Chiudi la pentola con il coperchio per trattenere il vapore.,Feche a panela com a tampa para reter o vapor.,coperchio,cucchiaio;manico;pavimento,,\nGianni Rodari,La carta stagnola,Papel alumínio,Foglio sottile di alluminio usato per avvolgere e cuocere i cibi.,\"sostantivo, femminile, oggetti, cucina, materiali, forno\",-,parola,la,carta stagnola,O papel alumínio,quaderno,Avvolgo la patata nella carta stagnola e la cuocio nel forno.,Embrulho a batata no papel alumínio e a asso no forno.,carta stagnola,carta igienica;carta geografica;carta da gioco,,\nGianni Rodari,La scodella,A tigela,\"Recipiente fondo e rotondo senza manici, per zuppe e latte.\",\"sostantivo, femminile, oggetti, cucina, tavola, colazione\",-,parola,la,scodella,A tigela,quaderno,Ogni mattina bevo il latte nella scodella.,Toda manhã bebo o leite na tigela.,scodella,valigia;chitarra;tasca,,\nGianni Rodari,Il tubetto del dentifricio,O tubo de pasta (de dente),Contenitore morbido e allungato che contiene il dentifricio.,\"sostantivo, maschile, oggetti, corpo e salute, igiene, diminutivo, bagno\",-,parola,il,tubetto del dentifricio,O tubo de pasta de dente,quaderno,Il tubetto del dentifricio è quasi finito.,O tubo de pasta de dente está quase acabando.,tubetto,bicchiere;pettine;asciugamano,,\nGianni Rodari,Il cacciavite,A chave de fenda,Attrezzo per avvitare e svitare le viti.,\"sostantivo, maschile, oggetti, attrezzi, bricolage, composto\",-,parola,il,cacciavite,A chave de fenda,quaderno,Con il cacciavite avvito le viti del tavolo.,Com a chave de fenda aparafuso os parafusos da mesa.,cacciavite,pettine;lenzuolo;cappello,cavatappi,\nGianni Rodari,Tutto il vicinato voleva avere il doppio cancello,Toda a vizinhança queria ter o portão duplo,Tutte le persone del quartiere volevano un cancello a due ante.,\"espressione, persone e ruoli, luoghi e ambienti, frase d'esempio, imperfetto, casa\",-,frase,,,,,Tutto il vicinato voleva avere il doppio cancello,Toda a vizinhança queria ter o portão duplo,cancello,cavatappi;soffitto;coperchio,,\nGianni Rodari,S'affaccia alla finestra,Olha pela janela,Si sporge o si mostra alla finestra per guardare fuori.,\"espressione, azioni e movimenti, casa, finestra, riflessivo, frase d'esempio\",-,frase,,,,,S'affaccia alla finestra,Olha pela janela,finestra,scodella;valigia;muffa,,\nGianni Rodari,Il soffitto sembra una barca rovesciata,O teto parece um barco virado de cabeça para baixo,Paragone: il soffitto curvo ricorda lo scafo di una barca capovolta.,\"espressione, luoghi e ambienti, frase d'esempio, paragone, casa, figurato\",-,frase,,,,,Il soffitto sembra una barca rovesciata,O teto parece um barco virado de cabeça para baixo,rovesciata,profumata;cucinata;spedita,,\nGianni Rodari,Quanto dista?,A que distância fica?,Domanda per sapere quanta strada c'è fino a un luogo.,\"espressione, tempo e quantità, luoghi e ambienti, domanda, viaggio, indicazioni\",-,espressione,,,A que distância fica?,quaderno,\"Scusi, quanto dista la stazione da qui?\",\"Com licença, a que distância fica a estação daqui?\",dista,costa;pesa;canta,,\nGianni Rodari,Il libriccino,\"O livrinho, o caderninho\",\"Libro piccolo e sottile, oppure piccolo taccuino.\",\"sostantivo, maschile, oggetti, diminutivo, libri, lettura\",-,parola,il,libriccino,O livrinho,quaderno,Scrivo gli appunti nel libriccino che porto in tasca.,Escrevo as anotações no livrinho que levo no bolso.,libriccino,frigorifero;lampione;cappello,,\nGianni Rodari,\"Per la festa, Maria si è agghindata con il suo vestito migliore\",Se arrumar,\"Si è vestita con molta cura ed eleganza, a volte in modo un po' vistoso.\",\"espressione, persone e ruoli, frase d'esempio, abbigliamento, riflessivo, passato prossimo\",-,frase,,,,,\"Per la festa, Maria si è agghindata con il suo vestito migliore\",\"Para a festa, Maria se arrumou com o seu melhor vestido\",agghindata,accovacciata;appoggiata;inginocchiata,,\nGianni Rodari,Un gregge di pecore,Um rebanho de ovelhas,Un gruppo numeroso di pecore che pascolano insieme.,\"sostantivo, maschile, natura e animali, tempo e quantità, collettivo, campagna, pastorizia\",-,parola,un,gregge di pecore,Um rebanho de ovelhas,quaderno,Il pastore porta un gregge di pecore sul prato.,O pastor leva um rebanho de ovelhas ao prado.,gregge,mazzo;pacco;secchio,,\nGianni Rodari,Un serpente l'ha morsa,Uma cobra a mordeu,Il serpente l'ha ferita con i denti.,\"espressione, natura e animali, corpo e salute, frase d'esempio, passato prossimo, pericolo\",-,frase,,,,,Un serpente l'ha morsa,Uma cobra a mordeu,morsa,rasa;appoggiata;cucinata,,\nGianni Rodari,\"Taglia, che non abbiamo tutta la vita\",Adianta,Invito a sbrigarsi e ad andare al sodo.,\"espressione, tempo e quantità, modo di dire, imperativo, fretta, da verificare\",\"Forse \"\"Taglia corto, che non abbiamo tutta la vita\"\"; nota a margine letta \"\"Adianta\"\" o \"\"Adiante\"\"\",espressione,,,,,,,,,,\nGianni Rodari,Se proprio devi fare,Se você realmente precisa fazer isso,Formula che concede di fare una cosa se è davvero inevitabile.,\"espressione, concetti astratti, periodo ipotetico, concessione, colloquiale, da verificare\",Frase forse incompleta sul foglio,espressione,,,,,,,,,,\nGianni Rodari,Zuccicare,Brilhar,\"Brillare, luccicare.\",\"verbo, concetti astratti, luce, sinonimi, registro letterario, da verificare\",\"Lettura incerta; forse \"\"scintillare\"\"\",parola,,zuccicare,Brilhar,quaderno,,,,,,\nGianni Rodari,Sfavillare,Brilhar,\"Brillare intensamente, emettendo scintille o luce viva.\",\"verbo, concetti astratti, luce, sinonimi, registro letterario, intensità\",-,parola,,sfavillare,Brilhar,quaderno,Le stelle sembrano sfavillare nella notte.,As estrelas parecem brilhar intensamente na noite.,sfavillare,sbadigliare;scivolare;sgridare,,\nGianni Rodari,Escursione termica,A variação (amplitude) térmica,\"Differenza tra la temperatura più alta e quella più bassa in un periodo, di solito un giorno.\",\"sostantivo, femminile, tempo e quantità, natura e animali, falsi amici, meteo, registro tecnico\",-,parola,l',escursione termica,A amplitude térmica,quaderno,Nel deserto l'escursione termica tra giorno e notte è enorme.,No deserto a amplitude térmica entre o dia e a noite é enorme.,escursione,esplosione;eccezione;emozione,,\nGianni Rodari,Svincolare,\"Desvincular, liberar-se (provvisoria)\",Significato incerto: forse liberare o sciogliere da un vincolo.,\"verbo, concetti astratti, libertà, cognato, registro formale, da verificare\",\"Sul foglio sembra \"\"snincolare\"\"\",parola,,svincolare,,,,,,,,\nGianni Rodari,Balle di fieno,\"\"\"Balle di paglia\"\"\",\"Grandi fasci di erba secca pressata, usati come foraggio; sul foglio sono accostati alle balle di paglia.\",\"sostantivo, plurale, natura e animali, campagna, agricoltura, foraggio\",-,parola,le,balle di fieno,Os fardos de feno,aggiunta,Il contadino accatasta le balle di fieno nel fienile.,O agricultor empilha os fardos de feno no celeiro.,balle,bolle;valigie;sedie,,\nGianni Rodari,Casolare,\"A casa rural, a casa de campo\",\"Casa isolata in campagna, di solito semplice e un po' rustica.\",\"sostantivo, maschile, luoghi e ambienti, campagna, architettura, vita rurale\",-,parola,il,casolare,A casa de campo,quaderno,Vivono in un casolare isolato in mezzo alla campagna.,Vivem numa casa de campo isolada no meio do campo.,casolare,garage;ascensore;semaforo,,\n";
-var ROWS = [], FOGLIO = '', NQ = 5;
+var ROWS = [], FILT = { pers: [], per: [], cat: [] }, NQ = 5, SUMM = {};
 
 /* il confronto ignora accenti, maiuscole e punteggiatura (tranne l'apostrofo) */
 norm = function (s) {
@@ -798,7 +822,7 @@ function take(a, n) { return shuffle(a).slice(0, n); }
    Una voce si segna come vista quando la domanda viene mostrata. Quando tutte le voci
    idonee sono state viste, il giro ricomincia da capo. */
 var SEEN = {}, STORE = '';
-function seenOf(n) { var k = n + '|' + FOGLIO; return (SEEN[k] = SEEN[k] || {}); }
+function seenOf(n) { var k = n + '|' + ['pers', 'per', 'cat'].map(function (g) { return FILT[g].slice().sort().join(';'); }).join('|'); return (SEEN[k] = SEEN[k] || {}); }
 function saveSeen() { try { localStorage.setItem(STORE, JSON.stringify(SEEN)); } catch (e) {} }
 function loadSeen() { SEEN = {}; try { SEEN = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { SEEN = {}; } }
 function hashText(t) { var h = 5381, i = 0; for (; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0; return h.toString(36); }
@@ -839,7 +863,13 @@ function roundsFor(poolLen, size, perRound) {
 function answerText(r) { return !r.lemma ? '' : r.art ? r.art + (/'$/.test(r.art) ? '' : ' ') + r.lemma : r.lemma; }
 function disp(r) { return cap(answerText(r)); }
 function shown(r) { return r.tipo === 'parola' ? disp(r) : r.text; }
-function inFoglio(r) { return !FOGLIO || r.pers === FOGLIO; }
+/* filtri: tra gruppi vale «e», dentro un gruppo vale «o» */
+function periodOf(r) { return (SUMM[r.pers] || {}).data || ''; }
+function inFoglio(r) {
+  return (!FILT.pers.length || FILT.pers.indexOf(r.pers) >= 0) &&
+    (!FILT.per.length || FILT.per.indexOf(periodOf(r)) >= 0) &&
+    (!FILT.cat.length || FILT.cat.some(function (t) { return r.tagList.indexOf(t) >= 0; }));
+}
 /* una voce è idonea a un esercizio se non è «da verificare» e il nome dell'esercizio non è in «Escludi da» */
 function ok(r, key) { return !r.uncertain && inFoglio(r) && r.esc.split(/[;,\s]+/).indexOf(key) < 0; }
 function words(key) { return ROWS.filter(function (r) { return r.tipo === 'parola' && r.lemma && ok(r, key); }); }
@@ -975,15 +1005,15 @@ var EX = [
       var c = coverSet(1, pool, size, used), set = c.set;
       if (set.length < 4) break;
       used = used.concat(set);
-      items.push(stamp({ dir: i % 2 ? 'pt' : 'it', pairs: set.map(function (r) { return [disp(r), r.trad]; }) },
+      items.push(stamp({ pairs: set.map(function (r) { return [disp(r), r.trad]; }) },
         set.map(function (r) { return r.id; }), c.wrap));
     }
     return items;
   },
   title: 'Tocca le coppie corrispondenti',
   render: function (item, ctx) {
-    var L = item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[0] : p[1], i: i }; });
-    var R = shuffle(item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[1] : p[0], i: i }; }));
+    var L = item.pairs.map(function (p, i) { return { t: p[1], i: i }; });
+    var R = shuffle(item.pairs.map(function (p, i) { return { t: p[0], i: i }; }));
     var sel = null, solved = 0, errors = 0, grid = h('div', { class: 'pairs-grid' });
     function mk(side, o) {
       var b = h('button', { class: 'pair-tile', type: 'button' }, o.t);
@@ -1009,7 +1039,7 @@ var EX = [
       return b;
     }
     item.pairs.forEach(function (p, k) { grid.append(mk('l', L[k]), mk('r', R[k])); });
-    ctx.body.append(h('p', { class: 'hint-line' }, item.dir === 'it' ? 'Italiano → Portoghese' : 'Portoghese → Italiano'), grid);
+    ctx.body.append(h('p', { class: 'hint-line' }, 'Portoghese → Italiano'), grid);
   }
 },
 
@@ -1122,7 +1152,19 @@ var EX = [
       });
       grid.append(b);
     });
-    ctx.body.append(grid, counter);
+    var reveal = h('button', { class: 'btn-ghost', type: 'button' }, 'Svela le parole');
+    reveal.addEventListener('click', function () {
+      if (ctx.isDone() || lock) return;
+      lock = true; reveal.disabled = true;
+      cards.forEach(function (c) { if (!c.ok && !c.up) { c.el.className = 'pair-tile mem-card up'; c.el.textContent = c.t; } });
+      setTimeout(function () {
+        cards.forEach(function (c) {
+          if (!c.ok && !c.up) { c.el.className = 'pair-tile mem-card down'; c.el.textContent = '?'; }
+        });
+        lock = false; reveal.disabled = false;
+      }, 3000);
+    });
+    ctx.body.append(grid, counter, reveal);
   }
 },
 
@@ -1331,6 +1373,7 @@ function runCheck() {
 function finish(ok, solution, note) {
   if (done) return;
   done = true; checkFn = null;
+  sfx(ok);
   if (ok) score++; else ctx.lose();
   $('body').querySelectorAll('input').forEach(function (i) { i.disabled = true; });
   if (afterFn) afterFn(ok);
@@ -1448,13 +1491,17 @@ function showTraining() {
     h('div', { class: 'tr-bar' }, search, toggle), count, list);
   $('body').scrollTop = 0; document.querySelector('.content').scrollTop = 0;
   paint();
-  $('modal').hidden = true; $('sheet').hidden = true;
+  $('sheet').hidden = true;
 }
 
 /* ---------- Home: sessioni (stellina) ed esercizi (libretto) ---------- */
 var HOME = { n: -1, name: 'Home', items: [], pool: function () { return []; }, needs: '' };
 function setMode(v) { VIEW = v; document.body.classList.toggle('mode-ex', v === 'ex'); }
-function subtitle() { return (FOGLIO || 'Tutti i fogli') + ' · ' + ROWS.filter(inFoglio).length + ' voci'; }
+function subtitle() {
+  var n = FILT.pers.length + FILT.per.length + FILT.cat.length;
+  var what = FILT.pers.length === 1 && !FILT.per.length && !FILT.cat.length ? FILT.pers[0] : n ? n + (n === 1 ? ' filtro' : ' filtri') : 'Tutti i fogli';
+  return what + ' · ' + ROWS.filter(inFoglio).length + ' voci';
+}
 function setTop(t) { $('top-title').textContent = t; $('top-sub').textContent = subtitle(); }
 function tabB(id, label, icon, go) {
   return h('button', { class: 'tabb' + (VIEW === id ? ' on' : ''), type: 'button', 'aria-label': label, 'aria-current': VIEW === id ? 'page' : 'false', onclick: go },
@@ -1488,7 +1535,7 @@ function showHome() {
   out.push(h('p', { class: 'hm-note' }, 'Prima di cominciare puoi ripassare le voci in Allenamento.'));
   b.replaceChildren.apply(b, out);
   document.querySelector('.content').scrollTop = 0;
-  $('modal').hidden = true; $('sheet').hidden = true;
+  $('sheet').hidden = true;
 }
 
 /* segna le voci della domanda come viste; se la domanda apre un nuovo giro, azzera prima il giro */
@@ -1522,7 +1569,6 @@ function load(n) {
   cur._wrapped = false;
   qi = 0; hearts = 5; score = 0;
   $('hearts').textContent = hearts;
-  $('modal').hidden = true;
   $('sheet').hidden = true;
   cur.items = cur.gen();
   if (!cur.items.length) showEmpty(); else showQ();
@@ -1557,14 +1603,51 @@ function buildSidebar() { renderCover(); }
 
 function setStatus(msg) { $('data-status').textContent = msg; }
 
-function fillFoglio() {
-  var sel = $('sel-foglio'), names = [];
-  ROWS.forEach(function (r) { if (r.pers && names.indexOf(r.pers) < 0) names.push(r.pers); });
-  sel.replaceChildren(h('option', { value: '' }, 'Tutti i fogli'));
-  names.forEach(function (nm) { sel.append(h('option', { value: nm }, nm)); });
-  if (names.indexOf(FOGLIO) < 0) FOGLIO = '';
-  sel.value = FOGLIO;
+/* categorie del riassunto → tag del glossario */
+var CATS = [['Sostantivi', 'sostantivo'], ['Verbi', 'verbo'], ['Aggettivi', 'aggettivo'], ['Avverbi', 'avverbio'], ['Espressioni / modi di dire', 'espressione'],
+  ['Oggetti', 'oggetti'], ['Sentimenti ed emozioni', 'sentimenti ed emozioni'], ['Persone e ruoli', 'persone e ruoli'], ['Luoghi e ambienti', 'luoghi e ambienti'],
+  ['Azioni e movimenti', 'azioni e movimenti'], ['Concetti astratti', 'concetti astratti'], ['Natura e animali', 'natura e animali'], ['Cibo e bevande', 'cibo e bevande'],
+  ['Corpo e salute', 'corpo e salute'], ['Tempo e quantità', 'tempo e quantità']];
+var MESI = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+function periodLabel(d) { var m = /^(\d{4})-(\d{2})$/.exec(d); return m ? MESI[+m[2] - 1] + ' ' + m[1] : d; }
+
+function chipGroup(boxId, group, opts) {
+  var box = $(boxId);
+  box.replaceChildren.apply(box, opts.map(function (o) {
+    var on = FILT[group].indexOf(o.v) >= 0;
+    return h('button', { class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), disabled: !o.n && !on,
+      onclick: function () {
+        var i = FILT[group].indexOf(o.v);
+        if (i >= 0) FILT[group].splice(i, 1); else FILT[group].push(o.v);
+        filtersChanged();
+      } }, o.l, h('small', {}, String(o.n)));
+  }));
 }
+function fillFilters() {
+  var pers = [], per = [], cnt = { pers: {}, per: {}, cat: {} };
+  ROWS.forEach(function (r) {
+    if (r.pers && pers.indexOf(r.pers) < 0) pers.push(r.pers);
+    var d = periodOf(r); if (d && per.indexOf(d) < 0) per.push(d);
+    cnt.pers[r.pers] = (cnt.pers[r.pers] || 0) + 1;
+    cnt.per[d] = (cnt.per[d] || 0) + 1;
+    r.tagList.forEach(function (t) { cnt.cat[t] = (cnt.cat[t] || 0) + 1; });
+  });
+  per.sort();
+  /* un filtro che non esiste più nei dati si toglie */
+  FILT.pers = FILT.pers.filter(function (v) { return pers.indexOf(v) >= 0; });
+  FILT.per = FILT.per.filter(function (v) { return per.indexOf(v) >= 0; });
+  chipGroup('f-pers', 'pers', pers.map(function (v) { return { v: v, l: v, n: cnt.pers[v] || 0 }; }));
+  chipGroup('f-per', 'per', per.map(function (v) { return { v: v, l: periodLabel(v), n: cnt.per[v] || 0 }; }));
+  chipGroup('f-cat', 'cat', CATS.map(function (c) { return { v: c[1], l: c[0], n: cnt.cat[c[1]] || 0 }; }));
+  $('f-reset').hidden = !(FILT.pers.length + FILT.per.length + FILT.cat.length);
+}
+function renderInfo() {
+  var box = $('foglio-info'), sel = FILT.pers.filter(function (p) { return SUMM[p]; });
+  box.replaceChildren.apply(box, sel.length === 1 ? [h('div', { class: 'cover' },
+    h('div', { class: 'cover-t' }, 'Foglio · ' + periodLabel(SUMM[sel[0]].data)),
+    h('div', { class: 'cover-n' }, SUMM[sel[0]].spieg))] : []);
+}
+function filtersChanged() { fillFilters(); renderInfo(); renderCover(); refreshView(); $('sheet').hidden = false; }
 
 function applyCSV(text, label) {
   var info;
@@ -1573,31 +1656,61 @@ function applyCSV(text, label) {
   var skipped = ROWS.filter(function (r) { return r.uncertain; }).length;
   setStatus((label || 'glossario') + ' · ' + ROWS.length + ' voci' + (skipped ? ' · ' + skipped + ' «da verificare» escluse' : '') +
     (info.hasNew ? '' : ' · mancano le colonne Tipo e Lemma: nessun esercizio disponibile'));
-  fillFoglio();
+  fillFilters(); renderInfo();
   buildSidebar();
   return true;
 }
 
+/* riassunto.csv: una riga per foglio (spiegazione, data, conteggi) */
+function loadSummary(text) {
+  var t = parseCSV(text.replace(/^﻿/, '')), head = t.shift() || [], idx = {};
+  head.forEach(function (c, i) { idx[c.trim()] = i; });
+  SUMM = {};
+  t.forEach(function (r) {
+    function g(c) { return idx[c] == null ? '' : (r[idx[c]] || '').trim(); }
+    if (g('Personaggio')) SUMM[g('Personaggio')] = { spieg: g('Spiegazione'), data: g('Data'), totale: g('Totale') };
+  });
+}
+
+/* i dati partono da glossario.csv e riassunto.csv, accanto a index.html */
+function fetchText(url) {
+  return fetch(url, { cache: 'no-cache' }).then(function (r) {
+    if (!r.ok) throw new Error(url + ': ' + r.status);
+    return r.text();
+  });
+}
+function loadData() {
+  setStatus('Caricamento dati…');
+  /* con un server si leggono i CSV; aprendo il file con doppio clic si usa dati.js (da rigenerare con «node sync-dati.js») */
+  var local = window.DATI ? Promise.resolve([window.DATI.glossario, window.DATI.riassunto]) : Promise.reject(new Error('dati.js mancante'));
+  return Promise.all([fetchText('glossario.csv'), fetchText('riassunto.csv').catch(function () { return ''; })]).catch(function () { return local; }).then(function (res) {
+    loadSummary(res[1]);
+    applyCSV(res[0], 'glossario.csv');
+    /* all'avvio parte dall'ultimo foglio del glossario: meno voci da preparare, app più veloce */
+    var last = ROWS.length ? ROWS[ROWS.length - 1].pers : '';
+    if (last && !FILT.pers.length && !FILT.per.length && !FILT.cat.length) { FILT.pers = [last]; fillFilters(); renderInfo(); renderCover(); }
+    showHome();
+  }).catch(function (e) {
+    setStatus('Impossibile caricare i dati (' + e.message + '). Esegui «node sync-dati.js» nella cartella per creare dati.js, oppure avvia «python -m http.server» e apri http://localhost:8000.');
+    $('body').replaceChildren(h('p', { class: 'hm-note' }, 'Dati non disponibili: apri le impostazioni per i dettagli.'));
+  });
+}
+
 (function () {
-  $('modal-mascot').innerHTML = mascotSvg(true);
-  $('close').addEventListener('click', function () { $('modal').hidden = false; });
-  $('keep').addEventListener('click', function () { $('modal').hidden = true; });
-  $('end').addEventListener('click', function () { showHome(); });
+  $('close').addEventListener('click', function () { showHome(); });
   $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
   $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
   $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
-  $('sel-foglio').addEventListener('change', function () { FOGLIO = this.value; renderCover(); refreshView(); });
-  $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
-  $('csv-file').addEventListener('change', function () {
-    var f = this.files && this.files[0], input = this;
-    if (!f) return;
-    var rd = new FileReader();
-    rd.onload = function () { if (applyCSV(String(rd.result), f.name)) { $('sheet').hidden = true; showHome(); } input.value = ''; };
-    rd.readAsText(f, 'utf-8');
+  $('sel-snd').value = SOUND_ON ? '1' : '0';
+  $('sel-snd').addEventListener('change', function () {
+    SOUND_ON = this.value === '1';
+    try { localStorage.setItem('ginestra-suoni', SOUND_ON ? '1' : '0'); } catch (e) {}
+    sfx(true);
   });
+  $('f-reset').addEventListener('click', function () { FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
+  $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
   cur = EX[0];
-  applyCSV(CSV_TEXT, 'glossario_aggiornato.csv');
-  showHome();
+  loadData();
 })();
 </script>
 </body>

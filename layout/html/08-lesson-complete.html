@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Lesson Complete</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* iOS Status Bar */
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #000000;
+      z-index: 50;
+      background: #ffffff;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* Main Content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      margin-top: 40px;
+    }
+
+    /* Illustration Duo & Oscar fistbump */
+    .illustration-wrap {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .ground-line {
+      position: absolute;
+      bottom: 0;
+      width: 250px;
+      height: 4px;
+      background: #e5e5e5;
+      border-radius: 2px;
+    }
+
+    /* Title */
+    .title {
+      font-size: 32px;
+      font-weight: 900;
+      color: #ffc800;
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Stats Grid Cards */
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .stat-card {
+      flex: 1;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.06);
+      background: #ffffff;
+    }
+
+    .stat-header {
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .stat-body {
+      padding: 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 20px;
+      font-weight: 900;
+      border: 2px solid transparent;
+      border-top: none;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    /* Card 1: TOTAL XP (Yellow) */
+    .card-xp {
+      border: 2px solid #ffc800;
+    }
+    .card-xp .stat-header {
+      background: #ffc800;
+    }
+    .card-xp .stat-body {
+      color: #ffc800;
+    }
+
+    /* Card 2: GOOD (Green) */
+    .card-good {
+      border: 2px solid #58cc02;
+    }
+    .card-good .stat-header {
+      background: #58cc02;
+    }
+    .card-good .stat-body {
+      color: #58cc02;
+    }
+
+    /* Card 3: SPEEDY (Cyan) */
+    .card-speedy {
+      border: 2px solid #1cb0f6;
+    }
+    .card-speedy .stat-header {
+      background: #1cb0f6;
+    }
+    .card-speedy .stat-body {
+      color: #1cb0f6;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px 24px 34px;
+      background: #ffffff;
+    }
+
+    .btn-claim {
+      width: 100%;
+      height: 52px;
+      background: #1cb0f6;
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #1899d6;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+    }
+    .btn-claim:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1899d6;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 16px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>1:52</span>
+      <div class="status-icons">
+        <span>5G</span>
+        <svg width="22" height="12" viewBox="0 0 24 12" fill="#000000">
+          <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000000" stroke-width="2" fill="none"/>
+          <rect x="2" y="2" width="16" height="8" rx="1" fill="#000000"/>
+          <path d="M22 4v4" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="content">
+      <!-- Duo and Oscar celebrating Illustration -->
+      <div class="illustration-wrap">
+        <svg width="280" height="180" viewBox="0 0 280 180" fill="none">
+          <!-- Duo Owl on left -->
+          <g transform="translate(45, 45)">
+            <ellipse cx="40" cy="55" rx="30" ry="34" fill="#58cc02"/>
+            <path d="M25 25C32 28 36 30 40 30C44 30 48 28 55 25C54 22 50 20 40 20C30 20 26 22 25 25Z" fill="#46a302"/>
+            <!-- Closed happy eyes -->
+            <path d="M30 48C33 52 38 52 41 48" stroke="#3c3c3c" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M47 48C50 52 55 52 58 48" stroke="#3c3c3c" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Beak -->
+            <polygon points="44,52 39,58 49,58" fill="#ff9600"/>
+            <!-- Extended wing high-fiving -->
+            <path d="M60 48C75 42 85 45 88 52C88 58 75 62 60 62Z" fill="#58cc02"/>
+            <!-- Feet -->
+            <ellipse cx="32" cy="88" rx="7" ry="4" fill="#ff9600"/>
+            <ellipse cx="48" cy="88" rx="7" ry="4" fill="#ff9600"/>
+          </g>
+
+          <!-- Oscar on right -->
+          <g transform="translate(140, 15)">
+            <!-- Hair -->
+            <path d="M30 35C28 15 48 5 62 12C74 18 78 30 76 44C70 42 62 45 62 45C52 40 40 42 30 35Z" fill="#3c3c3c"/>
+            <circle cx="36" cy="38" r="8" fill="#3c3c3c"/>
+            <!-- Head -->
+            <ellipse cx="50" cy="42" rx="18" ry="19" fill="#c68a6d"/>
+            <ellipse cx="64" cy="42" rx="4" ry="5" fill="#c68a6d"/>
+            <!-- Big Black Moustache -->
+            <path d="M32 46C38 43 45 54 48 48C51 54 58 43 64 46C65 52 58 56 48 56C38 56 31 52 32 46Z" fill="#2b2b2b"/>
+            <!-- Pink Shirt -->
+            <path d="M25 65C30 60 66 60 72 65L74 95H22L25 65Z" fill="#ffb4d6"/>
+            <!-- Arm extending forward fistbump -->
+            <path d="M26 68C12 70 0 78 -8 85C-10 92 6 92 20 86L26 80Z" fill="#c68a6d"/>
+            <!-- Brown belt -->
+            <rect x="22" y="93" width="52" height="7" fill="#6d4c41"/>
+            <rect x="42" y="91" width="12" height="11" rx="2" fill="#c79600"/>
+            <!-- Mint Green Trousers -->
+            <path d="M22 100H74L70 125H25L22 100Z" fill="#00cd9c"/>
+            <!-- Shoes -->
+            <ellipse cx="32" cy="126" rx="8" ry="4" fill="#1cb0f6"/>
+            <ellipse cx="64" cy="126" rx="8" ry="4" fill="#ff4b4b"/>
+          </g>
+
+          <!-- Confetti / Flower Petals on floor -->
+          <circle cx="68" cy="138" r="4" fill="#ff4b4b"/>
+          <ellipse cx="76" cy="139" rx="3" ry="1.5" fill="#58cc02"/>
+          <circle cx="180" cy="138" r="3.5" fill="#1cb0f6"/>
+          <circle cx="192" cy="139" r="4" fill="#ff4b4b"/>
+          <circle cx="204" cy="138" r="3.5" fill="#ff4b4b"/>
+        </svg>
+        <div class="ground-line"></div>
+      </div>
+
+      <!-- Title -->
+      <div class="title">Lesson complete!</div>
+
+      <!-- Stats Cards -->
+      <div class="stats-row">
+        <!-- TOTAL XP -->
+        <div class="stat-card card-xp">
+          <div class="stat-header">TOTAL XP</div>
+          <div class="stat-body">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc800">
+              <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+            </svg>
+            <span>25</span>
+          </div>
+        </div>
+
+        <!-- GOOD -->
+        <div class="stat-card card-good">
+          <div class="stat-header">GOOD</div>
+          <div class="stat-body">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#58cc02" stroke-width="3">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <span>75%</span>
+          </div>
+        </div>
+
+        <!-- SPEEDY -->
+        <div class="stat-card card-speedy">
+          <div class="stat-header">SPEEDY</div>
+          <div class="stat-body">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1cb0f6" stroke-width="2.5">
+              <circle cx="12" cy="13" r="8"/>
+              <polyline points="12 9 12 13 14.5 15"/>
+              <line x1="12" y1="2" x2="12" y2="5"/>
+            </svg>
+            <span>0:21</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Action -->
+    <div class="footer">
+      <button class="btn-claim" onclick="alert('+25 XP claimed!')">CLAIM XP</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo - Get Started</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .phone-container {
+      width: 100%;
+      max-width: 430px;
+      height: 932px;
+      background: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 36px;
+      background: #000000;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    /* Navigation Header */
+    .top-header {
+      padding: 58px 24px 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      margin-left: -8px;
+      color: #afafaf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+    }
+    .back-btn:hover {
+      color: #4b4b4b;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 32px;
+      position: relative;
+      margin-top: -60px;
+    }
+
+    /* Speech Bubble */
+    .speech-bubble {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 18px 22px;
+      max-width: 250px;
+      margin-bottom: 24px;
+      box-shadow: 0 3px 0 #f0f0f0;
+      text-align: left;
+    }
+
+    .speech-bubble p {
+      font-size: 19px;
+      font-weight: 700;
+      color: #4b4b4b;
+      line-height: 1.35;
+      letter-spacing: -0.2px;
+    }
+
+    /* Speech bubble tail */
+    .speech-bubble::after, .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .speech-bubble::before {
+      border-width: 10px 9px 0 9px;
+      border-color: #e5e5e5 transparent transparent transparent;
+      bottom: -12px;
+    }
+
+    .speech-bubble::after {
+      border-width: 9px 8px 0 8px;
+      border-color: #ffffff transparent transparent transparent;
+    }
+
+    /* Mascot Duo */
+    .character-container {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .character-shadow {
+      position: absolute;
+      bottom: 0;
+      width: 115px;
+      height: 115px;
+      background: #e5e5e5;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .duo-character {
+      position: relative;
+      z-index: 2;
+      width: 140px;
+      height: 140px;
+    }
+
+    /* Footer Bottom */
+    .footer {
+      padding: 24px 24px 34px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn-continue {
+      background: #58cc02;
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      height: 52px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #46a302;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+      width: 100%;
+    }
+
+    .btn-continue:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #46a302;
+    }
+
+    .home-indicator {
+      width: 140px;
+      height: 5px;
+      background: #000000;
+      border-radius: 3px;
+      margin: 12px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- Top Navigation -->
+    <div class="top-header">
+      <button class="back-btn" onclick="history.back()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="speech-bubble">
+        <p>Okay! Get ready for Unit 1 Lesson 1.</p>
+      </div>
+
+      <div class="character-container">
+        <div class="character-shadow"></div>
+        <!-- Duo Owl SVG Illustration -->
+        <svg class="duo-character" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Duo Body -->
+          <path d="M70 20C40 20 28 36 28 64C28 92 40 108 70 108C100 108 112 92 112 64C112 36 100 20 70 20Z" fill="#58cc02"/>
+          <path d="M38 23C47 28 55 33 62 33C69 33 77 28 86 23C83 18 78 18 70 18C62 18 57 18 38 23Z" fill="#58cc02"/>
+          <path d="M42 22C49 26 55 29 62 29C69 29 75 26 82 22C78 17 74 16 62 16C50 16 46 17 42 22Z" fill="#46a302" opacity="0.3"/>
+          
+          <!-- Eyes Outer (White) -->
+          <ellipse cx="50" cy="62" rx="15" ry="18" fill="#ffffff"/>
+          <ellipse cx="88" cy="62" rx="15" ry="18" fill="#ffffff"/>
+          
+          <!-- Pupils (Dark Slate) -->
+          <ellipse cx="52" cy="63" rx="8" ry="11" fill="#3c3c3c"/>
+          <ellipse cx="86" cy="63" rx="8" ry="11" fill="#3c3c3c"/>
+          
+          <!-- Eye Highlights -->
+          <ellipse cx="50" cy="58" rx="3.5" ry="5" fill="#ffffff"/>
+          <ellipse cx="84" cy="58" rx="3.5" ry="5" fill="#ffffff"/>
+          <circle cx="54" cy="68" r="1.5" fill="#ffffff"/>
+          <circle cx="88" cy="68" r="1.5" fill="#ffffff"/>
+
+          <!-- Beak -->
+          <path d="M62 67C62 67 69 64 76 67C78 74 74 81 69 81C64 81 60 74 62 67Z" fill="#ff9600"/>
+          <!-- Mouth open pink -->
+          <ellipse cx="69" cy="74" rx="4" ry="3" fill="#ea2b2b"/>
+          <ellipse cx="69" cy="74.5" rx="3" ry="1.5" fill="#ff7070"/>
+
+          <!-- Clipboard in Hand Left -->
+          <g transform="translate(38, 70)">
+            <rect x="0" y="0" width="26" height="34" rx="3" fill="#c47a00"/>
+            <rect x="2" y="2" width="22" height="30" rx="2" fill="#d98900"/>
+            <rect x="5" y="4" width="16" height="24" rx="1" fill="#f7f7f7"/>
+            <rect x="9" y="0" width="8" height="3" rx="1.5" fill="#afafaf"/>
+            <!-- Wing holding clipboard -->
+            <ellipse cx="5" cy="10" rx="9" ry="6" transform="rotate(-15 5 10)" fill="#58cc02"/>
+          </g>
+
+          <!-- Right Arm holding Yellow Pencil -->
+          <g transform="translate(98, 48)">
+            <!-- Arm wing extending right -->
+            <ellipse cx="10" cy="24" rx="14" ry="8" fill="#58cc02"/>
+            <!-- Yellow Pencil -->
+            <g transform="translate(18, 0)">
+              <polygon points="4,0 0,6 8,6" fill="#f5c28e"/>
+              <polygon points="4,0 2,3 6,3" fill="#3c3c3c"/>
+              <rect x="0" y="6" width="8" height="22" fill="#ffc800"/>
+              <rect x="0" y="6" width="2" height="22" fill="#e5a500"/>
+              <rect x="0" y="28" width="8" height="4" fill="#cfcfcf"/>
+              <rect x="0" y="32" width="8" height="6" rx="1" fill="#ff9bb2"/>
+            </g>
+          </g>
+
+          <!-- Feet -->
+          <ellipse cx="53" cy="104" rx="9" ry="6" fill="#ff9600"/>
+          <ellipse cx="85" cy="104" rx="9" ry="6" fill="#ff9600"/>
+          <ellipse cx="53" cy="103" rx="7" ry="4" fill="#ffaa00"/>
+          <ellipse cx="85" cy="103" rx="7" ry="4" fill="#ffaa00"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="footer">
+      <button class="btn-continue" onclick="alert('Continuing to Unit 1 Lesson 1!')">CONTINUE</button>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>

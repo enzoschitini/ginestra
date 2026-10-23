@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ginestra - Esercizi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      background: #1e293b;
+      padding: 16px 28px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 38px; height: 38px;
+      background: #58cc02;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 24px; color: #fff;
+      box-shadow: 0 3px 0 #46a302;
+    }
+    .brand-title { font-size: 20px; font-weight: 900; color: #fff; }
+    .brand-sub { font-size: 13px; color: #94a3b8; font-weight: 600; }
+    .header-btn {
+      background: #58cc02;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 3px 0 #46a302;
+      cursor: pointer;
+      transition: all .1s;
+    }
+    .header-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #46a302; }
+
+    /* ---------- Layout ---------- */
+    .app-layout { flex: 1; display: flex; overflow: hidden; height: calc(100vh - 71px); }
+
+    .sidebar {
+      width: 360px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      overflow-y: auto;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .section-label {
+      font-size: 12px; font-weight: 900; letter-spacing: .8px;
+      text-transform: uppercase; color: #64748b;
+      margin: 12px 10px 4px;
+    }
+    .section-label:first-child { margin-top: 0; }
+    .screen-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      background: #0f172a;
+      border: 1px solid transparent;
+      transition: all .15s ease;
+      color: #cbd5e1;
+      text-align: left;
+      width: 100%;
+    }
+    .screen-item:hover { background: #334155; color: #fff; }
+    .screen-item.active { background: #1e3a5f; border-color: #38bdf8; color: #fff; }
+    .screen-num {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: #334155; color: #94a3b8;
+      font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .screen-item.active .screen-num { background: #0284c7; color: #fff; }
+    .screen-info { flex: 1; overflow: hidden; }
+    .screen-name { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .screen-desc { font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+
+    .stage {
+      flex: 1;
+      background: #0b1120;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      overflow: auto;
+    }
+    .preview-frame {
+      width: 430px;
+      height: 932px;
+      max-height: calc(100vh - 71px - 48px);
+      min-height: 640px;
+      flex-shrink: 0;
+      border-radius: 48px;
+      border: 12px solid #1e293b;
+      box-shadow: 0 30px 80px rgba(0,0,0,.7);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      body { min-height: 100vh; }
+      .app-layout { flex-direction: column; height: auto; overflow: visible; }
+      .sidebar { width: 100%; max-height: 220px; border-right: none; border-bottom: 1px solid #334155; }
+      .preview-frame { width: 100%; max-width: 430px; height: 750px; max-height: none; }
+      .stage { padding: 16px; overflow: visible; }
+      header { padding: 12px 16px; }
+      .brand-sub { display: none; }
+    }
+
+    /* ======================================================
+       PHONE (stile delle schermate Duolingo)
+       ====================================================== */
+    .phone { height: 100%; background: #fff; display: flex; flex-direction: column; position: relative; color: #3c3c3c; }
+
+    .status-bar {
+      padding: 14px 28px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 15px; font-weight: 800; color: #000;
+      background: #fff;
+    }
+    .brand-logo { font-weight: 900; color: #58cc02; font-size: 17px; letter-spacing: -.3px; }
+    .status-icons { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; }
+
+    .lesson-bar { padding: 14px 20px 10px; display: flex; align-items: center; gap: 16px; }
+    .close-btn { background: none; border: none; cursor: pointer; color: #afafaf; display: flex; align-items: center; }
+    .close-btn:hover { color: #777; }
+    .progress-bg { flex: 1; height: 14px; background: #e5e5e5; border-radius: 7px; overflow: hidden; }
+    .progress-fill { width: 0; height: 100%; background: #ffc800; border-radius: 7px; transition: width .35s ease; }
+    .heart-stat { display: flex; align-items: center; gap: 6px; color: #ff4b4b; font-size: 16px; font-weight: 900; }
+
+    .content { flex: 1; padding: 12px 20px 16px; display: flex; flex-direction: column; overflow-y: auto; min-height: 0; }
+    .title { font-size: 22px; font-weight: 900; color: #3c3c3c; margin-bottom: 22px; }
+    #body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+    /* mascotte + fumetto */
+    .speaker-section { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+    .mascot { width: 84px; flex-shrink: 0; }
+    .mascot svg { width: 100%; height: auto; display: block; }
+    .speech-bubble {
+      background: #fff;
+      border: 2px solid #e5e5e5;
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
+      position: relative;
+      box-shadow: 0 2px 0 #f0f0f0;
+      flex: 1;
+      margin-top: 8px;
+      font-size: 19px; font-weight: 700; line-height: 1.4;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .speech-bubble::before, .speech-bubble::after {
+      content: ''; position: absolute; top: 20px; width: 0; height: 0; border-style: solid;
+    }
+    .speech-bubble::before { border-width: 8px 12px 8px 0; border-color: transparent #e5e5e5 transparent transparent; left: -13px; }
+    .speech-bubble::after { border-width: 7px 10px 7px 0; border-color: transparent #fff transparent transparent; left: -10px; }
+    .bubble-label { font-size: 12px; font-weight: 900; color: #afafaf; letter-spacing: .8px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+    .audio-btn {
+      width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+      background: #ddf4ff; border: 2px solid #84d8ff; box-shadow: 0 3px 0 #84d8ff;
+      color: #1cb0f6; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .audio-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #84d8ff; }
+    .audio-btn.slow { background: #fff; border-color: #e5e5e5; box-shadow: 0 3px 0 #e5e5e5; color: #afafaf; }
+    .audio-btn:disabled { opacity: .5; cursor: default; }
+
+    .sentence { font-size: 21px; font-weight: 800; line-height: 1.7; margin-bottom: 26px; }
+    .blank {
+      display: inline-block; min-width: 80px; padding: 0 8px; text-align: center;
+      border-bottom: 3px solid #afafaf; color: #1899d6;
+    }
+    .blank.ok { color: #58a700; border-color: #58cc02; }
+    .blank.bad { color: #ea2b2b; border-color: #ff4b4b; }
+
+    .prompt-big { font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+    .prompt-sub { font-size: 17px; font-weight: 700; color: #777; margin-bottom: 22px; }
+
+    /* scelte */
+    .options-col { display: flex; flex-direction: column; gap: 12px; }
+    .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .options-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .choice-card {
+      border: 2px solid #e5e5e5; border-radius: 16px; padding: 15px 20px;
+      font-size: 18px; font-weight: 800; color: #3c3c3c; background: #fff;
+      box-shadow: 0 3px 0 #e5e5e5; cursor: pointer; transition: all .12s;
+      text-align: left; overflow-wrap: anywhere;
+    }
+    .options-grid .choice-card, .options-two .choice-card { text-align: center; padding: 18px 8px; }
+    .choice-card:hover { background: #fcfcfc; }
+    .choice-card:active { transform: translateY(2px); box-shadow: 0 1px 0 #e5e5e5; }
+    .choice-card.selected { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
+    .choice-card.right { background: #e7ffcf; border-color: #a4e478; color: #58a700; box-shadow: 0 3px 0 #8ad058; }
+    .choice-card.wrong { background: #ffdfe0; border-color: #ffb8b8; color: #ea2b2b; box-shadow: 0 3px 0 #ffb8b8; }
+    .choice-card:disabled { cursor: default; }
+
+    .hint-btn {
+      align-self: flex-start; background: none; border: none; color: #1cb0f6;
+      font-size: 14px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
+      cursor: pointer; margin-bottom: 8px; padding: 4px 0;
+    }
+    .hint-line { font-size: 15px; font-weight: 700; color: #777; margin-bottom: 14px; }
+    .hint-line[hidden] { display: none; }
+
+    /* chip (costruttore) */
+    .answer-line-area {
+      min-height: 84px;
+      border-top: 2px solid #e5e5e5; border-bottom: 2px solid #e5e5e5;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      padding: 10px 0; margin-bottom: 26px;
+    }
+    .answer-line-area:empty::before { content: "Tocca i pezzi qui sotto"; color: #afafaf; font-weight: 700; font-size: 15px; }
+    .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .word-chip {
+      background: #fff; border: 2px solid #e5e5e5; border-radius: 14px;
+      padding: 10px 16px; font-size: 17px; font-weight: 800; color: #4b4b4b;
+      box-shadow: 0 3px 0 #e5e5e5; cursor: pointer; user-select: none; transition: all .1s ease;
+    }
+    .word-chip:active { transform: translateY(2px); box-shadow: 0 1px 0 #e5e5e5; }
+    .word-chip.placed { background: #e5e5e5; color: transparent; border-color: #e5e5e5; box-shadow: none; cursor: default; }
+    .word-chip.letter { min-width: 46px; padding: 10px 0; text-align: center; font-size: 20px; }
+    .words-line { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .word-chip.sel { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
+    .word-chip.right { background: #e7ffcf; border-color: #a4e478; color: #58a700; box-shadow: 0 3px 0 #8ad058; }
+    .word-chip.wrong { background: #ffdfe0; border-color: #ffb8b8; color: #ea2b2b; box-shadow: 0 3px 0 #ffb8b8; }
+
+    /* coppie / memory */
+    .pairs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pair-tile {
+      min-height: 62px; padding: 6px 10px;
+      border: 2px solid #e5e5e5; border-radius: 16px; background: #fff;
+      box-shadow: 0 3px 0 #e5e5e5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: #3c3c3c; text-align: center;
+      cursor: pointer; user-select: none; position: relative; transition: all .12s ease;
+      overflow-wrap: anywhere;
+    }
+    .pair-tile:active { transform: translateY(2px); box-shadow: 0 1px 0 #e5e5e5; }
+    .pair-tile.selected { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
+    .pair-tile.completed { border-color: #f0f0f0; color: #d0d0d0; box-shadow: none; cursor: default; }
+    .pair-tile.matched-active { border-color: #a4e478; background: #e7ffcf; color: #58a700; box-shadow: 0 3px 0 #8ad058; cursor: default; }
+    .pair-tile.mismatch { background: #ffdfe0; border-color: #ffb8b8; color: #ea2b2b; box-shadow: 0 3px 0 #ffb8b8; }
+    .sparkle { position: absolute; width: 7px; height: 7px; background: #78c800; transform: rotate(45deg); opacity: .65; }
+    .sp-a { top: 10px; right: 12px; } .sp-b { bottom: 10px; left: 12px; } .sp-c { top: 12px; left: 35%; }
+
+    .mem-card { min-height: 78px; font-size: 15px; }
+    .mem-card.down { background: #58cc02; border-color: #58cc02; box-shadow: 0 3px 0 #46a302; color: #fff; font-size: 26px; }
+    .mem-card.up { background: #ddf4ff; border-color: #84d8ff; color: #1899d6; box-shadow: 0 3px 0 #84d8ff; }
+    .moves { font-size: 14px; font-weight: 800; color: #afafaf; text-transform: uppercase; letter-spacing: .8px; margin-top: 16px; text-align: center; }
+
+    /* impiccato */
+    .hang { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+    .hang span {
+      width: 30px; height: 44px; border-bottom: 3px solid #3c3c3c;
+      font-size: 28px; font-weight: 900; text-align: center; text-transform: uppercase;
+    }
+    .hang.lost span { color: #ea2b2b; }
+    .lives { text-align: center; font-size: 20px; letter-spacing: 4px; color: #ff4b4b; margin-bottom: 18px; }
+    .keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .key {
+      width: 44px; height: 46px; border: 2px solid #e5e5e5; border-radius: 12px; background: #fff;
+      box-shadow: 0 3px 0 #e5e5e5; font-size: 18px; font-weight: 800; color: #4b4b4b;
+      text-transform: uppercase; cursor: pointer;
+    }
+    .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #e5e5e5; }
+    .key.hit { background: #e7ffcf; border-color: #a4e478; color: #58a700; box-shadow: none; }
+    .key.miss { background: #ffdfe0; border-color: #ffb8b8; color: #ea2b2b; box-shadow: none; }
+    .key:disabled { cursor: default; }
+
+    /* testo */
+    .text-in {
+      width: 100%; font-size: 19px; font-weight: 700; color: #3c3c3c;
+      border: 2px solid #e5e5e5; border-radius: 16px; background: #f7f7f7;
+      padding: 16px; margin-bottom: 14px; outline: none;
+    }
+    .text-in:focus { border-color: #84d8ff; background: #fff; }
+    .text-in:disabled { color: #afafaf; }
+
+    /* risultato */
+    .result { align-items: center; text-align: center; justify-content: center; gap: 10px; }
+    .result .mascot { width: 140px; }
+    .result h2 { font-size: 28px; font-weight: 900; color: #ffc800; }
+    .result p { font-size: 17px; font-weight: 700; color: #777; }
+    .stats { display: flex; gap: 12px; margin-top: 18px; width: 100%; }
+    .stat { flex: 1; border: 2px solid; border-radius: 16px; overflow: hidden; }
+    .stat b { display: block; font-size: 12px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; color: #fff; padding: 5px 0; }
+    .stat span { display: block; font-size: 22px; font-weight: 900; padding: 14px 0; }
+    .stat.y { border-color: #ffc800; } .stat.y b { background: #ffc800; } .stat.y span { color: #d9a900; }
+    .stat.r { border-color: #ff4b4b; } .stat.r b { background: #ff4b4b; } .stat.r span { color: #ff4b4b; }
+
+    /* footer */
+    .footer { padding: 14px 20px 24px; background: #fff; border-top: 2px solid #e5e5e5; }
+    .btn-main {
+      width: 100%; height: 50px; border: none; border-radius: 16px;
+      background: #58cc02; color: #fff;
+      font-size: 16px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
+      box-shadow: 0 4px 0 #46a302; cursor: pointer; transition: all .1s ease;
+    }
+    .btn-main:active { transform: translateY(3px); box-shadow: 0 1px 0 #46a302; }
+    .btn-main:disabled { background: #e5e5e5; color: #afafaf; box-shadow: none; cursor: not-allowed; transform: none; }
+    .home-indicator { width: 140px; height: 5px; background: #000; border-radius: 3px; margin: 14px auto 0; }
+
+    .drawer { padding: 18px 20px 24px; display: flex; flex-direction: column; gap: 10px; }
+    .drawer.good { background: #d7ffb8; border-top: 2px solid #b8f28b; }
+    .drawer.bad { background: #ffdfe0; border-top: 2px solid #ffb8b8; }
+    .drawer-status { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 900; }
+    .drawer.good .drawer-status { color: #58a700; }
+    .drawer.bad .drawer-status { color: #ea2b2b; font-size: 20px; }
+    .drawer-solution { font-size: 17px; font-weight: 800; color: #ea2b2b; }
+    .drawer-note { font-size: 14.5px; font-weight: 700; color: #777; }
+    .drawer.good .drawer-note { color: #58a700; }
+    .drawer .btn-main { margin-top: 6px; }
+    .drawer.bad .btn-main { background: #ff4b4b; box-shadow: 0 4px 0 #ea2b2b; }
+    .drawer.bad .btn-main:active { box-shadow: 0 1px 0 #ea2b2b; }
+
+    /* modale di uscita */
+    .modal-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,.6); z-index: 150;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay[hidden] { display: none; }
+    .quit-modal {
+      background: #fff; border-radius: 28px; padding: 28px 24px; width: 100%;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .quit-modal .mascot { width: 100px; margin-bottom: 16px; }
+    .quit-title { font-size: 19px; font-weight: 900; color: #3c3c3c; margin-bottom: 24px; line-height: 1.35; }
+    .btn-blue {
+      width: 100%; height: 50px; background: #1cb0f6; border: none; border-radius: 16px; color: #fff;
+      font-size: 15px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase;
+      box-shadow: 0 4px 0 #1899d6; cursor: pointer; margin-bottom: 14px;
+    }
+    .btn-link { background: none; border: none; color: #1cb0f6; font-size: 15px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; cursor: pointer; }
+  
+    /* ---------- controlli dati ---------- */
+    .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .ctl { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #94a3b8; }
+    .sel { background: #0f172a; color: #f8fafc; border: 1px solid #334155; border-radius: 10px; padding: 8px 10px; font-size: 13px; font-weight: 800; max-width: 180px; }
+    .header-btn.alt { background: #334155; box-shadow: 0 3px 0 #1e293b; display: inline-block; }
+    label.header-btn { cursor: pointer; }
+    .screen-item.off { opacity: .45; }
+    /* ---------- Allenamento ---------- */
+    #body.train { flex: none; }
+    .tr-bar { display: flex; gap: 8px; margin: 4px 0 6px; }
+    .tr-search { flex: 1; min-width: 0; border: 2px solid #e5e5e5; border-radius: 12px; padding: 9px 12px; font-size: 14px; font-weight: 700; color: #3c3c3c; background: #fff; }
+    .tr-toggle { border: 2px solid #e5e5e5; border-bottom-width: 4px; background: #fff; color: #1cb0f6; border-radius: 12px; padding: 0 12px; font-weight: 800; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .tr-count { font-size: 12px; font-weight: 800; color: #94a3b8; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .5px; }
+    .tr-list { display: flex; flex-direction: column; gap: 8px; }
+    .tr-card { border: 2px solid #e5e5e5; border-bottom-width: 4px; border-radius: 16px; background: #fff; }
+    .tr-card.open { border-color: #84d8ff; }
+    .tr-card.unsure { border-style: dashed; border-color: #f5c242; }
+    .tr-row { display: flex; align-items: stretch; }
+    .tr-spk { flex: none; width: 48px; border: 0; background: transparent; color: #1cb0f6; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 14px 0 0 14px; }
+    .tr-spk:disabled { color: #cbd5e1; cursor: not-allowed; }
+    .tr-spk:hover:not(:disabled) { background: #ddf4ff; }
+    .tr-head { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; background: transparent; text-align: left; padding: 10px 12px 10px 2px; cursor: pointer; font-family: inherit; }
+    .tr-txt { flex: 1; min-width: 0; }
+    .tr-it { font-size: 16px; font-weight: 800; color: #3c3c3c; overflow-wrap: anywhere; }
+    .tr-pt { font-size: 14px; font-weight: 600; color: #777; margin-top: 2px; overflow-wrap: anywhere; }
+    .tr-chev { color: #afafaf; font-size: 16px; transition: transform .15s; }
+    .tr-card.open .tr-chev { transform: rotate(180deg); }
+    .tr-box { padding: 2px 14px 14px 14px; border-top: 2px solid #f0f0f0; margin: 0 2px; }
+    .tr-lab { font-size: 11px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #1cb0f6; margin: 12px 0 3px; }
+    .tr-sp, .tr-ex { font-size: 14px; font-weight: 600; color: #3c3c3c; line-height: 1.4; }
+    .tr-ex { font-weight: 800; }
+    .tr-expt { font-size: 13px; color: #777; margin: 2px 0 6px; }
+    .tr-warn { margin-top: 10px; font-size: 13px; font-weight: 800; color: #b45309; background: #fef3c7; border-radius: 10px; padding: 8px 10px; }
+    .tr-mini { border: 2px solid #e5e5e5; border-bottom-width: 3px; background: #fff; color: #1cb0f6; border-radius: 10px; padding: 5px 10px; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 4px; }
+    .tr-mini:disabled { color: #cbd5e1; cursor: not-allowed; }
+    .tr-actions { margin-top: 10px; }
+    .tr-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .tr-tag { font-size: 11px; font-weight: 800; color: #777; background: #f3f4f6; border-radius: 8px; padding: 3px 8px; }
+    .tr-none { color: #777; font-weight: 700; text-align: center; padding: 20px 0; }
+    /* ---------- navigazione Home / Allenamento ---------- */
+    .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px 9px; border-radius: 14px; border: 2px solid #334155; border-bottom-width: 4px; background: #0f172a; color: #94a3b8; font-weight: 900; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .tab:hover { background: #334155; color: #fff; }
+    .tab.on { background: #1e3a5f; border-color: #38bdf8; color: #fff; }
+    .ico { display: block; image-rendering: auto; -webkit-user-drag: none; user-select: none; }
+    .tab-ico { height: 30px; width: auto; }
+    .sess { display: flex; align-items: center; gap: 10px; margin: 14px 4px 2px; padding: 8px 12px; border-radius: 14px; background: linear-gradient(90deg, #3b2f0b, #1e293b 70%); border: 1px solid #5b4a14; }
+    .sess:first-of-type { margin-top: 4px; }
+    .sess-ico { width: 30px; height: auto; flex: none; }
+    .sess-name { font-size: 15px; font-weight: 900; color: #fde68a; }
+    .sess-sub { font-size: 12px; font-weight: 700; color: #a8a29e; }
+    .screen-num.ex { background: transparent; width: 32px; height: 30px; }
+    .ex-ico { width: 30px; height: auto; }
+    .screen-item.active .screen-num.ex { background: transparent; }
+    .cover { margin: 0 0 14px; padding: 12px; border-radius: 14px; background: #0f172a; border: 1px solid #334155; font-size: 13px; color: #cbd5e1; }
+    .cover-t { font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
+    .cover-d { margin-top: 8px; } .cover-d summary { cursor: pointer; color: #fbbf24; font-weight: 800; }
+    .cover-r { margin-top: 6px; font-size: 12px; color: #94a3b8; } .cover-r b { color: #e2e8f0; }
+    .cover-b { margin-top: 10px; background: transparent; color: #94a3b8; border: 1px solid #475569; border-radius: 10px; padding: 6px 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+    @media (max-width: 900px) { header { flex-wrap: wrap; gap: 10px; } .controls { justify-content: flex-start; } }
+  
+    /* ======================================================
+       APP: solo il telefono
+       ====================================================== */
+    body.app { background: #0b1120; min-height: 100vh; min-height: 100dvh; }
+    body.app .app-layout { display: block; height: 100vh; height: 100dvh; overflow: hidden; }
+    body.app .stage { height: 100%; padding: 16px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    body.app .preview-frame { width: 430px; height: 932px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); min-height: 0; max-width: 100%; }
+    @media (max-width: 520px) {
+      body.app .stage { padding: 0; }
+      body.app .preview-frame { width: 100%; height: 100vh; height: 100dvh; max-height: none; border: 0; border-radius: 0; box-shadow: none; }
+    }
+
+    /* barra superiore di Home e Allenamento */
+    .apptop { display: none; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px 6px; }
+    body:not(.mode-ex) .apptop { display: flex; }
+    body:not(.mode-ex) .lesson-bar, body:not(.mode-ex) .title, body:not(.mode-ex) #footer { display: none; }
+    body.mode-ex .tabbar { display: none; }
+    .apptop-t { font-size: 26px; font-weight: 900; color: #3c3c3c; line-height: 1.1; }
+    .apptop-s { font-size: 13px; font-weight: 700; color: #afafaf; margin-top: 3px; }
+    .gear { width: 44px; height: 44px; border-radius: 14px; border: 2px solid #e5e5e5; border-bottom-width: 4px; background: #fff; color: #777; cursor: pointer; display: flex; align-items: center; justify-content: center; flex: none; }
+    .gear:hover { background: #f7f7f7; }
+    .gear:active { transform: translateY(2px); border-bottom-width: 2px; }
+    body:not(.mode-ex) .content { padding-top: 8px; }
+
+    /* barra di navigazione in basso */
+    .tabbar { display: flex; gap: 8px; padding: 8px 14px 20px; background: #fff; border-top: 2px solid #e5e5e5; flex: none; }
+    .tabb { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px; border-radius: 14px; border: 2px solid transparent; background: none; color: #afafaf; font-family: inherit; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; cursor: pointer; }
+    .tabb .ico { height: 30px; width: auto; filter: grayscale(1) opacity(.55); transition: filter .15s; }
+    .tabb.on { background: #ddf4ff; border-color: #84d8ff; color: #1cb0f6; }
+    .tabb.on .ico { filter: none; }
+    .tabb:not(.on):hover { background: #f7f7f7; }
+    .ico { display: block; -webkit-user-drag: none; user-select: none; }
+
+    /* Home: sessioni e esercizi */
+    .hm-sess { display: flex; align-items: center; gap: 12px; margin: 18px 0 8px; padding: 10px 14px; border-radius: 16px; background: #fff7d6; border: 2px solid #ffe08a; }
+    .hm-sess:first-child { margin-top: 4px; }
+    .hm-sess .ico { width: 34px; height: auto; flex: none; }
+    .hm-sess-n { font-size: 17px; font-weight: 900; color: #8a6100; }
+    .hm-sess-s { font-size: 12px; font-weight: 800; color: #b58a1b; text-transform: uppercase; letter-spacing: .5px; }
+    .hm-list { display: flex; flex-direction: column; gap: 8px; }
+    .hm-ex { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 14px; border-radius: 16px; border: 2px solid #e5e5e5; border-bottom-width: 4px; background: #fff; cursor: pointer; font-family: inherit; color: #3c3c3c; }
+    .hm-ex:hover { background: #f7f7f7; }
+    .hm-ex:active { transform: translateY(2px); border-bottom-width: 2px; }
+    .hm-ex.off { opacity: .5; }
+    .hm-ex .ico { width: 36px; height: auto; flex: none; }
+    .hm-ex-t { flex: 1; min-width: 0; }
+    .hm-ex-n { font-size: 16px; font-weight: 800; }
+    .hm-ex-d { font-size: 12px; font-weight: 600; color: #777; margin-top: 1px; }
+    .hm-bar { height: 6px; border-radius: 3px; background: #e5e5e5; margin-top: 7px; overflow: hidden; }
+    .hm-bar > i { display: block; height: 100%; background: #58cc02; border-radius: 3px; }
+    .hm-note { text-align: center; font-size: 12px; font-weight: 700; color: #afafaf; margin: 18px 0 6px; }
+    .btn-link.home-link { display: block; margin: 12px auto 0; }
+
+    /* impostazioni */
+    .sheet-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.5); z-index: 160; display: flex; align-items: flex-end; }
+    .sheet-overlay[hidden] { display: none; }
+    .sheet { width: 100%; max-height: 88%; overflow-y: auto; background: #fff; border-radius: 26px 26px 0 0; padding: 20px 20px 28px; display: flex; flex-direction: column; gap: 14px; }
+    .sheet-h { display: flex; align-items: center; justify-content: space-between; font-size: 20px; font-weight: 900; color: #3c3c3c; }
+    .sheet-x { border: 0; background: none; font-size: 32px; line-height: 1; color: #afafaf; cursor: pointer; padding: 0 4px; }
+    .sheet-status { font-size: 13px; font-weight: 700; color: #777; margin-top: -6px; }
+    .fld { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #afafaf; }
+    .fld select { width: 100%; border: 2px solid #e5e5e5; border-radius: 12px; padding: 11px 12px; font-size: 15px; font-weight: 700; color: #3c3c3c; background: #fff; font-family: inherit; text-transform: none; letter-spacing: 0; }
+    .btn-up { display: block; text-align: center; padding: 13px; border-radius: 14px; border: 2px solid #84d8ff; border-bottom-width: 4px; background: #ddf4ff; color: #1cb0f6; font-weight: 900; font-size: 14px; letter-spacing: .6px; text-transform: uppercase; cursor: pointer; }
+    #cover-box .cover { margin: 0; background: #f7f7f7; border: 2px solid #e5e5e5; color: #3c3c3c; }
+    #cover-box .cover-t { color: #afafaf; }
+    #cover-box .cover-d summary { color: #b45309; }
+    #cover-box .cover-r { color: #777; } #cover-box .cover-r b { color: #3c3c3c; }
+    #cover-box .cover-b { color: #777; border-color: #cfcfcf; background: #fff; }
+  </style>
+</head>
+<body class="app">
+
+  <div class="app-layout">
+
+    <main class="stage">
+      <div class="preview-frame">
+        <div class="phone" id="phone">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span class="brand-logo">ginestra</span>
+            <div class="status-icons">
+              <span>5G</span>
+              <svg width="22" height="12" viewBox="0 0 24 12" fill="#000">
+                <rect x="0" y="0" width="20" height="12" rx="3" stroke="#000" stroke-width="2" fill="none"/>
+                <rect x="2" y="2" width="16" height="8" rx="1" fill="#000"/>
+                <path d="M22 4v4" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="apptop" id="apptop">
+            <div>
+              <div class="apptop-t" id="top-title">Home</div>
+              <div class="apptop-s" id="top-sub"></div>
+            </div>
+            <button class="gear" id="gear" type="button" aria-label="Impostazioni">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+          </div>
+
+          <div class="lesson-bar">
+            <button class="close-btn" id="close" type="button" aria-label="Esci">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <div class="progress-bg"><div class="progress-fill" id="prog"></div></div>
+            <div class="heart-stat">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4b4b" aria-hidden="true">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span id="hearts">5</span>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="title" id="title"></div>
+            <div id="body"></div>
+          </div>
+
+          <div id="footer"></div>
+
+          <nav class="tabbar" id="tabbar" aria-label="Navigazione"></nav>
+
+          <div class="sheet-overlay" id="sheet" hidden>
+            <div class="sheet" role="dialog" aria-label="Impostazioni">
+              <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
+              <div class="sheet-status" id="data-status"></div>
+              <label class="fld">Foglio<select id="sel-foglio"></select></label>
+              <label class="fld">Domande per lezione<select id="sel-n"><option value="5">5</option><option value="8">8</option><option value="10">10</option><option value="20">20</option><option value="tutte">Tutte le voci</option></select></label>
+              <label class="btn-up" for="csv-file">Carica un CSV</label><input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+              <div id="cover-box"></div>
+            </div>
+          </div>
+
+          <div class="modal-overlay" id="modal" hidden>
+            <div class="quit-modal">
+              <div class="mascot" id="modal-mascot"></div>
+              <div class="quit-title">Aspetta, non andare! Perderai i progressi se esci adesso</div>
+              <button class="btn-blue" id="keep" type="button">Continua a imparare</button>
+              <button class="btn-link" id="end" type="button">Termina la sessione</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+/* ---------- utilità ---------- */
+function h(tag, attrs) {
+  var e = document.createElement(tag);
+  attrs = attrs || {};
+  Object.keys(attrs).forEach(function (k) {
+    var v = attrs[k];
+    if (k === 'class') e.className = v;
+    else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+  });
+  for (var i = 2; i < arguments.length; i++) {
+    [].concat(arguments[i]).forEach(function (x) {
+      if (x == null || x === false) return;
+      e.append(x.nodeType ? x : document.createTextNode(x));
+    });
+  }
+  return e;
+}
+function $(id) { return document.getElementById(id); }
+function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+var ART = /^(il |lo |la |l'|i |gli |le |un |una |uno )/i;
+function norm(s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’‘`´]/g, "'").replace(/\s+/g, ' ').trim(); }
+function noArt(s) { return s.replace(ART, ''); }
+function lev(a, b) {
+  var m = a.length, n = b.length, d = [], i, j;
+  for (i = 0; i <= m; i++) d[i] = [i];
+  for (j = 1; j <= n; j++) d[0][j] = j;
+  for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
+function speak(text, rate) {
+  if (!('speechSynthesis' in window)) return false;
+  try {
+    var u = new SpeechSynthesisUtterance(text); u.lang = 'it-IT'; u.rate = rate || .85;
+    var v = (speechSynthesis.getVoices() || []).filter(function (x) { return x.lang && x.lang.toLowerCase().indexOf('it') === 0; })[0];
+    if (v) u.voice = v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
+  } catch (e) { return false; }
+}
+function svg(html) { var d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
+
+var SPEAKER = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+function mascotSvg(sad) {
+  return '<svg viewBox="0 0 100 110" fill="none">' +
+    '<ellipse cx="50" cy="102" rx="26" ry="5" fill="#e5e5e5"/>' +
+    '<path d="M22 30L30 6L44 22Z" fill="#58cc02"/><path d="M78 30L70 6L56 22Z" fill="#58cc02"/>' +
+    '<ellipse cx="50" cy="62" rx="38" ry="40" fill="#58cc02"/>' +
+    '<ellipse cx="50" cy="78" rx="24" ry="20" fill="#89e219"/>' +
+    '<ellipse cx="36" cy="46" rx="13" ry="15" fill="#fff"/><ellipse cx="64" cy="46" rx="13" ry="15" fill="#fff"/>' +
+    (sad
+      ? '<path d="M28 48C32 43 38 43 42 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/><path d="M58 48C62 43 68 43 72 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>' +
+        '<path d="M30 56C30 56 27 63 27 68C27 72 30 74 33 74C36 74 39 72 39 68C39 63 36 56 36 56Z" fill="#1cb0f6"/><path d="M70 56C70 56 67 63 67 68C67 72 70 74 73 74C76 74 79 72 79 68C79 63 76 56 76 56Z" fill="#1cb0f6"/>'
+      : '<ellipse cx="38" cy="48" rx="6" ry="8" fill="#3c3c3c"/><ellipse cx="62" cy="48" rx="6" ry="8" fill="#3c3c3c"/><circle cx="40" cy="45" r="2" fill="#fff"/><circle cx="64" cy="45" r="2" fill="#fff"/>') +
+    '<polygon points="50,58 42,68 58,68" fill="#ff9600"/>' +
+    '<ellipse cx="34" cy="100" rx="9" ry="4" fill="#ff9600"/><ellipse cx="66" cy="100" rx="9" ry="4" fill="#ff9600"/>' +
+    '</svg>';
+}
+function mascot(sad) { var d = h('div', { class: 'mascot', 'aria-hidden': 'true' }); d.innerHTML = mascotSvg(sad); return d; }
+function bubble(label, text, audioText) {
+  var inner = h('div', {}, label ? h('span', { class: 'bubble-label' }, label) : null, text);
+  var kids = [];
+  if (audioText) {
+    var ok = 'speechSynthesis' in window;
+    var b = h('button', { class: 'audio-btn', type: 'button', disabled: !ok, 'aria-label': 'Ascolta', onclick: function () { speak(audioText, .85); } });
+    b.innerHTML = SPEAKER; kids.push(b);
+  }
+  kids.push(inner);
+  return h('div', { class: 'speaker-section' }, mascot(), h('div', { class: 'speech-bubble' }, kids));
+}
+
+/* ---------- elementi riutilizzabili ---------- */
+/* scelta multipla: selezione + CONTROLLA. opts: {layout:'col'|'grid'|'two', onSelect(c)} */
+function choices(item, ctx, list, answer, explain, opts) {
+  opts = opts || {};
+  var cls = opts.layout === 'grid' ? 'options-grid' : opts.layout === 'two' ? 'options-two' : 'options-col';
+  var box = h('div', { class: cls }), sel = null;
+  var order = opts.fixed ? list : shuffle(list);
+  var cards = order.map(function (c) {
+    var b = h('button', { class: 'choice-card', type: 'button' }, c);
+    b.addEventListener('click', function () {
+      if (ctx.isDone()) return;
+      cards.forEach(function (x) { x.classList.remove('selected'); });
+      b.classList.add('selected'); sel = c;
+      if (opts.onSelect) opts.onSelect(c);
+      ctx.ready(function () { return { ok: sel === answer, solution: answer, note: explain }; });
+    });
+    return b;
+  });
+  box.append.apply(box, cards);
+  ctx.after(function (ok) {
+    cards.forEach(function (x) {
+      x.disabled = true;
+      if (x.textContent === answer) { x.classList.remove('selected'); x.classList.add('right'); }
+      else if (x.classList.contains('selected')) { x.classList.remove('selected'); x.classList.add('wrong'); }
+    });
+    if (opts.onDone) opts.onDone(ok);
+  });
+  return box;
+}
+
+/* frase con spazio vuoto */
+function blankSentence(before, after) {
+  var bl = h('span', { class: 'blank' }, ' ');
+  return { el: h('p', { class: 'sentence' }, before, bl, after), blank: bl };
+}
+
+/* costruttore: lettere o parole da mettere in ordine */
+function builder(item, ctx, join, letter) {
+  var order, placed = [];
+  do { order = shuffle(item.tokens.map(function (t, k) { return { t: t, k: k }; })); }
+  while (order.length > 1 && order.every(function (o, k) { return o.k === k; }));
+  var line = h('div', { class: 'answer-line-area' }), bank = h('div', { class: 'word-bank' });
+  var target = item.tokens.join(join);
+  var chips = order.map(function (o) {
+    var c = h('button', { class: 'word-chip' + (letter ? ' letter' : ''), type: 'button' }, o.t);
+    c.addEventListener('click', function () {
+      if (ctx.isDone()) return;
+      var i = placed.indexOf(o);
+      if (i >= 0) placed.splice(i, 1); else placed.push(o);
+      draw();
+    });
+    return c;
+  });
+  var ghosts = order.map(function (o) { return h('div', { class: 'word-chip placed' + (letter ? ' letter' : '') }, o.t); });
+  function draw() {
+    line.replaceChildren.apply(line, placed.map(function (o) { return chips[order.indexOf(o)]; }));
+    bank.replaceChildren.apply(bank, order.map(function (o, i) { return placed.indexOf(o) >= 0 ? ghosts[i] : chips[i]; }));
+    if (placed.length === order.length) {
+      ctx.ready(function () {
+        var s = placed.map(function (o) { return o.t; }).join(join);
+        return { ok: s === target, solution: target };
+      });
+    } else ctx.ready(null);
+  }
+  draw();
+  return [line, bank];
+}
+
+/* risposta scritta (Scrivi la parola e Dettato) */
+function judge(input, answer) {
+  var n = norm(input), a = norm(answer), typedArt = ART.test(n);
+  if (n === a || (noArt(n) === noArt(a) && !typedArt))
+    return { ok: true, note: ART.test(a) && !typedArt ? "Con l'articolo: " + answer + '.' : '' };
+  if (noArt(n) === noArt(a)) return { ok: false, solution: answer, note: 'Parola giusta, articolo sbagliato.' };
+  if (lev(noArt(n), noArt(a)) <= 2) return { ok: false, solution: answer, note: 'Quasi!' };
+  return { ok: false, solution: answer };
+}
+function typed(item, ctx) {
+  var input = h('input', { class: 'text-in', type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Scrivi in italiano', 'aria-label': 'La tua risposta' });
+  input.addEventListener('input', function () {
+    ctx.ready(input.value.trim() ? function () { return judge(input.value, item.answer); } : null);
+  });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ctx.check(); } });
+  setTimeout(function () { if (!ctx.isDone()) input.focus(); }, 50);
+  return input;
+}
+
+var ICON = {"stella": "data:image/png;base64,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", "peso": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAAAfCAYAAABgfwTIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAA/9JREFUeAG1V81u20YQniElC5RpgG4vRe20LHIq+gP7UKDOST4EPdp8gsRAD71ZfgJJTxAF6D1+AzkPUNiBD2rRg5xDgR4CRHZlNy3yo8SyFCsiJ7Ok1qQkkpFM5gMEc3dWw0+zM9+MEVLCF7VO0UZlGwFMAmgiQrW1kb8P1wBCCrjxsHuPCIrj+4RO9XRD3xHPRu2VMQ/ZTQQ0bYCjf635PfhYpJZqnRVEpSHXn2uey7MeDZnZ6wMYNFXM7S9paEqbiKZNl+vPrMXmuM8MJAT/8s0goe8MxX3OogPHXX41qiWV8FgQGrOZGcw94OX6uE8FEkIBavsEfdxcUEBT3ccCR/JOlG25dl6Y9JkQDqhH8vmUr+V84F1blj3f1H33kTaOJKRNqmVpB+z5QK7/fk2+cSxjI2wFzsu7wXOpVJ9Z65k2Og0CNMT6kzmEhSxHpwswIBo5G2YTSX9Bl6tta9FNhdBICc1Z2us+Xd7rkvv3YXc7hhM0La3J/q806WWf4PiCJghF2YS26ZApBtajmEZzwmCyDtk491RGa3ZQu0P9r0S0RiIlNEcSEuUtNcdlT0oxrFIkmuwMCStwbaAxr2TdpB8hJTVH6o34fJn3iRGq9+Lcnlj5ajDpZ6Y1/OEjpKTmRGiK2F/haBbDHDYaDeOPer1UMp6sQALw9a+MkJKaE6c3iFgSfSz4vfrhYaH/9q1oNeXvcx3jm7kOJIH7NvESTyucgihPsRetN/7d1+t18/d6fV/JZPZ5acoTP+utRxhQ+lmQBXUPP6u9MkWzxIBTiTi9+WWhtXtbe77JofOjRtTmU5Ufb92qLtcuymwrwSwgu9KyFsoZFbLlvArmD596V/TnCwd6tndGaMrLfvj3Dy+Nu7fzLwJ86H5O08qrq6tuhDLQr9owt/0hieDi2kWyH4vUYUIHYk9REDdEtWmq9/nWmK7z/NXXYb+3KNg8crjTc3SKkpDAtBLhMKETS6967cqDy+Cs5x8SVxaUgTj8+uZG+6f/vt5cW1s7CLNPIxEYEkmFQDnq2QRPzp2rzcXctC0RjWB7CAVBJd5MExOokiHYEpVy0iU3h4QSnHUJpgbP5aJYoszutZATOqsT759a+tEEKdlM3zlekv/2zIb/L2cgxdEaTpAQTUwvKuTs4FBuuCiOmdAOEwqNsntPXjPN8egxKQtTg2dxWT1J4Sa6qBQi3IIE4L74AFLCVf2PT5CzQogvN9MypIARURJJDwnA0boDKWCElEj6qEqZBpgkJwOYkO8MvCtHNVNRPXGNVlZX6qRi2wM5lbjW4SSIciwpAdEekJwtFpTHLpehrvxj6btu6wh5+VAIq5ACrv0vlsnz/IDHZzGteh3eb6hJ8R46F97DflP8RgAAAABJRU5ErkJggg==", "libretto": "data:image/png;base64,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", "casa": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAdCAYAAADPa766AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAsZJREFUeAGtls9qE1EUxr87SUhMUSOlIEVsqqgLBc3CWjc1LqylhWr3ovYFJDuXmjfoGySIe4uL0lLQycpaFyZFXFQ040KhiBgLGmPNXM+dxNok99zMpPktMn/OzJkv3zn3zAjsAzk9/QBCZBoHckEsLWXRIwI9IKemkrCsJyTiQmtAOnDdq2J52UFALAREzsxkEAq97hChECJJsbLnVEB8O+K5EArlaDft8xYb9fq8X3d8ObLrgn8R8K61rOfkzl0/Fxsdkel0AvF4jiy/yV50uNrYfj9gSCTz1DtZkzusECqF+kc5r+4cl8rAxDsgtgOsnAXWkyYxDv1maWXl4UeI58LAgGq2DDiUC7MlIPm19bwzCDw9b3bHdRdQrWaFbVdYIYFd0FGJA4VTwMYxNkXTnTlyp9gixJcL0T/ADbrvzBZ8USIhhdPdeufhvyEo2OG0lxEqwewGkPiJQPh1Rw1BWppqWepFKBeubDbK0caP7QherQyj8iWGnVoIwye3kUpvIX5IU7KXow13amEw2EqI1IYMLigRq49PeAL2EonWMXnrg16McufROFsqNdDsjrOTb4Hba2wpivbRDhEKdW6dXNKict171mh0TUoLkcg87ZS8QykLdJzCWPkjDHx+f5CNqVIZmdhUzxhte+ZcWCwuOmjrEXnfc+kOl0uVQOeIgju/i0BR90zuXePAQGKoxsZU0xpxNa3ACrFQhIGL1z95rrQTibreyjEi9Lm17xr5AkmKlGFArRzVtKpflIDE0C+MkUDtivlPRYzjiG8hnpg1fKNNAv1EoiAu6z8l+O8RYe6THrG5ADvqqKlKJIYd+29Wgd+aMTOSAgaPI7AQ3hFpbtieiPE5eUeEWci5awiKI1KocEHekVifHXGbkzSokKb6CvqHjV6ENCmgX3QpdTchDvpFl1KHTUHUkSep+y+PpImaMuf5CwyHBH+LHnGIAAAAAElFTkSuQmCC"};
+/* ======================================================
+   DATI: il glossario (CSV) è l'unica fonte degli esercizi
+   ====================================================== */
+var CSV_TEXT = "Personaggio,Parola/Espressione,Nota,Spiegazione,Tags,Varianti,Tipo,Articolo,Lemma,Traduzione,Trad_Fonte,Frase,Frase_PT,Vuoto,Alternative,Confondibile con,Escludi da\nGianni Rodari,L'impugnatura,A empunhadura (o punho),\"La parte di un oggetto che si stringe in mano per usarlo, come una spada o una racchetta.\",\"sostantivo, femminile, oggetti, sport, presa, attrezzi\",-,parola,l',impugnatura,A empunhadura,quaderno,Tieni bene l'impugnatura della racchetta.,Segure bem a empunhadura da raquete.,impugnatura,armatura;apertura;avventura,,\nGianni Rodari,Il manico,O cabo,\"La parte di un utensile che serve per afferrarlo, come quello della pentola o della scopa.\",\"sostantivo, maschile, oggetti, cucina, utensili, casa\",-,parola,il,manico,O cabo,quaderno,Il manico della scopa si è rotto.,O cabo da vassoura quebrou.,manico,coperchio;cassetto;bicchiere,,\nGianni Rodari,Hanno creato un tutt'uno,Eles formaram um todo único,Si sono uniti così bene da formare un'unica cosa.,\"espressione, concetti astratti, passato prossimo, unione, frase d'esempio\",-,frase,,,,,Hanno creato un tutt'uno,Eles formaram um todo único,tutt'uno,tuttofare;tutta;tuttavia,,\nGianni Rodari,Metto le mani avanti,Essere pronti alle critiche e conseguenze,Giustificarsi in anticipo per evitare critiche o problemi.,\"espressione, concetti astratti, modo di dire, prudenza, figurato\",-,espressione,,,Prevenir-se antes das críticas,aggiunta,Metto le mani avanti: forse il progetto non è perfetto.,Eu me previno: talvez o projeto não seja perfeito.,avanti,indietro;sopra;sotto,,\nGianni Rodari,Fare lo spello,Ficar babando de vontade (provvisoria),Significato incerto: nella frase d'esempio sembra indicare un desiderio intenso verso qualcosa.,\"espressione, sentimenti ed emozioni, desiderio, informale, da verificare\",\"Lettura incerta: la parola dopo \"\"lo\"\" non è leggibile con certezza\",espressione,,,,,,,,,,\nGianni Rodari,Fare delle commissioni,Compiti quotidiani fuori casa,\"Sbrigare piccole faccende fuori casa, come andare in posta o fare acquisti.\",\"espressione, azioni e movimenti, vita quotidiana, faccende, commercio\",-,espressione,,,Fazer recados,aggiunta,Questa mattina devo fare delle commissioni in centro.,Esta manhã preciso fazer uns recados no centro.,commissioni,colazioni;decisioni;canzoni,,\nGianni Rodari,La maglietta a maniche corte,A camiseta de manga curta,Indumento per il busto con maniche che arrivano sopra il gomito.,\"sostantivo, femminile, oggetti, abbigliamento, estate, quotidiano\",-,parola,la,maglietta a maniche corte,A camiseta de manga curta,quaderno,D'estate porto volentieri una maglietta a maniche corte.,No verão uso com prazer uma camiseta de manga curta.,maglietta a maniche corte,sciarpa di lana;giacca a vento;maglia di lana,,\nGianni Rodari,Una città quasi rasa al suolo,Distruggere tutto,\"Una città quasi completamente distrutta, con gli edifici abbattuti.\",\"espressione, luoghi e ambienti, modo di dire, distruzione, guerra, figurato\",-,espressione,,,Uma cidade quase arrasada,aggiunta,Dopo la guerra restava una città quasi rasa al suolo.,Depois da guerra restava uma cidade quase arrasada.,rasa al suolo,piena di gente;tutta illuminata;molto rumorosa,,\nGianni Rodari,Atrocità,Atrocidade,Azione molto crudele e spietata.,\"sostantivo, femminile, concetti astratti, cognato, violenza, registro formale\",-,parola,l',atrocità,A atrocidade,quaderno,L'atrocità del gesto ha scioccato tutti.,A atrocidade do gesto chocou todos.,atrocità,autorità;università;attività,,\nGianni Rodari,Saltare all'occhio,Saltar aos olhos,Essere così evidente da notarsi subito.,\"espressione, concetti astratti, modo di dire, cognato, evidenza, figurato\",-,espressione,,,Saltar aos olhos,quaderno,Il suo errore saltava subito all'occhio.,O erro dele saltava logo aos olhos.,occhio,orecchio;orizzonte;ombrello,,\nGianni Rodari,Il bambino faceva lo spello al giocattolo nuovo in vetrina,A criança ficava babando pelo brinquedo novo na vitrine (provvisoria),Il bambino guardava il giocattolo con grande desiderio (interpretazione provvisoria).,\"espressione, sentimenti ed emozioni, persone e ruoli, frase d'esempio, imperfetto, da verificare\",\"Vedi \"\"Fare lo spello\"\"\",frase,,,,,,,,,,\nGianni Rodari,Puoi fare lo spelling del tuo nome,Você pode soletrar o seu nome,Dire il proprio nome lettera per lettera.,\"espressione, concetti astratti, frase d'esempio, anglicismo, alfabeto, comunicazione\",-,frase,,,,,Puoi fare lo spelling del tuo nome,Você pode soletrar o seu nome,spelling,specchio;spettacolo;sbaglio,,\nGianni Rodari,Padella,Larghe e poco profonde,\"Recipiente basso e largo con un manico lungo, usato per friggere e saltare.\",\"sostantivo, femminile, oggetti, cucina, utensili, cottura\",-,parola,la,padella,A frigideira,aggiunta,Per friggere le uova uso la padella larga e bassa.,Para fritar os ovos uso a frigideira larga e rasa.,padella,zanzariera;persiana;valigia,pentola,\nGianni Rodari,Pentola,Alte e profonde,\"Recipiente alto e capiente, usato per bollire e cuocere.\",\"sostantivo, femminile, oggetti, cucina, utensili, cottura\",-,parola,la,pentola,A panela,aggiunta,Per cuocere la pasta uso la pentola alta e profonda.,Para cozinhar a massa uso a panela alta e funda.,pentola,busta;valigia;scrivania,padella,\nGianni Rodari,La muffa,O mofo,Strato di funghi che si forma su cibo o pareti umide.,\"sostantivo, femminile, natura e animali, casa, umidità, igiene\",-,parola,la,muffa,O mofo,quaderno,Sul pane vecchio è comparsa la muffa.,No pão velho apareceu mofo.,muffa,nebbia;vernice;ruggine,,\nGianni Rodari,Il faro teatrale,O refletor de teatro,Proiettore luminoso che illumina il palco.,\"sostantivo, maschile, oggetti, teatro, luci, spettacolo\",-,parola,il,faro teatrale,O refletor de teatro,quaderno,Il faro teatrale illumina l'attore sul palco.,O refletor de teatro ilumina o ator no palco.,faro,sipario;costume;camerino,,\nGianni Rodari,Il costume dei protagonisti,O figurino dos protagonistas,L'abito di scena indossato dai personaggi principali.,\"sostantivo, maschile, oggetti, persone e ruoli, falsi amici, teatro, abbigliamento\",-,parola,il,costume dei protagonisti,O figurino dos protagonistas,quaderno,Il costume dei protagonisti è stato cucito a mano.,O figurino dos protagonistas foi costurado à mão.,costume,faro;sipario;camerino,,\nGianni Rodari,Il camerino,\"O camarim (o \"\"o provador\"\", a seconda del contesto)\",\"Stanza dove gli artisti si preparano, oppure cabina dove si provano i vestiti in negozio.\",\"sostantivo, maschile, luoghi e ambienti, falsi amici, teatro, negozio\",-,parola,il,camerino,O camarim,quaderno,Prima dello spettacolo l'attrice aspetta nel camerino.,Antes do espetáculo a atriz espera no camarim.,camerino,sipario;biglietto;copione,,\nGianni Rodari,Le zollette di zucchero,Os cubinhos de açúcar,\"Piccoli cubetti di zucchero pressato, usati per addolcire caffè e tè.\",\"sostantivo, plurale, cibo e bevande, oggetti, diminutivo, colazione\",-,parola,le,zollette di zucchero,Os cubinhos de açúcar,quaderno,Nel tè metto due zollette di zucchero.,No chá coloco dois cubinhos de açúcar.,zollette,fettine;gocce;ruote,,\nGianni Rodari,Borsa marsupio,A pochete,Borsetta che si porta legata in vita.,\"sostantivo, femminile, oggetti, abbigliamento, accessori, viaggio\",-,parola,la,borsa marsupio,A pochete,quaderno,In viaggio porto la borsa marsupio legata in vita.,Em viagem levo a pochete amarrada na cintura.,borsa marsupio,busta della spesa;valigia pesante;scatola vuota,,\nGianni Rodari,La busta della spesa,A sacola de compras,Sacchetto in cui si mettono gli acquisti al supermercato.,\"sostantivo, femminile, oggetti, spesa, supermercato, quotidiano\",-,parola,la,busta della spesa,A sacola de compras,quaderno,Al supermercato metto la frutta nella busta della spesa.,No supermercado coloco a fruta na sacola de compras.,busta,scarpa;vite;tazza,,\nGianni Rodari,Il reparto ortofrutta,A seção de hortifrúti,La zona del negozio dove si vendono frutta e verdura.,\"sostantivo, maschile, luoghi e ambienti, cibo e bevande, supermercato, spesa\",-,parola,il,reparto ortofrutta,A seção de hortifrúti,quaderno,Le mele si trovano nel reparto ortofrutta.,As maçãs ficam na seção de hortifrúti.,reparto,garage;teatro;cinema,,\nGianni Rodari,I chicchi di caffè,Os grãos de café,\"I semi della pianta del caffè, da macinare per preparare la bevanda.\",\"sostantivo, plurale, cibo e bevande, natura e animali, caffè, colazione\",-,parola,i,chicchi di caffè,Os grãos de café,quaderno,Macino i chicchi di caffè ogni mattina.,Moo os grãos de café toda manhã.,chicchi,sassi;fili;cubetti,,\nGianni Rodari,Il colino,\"O filtro (anche \"\"o coador\"\")\",Utensile a rete o con fori per separare i liquidi dai solidi.,\"sostantivo, maschile, oggetti, cucina, utensili, diminutivo\",-,parola,il,colino,O filtro,quaderno,Scolo la pasta con il colino.,Escorro a massa com o coador.,colino,cavatappi;cacciavite;manico,,\nGianni Rodari,La persiana,A persiana,Imposta di legno o plastica a lamelle che protegge la finestra dal sole.,\"sostantivo, femminile, oggetti, casa, finestra, cognato\",-,parola,la,persiana,A persiana,quaderno,La persiana protegge la finestra dal sole.,A persiana protege a janela do sol.,persiana,scodella;muffa;busta,zanzariera,\nGianni Rodari,La tapparella,A persiana de enrolar,Serranda avvolgibile che copre la finestra.,\"sostantivo, femminile, oggetti, casa, finestra, da verificare\",\"Sul foglio sembra scritto \"\"topparella\"\"\",parola,la,tapparella,A persiana de enrolar,quaderno,,,,,,\nGianni Rodari,La zanzariera,\"O mosquiteiro, a tela mosquiteira\",Rete sottile applicata alla finestra o al letto per tenere lontane le zanzare.,\"sostantivo, femminile, oggetti, casa, finestra, insetti\",-,parola,la,zanzariera,O mosquiteiro,quaderno,La zanzariera tiene lontane le zanzare dalla finestra.,O mosquiteiro mantém os mosquitos longe da janela.,zanzariera,tazza;carta;scarpa,persiana,\nGianni Rodari,Lo spremiagrumi,Espremedor de frutas,\"Utensile per estrarre il succo da arance, limoni e altri agrumi.\",\"sostantivo, maschile, oggetti, cucina, utensili, composto\",-,parola,lo,spremiagrumi,O espremedor de frutas,quaderno,Con lo spremiagrumi preparo il succo d'arancia.,Com o espremedor de frutas preparo o suco de laranja.,spremiagrumi,scolapasta;stuzzicadenti;zaino,,\nGianni Rodari,Inginocchiato,Ajoelhado,Con le ginocchia appoggiate a terra.,\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, cognato\",-,parola,,inginocchiato,Ajoelhado,quaderno,Prega inginocchiato davanti all'altare.,Reza ajoelhado diante do altar.,inginocchiato,stravaccato;cucinato;spedito,,\nGianni Rodari,Appoggiato,Apoiado,\"Sostenuto da qualcosa, con il peso poggiato su una superficie.\",\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, cognato\",-,parola,,appoggiato,Apoiado,quaderno,Il ragazzo è appoggiato al muro.,O rapaz está apoiado na parede.,appoggiato,inginocchiato;cucinato;dimenticato,,\nGianni Rodari,\"Ritta, in piedi\",Reta; em pé,In posizione eretta e dritta sulle gambe.,\"aggettivo, corpo e salute, azioni e movimenti, postura, femminile, doppia voce\",-,parola,,\"ritta, in piedi\",\"Reta, em pé\",quaderno,La statua è ritta in piedi nel giardino.,\"A estátua está reta, em pé, no jardim.\",ritta,stravaccata;inginocchiata;accovacciata,,scrivi;impiccato;mischiate;dettato;articolo\nGianni Rodari,Stravaccato,Molto sdraiato,Sdraiato o sprofondato in modo molto rilassato e scomposto.,\"aggettivo, corpo e salute, azioni e movimenti, colloquiale, riposo, da verificare\",\"Sul foglio sembra \"\"strazzaccato\"\"; altre ipotesi: strapazzato, stracciato\",parola,,stravaccato,,,,,,,,\nGianni Rodari,Accovacciata,Agachada,Seduta sui talloni con le gambe piegate e vicina al suolo.,\"aggettivo, corpo e salute, azioni e movimenti, participio, postura, femminile\",-,parola,,accovacciata,Agachada,quaderno,La bambina si è accovacciata per guardare le formiche.,A menina se agachou para olhar as formigas.,accovacciata,cucinata;spedita;stampata,,\nGianni Rodari,Semi-accovacciata,Semiagachada,A metà strada tra la posizione in piedi e quella accovacciata.,\"aggettivo, corpo e salute, azioni e movimenti, postura, femminile, prefisso semi-\",-,parola,,semi-accovacciata,Semiagachada,quaderno,\"Resta semi-accovacciata, con le ginocchia appena piegate.\",\"Fica semiagachada, com os joelhos apenas dobrados.\",semi-accovacciata,semi-cucinata;semi-spedita;semi-stampata,,\nGianni Rodari,Le apribottiglie,O abridor de garrafas,Attrezzo per togliere il tappo a corona dalle bottiglie.,\"sostantivo, plurale, oggetti, cucina, utensili, composto\",\"Nel quaderno «Le apribottiglie»; in italiano apribottiglie è di solito maschile invariabile (l'apribottiglie, gli apribottiglie): da ricontrollare. Per ora fuori da Articolo e genere\",parola,le,apribottiglie,O abridor de garrafas,quaderno,Per togliere il tappo a corona uso l'apribottiglie.,Para tirar a tampa de coroa uso o abridor de garrafas.,apribottiglie,ombrello;orologio;ascensore,,articolo\nGianni Rodari,Il cavatappi,O saca-rolhas,Attrezzo a spirale per togliere il tappo di sughero dalle bottiglie di vino.,\"sostantivo, maschile, oggetti, cucina, utensili, composto\",-,parola,il,cavatappi,O saca-rolhas,quaderno,Il cavatappi serve per togliere il tappo di sughero.,O saca-rolhas serve para tirar a rolha de cortiça.,cavatappi,pettine;lenzuolo;bastone,cacciavite,\nGianni Rodari,Le stoviglie,A louça,\"Piatti, bicchieri, posate e pentole usati a tavola e in cucina.\",\"sostantivo, plurale, oggetti, cucina, tavola, collettivo\",-,parola,le,stoviglie,A louça,quaderno,Dopo cena lavo le stoviglie.,Depois do jantar lavo a louça.,stoviglie,nuvole;montagne;stagioni,,\nGianni Rodari,Il coperchio per la pentola,A tampa da panela,Parte che chiude la pentola per trattenere calore e vapore.,\"sostantivo, maschile, oggetti, cucina, utensili, cottura\",-,parola,il,coperchio per la pentola,A tampa da panela,quaderno,Chiudi la pentola con il coperchio per trattenere il vapore.,Feche a panela com a tampa para reter o vapor.,coperchio,cucchiaio;manico;pavimento,,\nGianni Rodari,La carta stagnola,Papel alumínio,Foglio sottile di alluminio usato per avvolgere e cuocere i cibi.,\"sostantivo, femminile, oggetti, cucina, materiali, forno\",-,parola,la,carta stagnola,O papel alumínio,quaderno,Avvolgo la patata nella carta stagnola e la cuocio nel forno.,Embrulho a batata no papel alumínio e a asso no forno.,carta stagnola,carta igienica;carta geografica;carta da gioco,,\nGianni Rodari,La scodella,A tigela,\"Recipiente fondo e rotondo senza manici, per zuppe e latte.\",\"sostantivo, femminile, oggetti, cucina, tavola, colazione\",-,parola,la,scodella,A tigela,quaderno,Ogni mattina bevo il latte nella scodella.,Toda manhã bebo o leite na tigela.,scodella,valigia;chitarra;tasca,,\nGianni Rodari,Il tubetto del dentifricio,O tubo de pasta (de dente),Contenitore morbido e allungato che contiene il dentifricio.,\"sostantivo, maschile, oggetti, corpo e salute, igiene, diminutivo, bagno\",-,parola,il,tubetto del dentifricio,O tubo de pasta de dente,quaderno,Il tubetto del dentifricio è quasi finito.,O tubo de pasta de dente está quase acabando.,tubetto,bicchiere;pettine;asciugamano,,\nGianni Rodari,Il cacciavite,A chave de fenda,Attrezzo per avvitare e svitare le viti.,\"sostantivo, maschile, oggetti, attrezzi, bricolage, composto\",-,parola,il,cacciavite,A chave de fenda,quaderno,Con il cacciavite avvito le viti del tavolo.,Com a chave de fenda aparafuso os parafusos da mesa.,cacciavite,pettine;lenzuolo;cappello,cavatappi,\nGianni Rodari,Tutto il vicinato voleva avere il doppio cancello,Toda a vizinhança queria ter o portão duplo,Tutte le persone del quartiere volevano un cancello a due ante.,\"espressione, persone e ruoli, luoghi e ambienti, frase d'esempio, imperfetto, casa\",-,frase,,,,,Tutto il vicinato voleva avere il doppio cancello,Toda a vizinhança queria ter o portão duplo,cancello,cavatappi;soffitto;coperchio,,\nGianni Rodari,S'affaccia alla finestra,Olha pela janela,Si sporge o si mostra alla finestra per guardare fuori.,\"espressione, azioni e movimenti, casa, finestra, riflessivo, frase d'esempio\",-,frase,,,,,S'affaccia alla finestra,Olha pela janela,finestra,scodella;valigia;muffa,,\nGianni Rodari,Il soffitto sembra una barca rovesciata,O teto parece um barco virado de cabeça para baixo,Paragone: il soffitto curvo ricorda lo scafo di una barca capovolta.,\"espressione, luoghi e ambienti, frase d'esempio, paragone, casa, figurato\",-,frase,,,,,Il soffitto sembra una barca rovesciata,O teto parece um barco virado de cabeça para baixo,rovesciata,profumata;cucinata;spedita,,\nGianni Rodari,Quanto dista?,A que distância fica?,Domanda per sapere quanta strada c'è fino a un luogo.,\"espressione, tempo e quantità, luoghi e ambienti, domanda, viaggio, indicazioni\",-,espressione,,,A que distância fica?,quaderno,\"Scusi, quanto dista la stazione da qui?\",\"Com licença, a que distância fica a estação daqui?\",dista,costa;pesa;canta,,\nGianni Rodari,Il libriccino,\"O livrinho, o caderninho\",\"Libro piccolo e sottile, oppure piccolo taccuino.\",\"sostantivo, maschile, oggetti, diminutivo, libri, lettura\",-,parola,il,libriccino,O livrinho,quaderno,Scrivo gli appunti nel libriccino che porto in tasca.,Escrevo as anotações no livrinho que levo no bolso.,libriccino,frigorifero;lampione;cappello,,\nGianni Rodari,\"Per la festa, Maria si è agghindata con il suo vestito migliore\",Se arrumar,\"Si è vestita con molta cura ed eleganza, a volte in modo un po' vistoso.\",\"espressione, persone e ruoli, frase d'esempio, abbigliamento, riflessivo, passato prossimo\",-,frase,,,,,\"Per la festa, Maria si è agghindata con il suo vestito migliore\",\"Para a festa, Maria se arrumou com o seu melhor vestido\",agghindata,accovacciata;appoggiata;inginocchiata,,\nGianni Rodari,Un gregge di pecore,Um rebanho de ovelhas,Un gruppo numeroso di pecore che pascolano insieme.,\"sostantivo, maschile, natura e animali, tempo e quantità, collettivo, campagna, pastorizia\",-,parola,un,gregge di pecore,Um rebanho de ovelhas,quaderno,Il pastore porta un gregge di pecore sul prato.,O pastor leva um rebanho de ovelhas ao prado.,gregge,mazzo;pacco;secchio,,\nGianni Rodari,Un serpente l'ha morsa,Uma cobra a mordeu,Il serpente l'ha ferita con i denti.,\"espressione, natura e animali, corpo e salute, frase d'esempio, passato prossimo, pericolo\",-,frase,,,,,Un serpente l'ha morsa,Uma cobra a mordeu,morsa,rasa;appoggiata;cucinata,,\nGianni Rodari,\"Taglia, che non abbiamo tutta la vita\",Adianta,Invito a sbrigarsi e ad andare al sodo.,\"espressione, tempo e quantità, modo di dire, imperativo, fretta, da verificare\",\"Forse \"\"Taglia corto, che non abbiamo tutta la vita\"\"; nota a margine letta \"\"Adianta\"\" o \"\"Adiante\"\"\",espressione,,,,,,,,,,\nGianni Rodari,Se proprio devi fare,Se você realmente precisa fazer isso,Formula che concede di fare una cosa se è davvero inevitabile.,\"espressione, concetti astratti, periodo ipotetico, concessione, colloquiale, da verificare\",Frase forse incompleta sul foglio,espressione,,,,,,,,,,\nGianni Rodari,Zuccicare,Brilhar,\"Brillare, luccicare.\",\"verbo, concetti astratti, luce, sinonimi, registro letterario, da verificare\",\"Lettura incerta; forse \"\"scintillare\"\"\",parola,,zuccicare,Brilhar,quaderno,,,,,,\nGianni Rodari,Sfavillare,Brilhar,\"Brillare intensamente, emettendo scintille o luce viva.\",\"verbo, concetti astratti, luce, sinonimi, registro letterario, intensità\",-,parola,,sfavillare,Brilhar,quaderno,Le stelle sembrano sfavillare nella notte.,As estrelas parecem brilhar intensamente na noite.,sfavillare,sbadigliare;scivolare;sgridare,,\nGianni Rodari,Escursione termica,A variação (amplitude) térmica,\"Differenza tra la temperatura più alta e quella più bassa in un periodo, di solito un giorno.\",\"sostantivo, femminile, tempo e quantità, natura e animali, falsi amici, meteo, registro tecnico\",-,parola,l',escursione termica,A amplitude térmica,quaderno,Nel deserto l'escursione termica tra giorno e notte è enorme.,No deserto a amplitude térmica entre o dia e a noite é enorme.,escursione,esplosione;eccezione;emozione,,\nGianni Rodari,Svincolare,\"Desvincular, liberar-se (provvisoria)\",Significato incerto: forse liberare o sciogliere da un vincolo.,\"verbo, concetti astratti, libertà, cognato, registro formale, da verificare\",\"Sul foglio sembra \"\"snincolare\"\"\",parola,,svincolare,,,,,,,,\nGianni Rodari,Balle di fieno,\"\"\"Balle di paglia\"\"\",\"Grandi fasci di erba secca pressata, usati come foraggio; sul foglio sono accostati alle balle di paglia.\",\"sostantivo, plurale, natura e animali, campagna, agricoltura, foraggio\",-,parola,le,balle di fieno,Os fardos de feno,aggiunta,Il contadino accatasta le balle di fieno nel fienile.,O agricultor empilha os fardos de feno no celeiro.,balle,bolle;valigie;sedie,,\nGianni Rodari,Casolare,\"A casa rural, a casa de campo\",\"Casa isolata in campagna, di solito semplice e un po' rustica.\",\"sostantivo, maschile, luoghi e ambienti, campagna, architettura, vita rurale\",-,parola,il,casolare,A casa de campo,quaderno,Vivono in un casolare isolato in mezzo alla campagna.,Vivem numa casa de campo isolada no meio do campo.,casolare,garage;ascensore;semaforo,,\n";
+var ROWS = [], FOGLIO = '', NQ = 5;
+
+/* il confronto ignora accenti, maiuscole e punteggiatura (tranne l'apostrofo) */
+norm = function (s) {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[’‘`´]/g, "'").replace(/[.,;:!?«»"“”]/g, '')
+    .replace(/\s+/g, ' ').trim();
+};
+
+/* tag grammaticali o di registro: non servono per raggruppare per tema */
+var META = {};
+['sostantivo', 'aggettivo', 'verbo', 'espressione', 'maschile', 'femminile', 'plurale', 'cognato', 'falsi amici',
+ 'diminutivo', 'composto', 'participio', 'collettivo', 'doppia voce', 'da verificare', "frase d'esempio", 'colloquiale',
+ 'figurato', 'modo di dire', 'passato prossimo', 'imperfetto', 'riflessivo', 'imperativo', 'prefisso semi-', 'sinonimi',
+ 'quotidiano', 'registro formale', 'registro letterario', 'registro tecnico', 'informale', 'anglicismo', 'paragone',
+ 'domanda', 'periodo ipotetico', 'concessione'].forEach(function (t) { META[t] = 1; });
+
+function parseCSV(text) {
+  var rows = [], row = [], cell = '', q = false, i = 0, c;
+  for (; i < text.length; i++) {
+    c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cell); cell = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); rows.push(row); row = []; cell = '';
+    } else cell += c;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+function loadRows(text) {
+  var t = parseCSV(text.replace(/^﻿/, '')), head = t.shift() || [], idx = {};
+  head.forEach(function (c, i) { idx[c.trim()] = i; });
+  if (idx['Parola/Espressione'] == null) throw new Error('Manca la colonna «Parola/Espressione».');
+  var out = t.filter(function (r) { return r.some(function (x) { return x.trim(); }); }).map(function (r, ix) {
+    function g(c) { return idx[c] == null ? '' : (r[idx[c]] || '').trim(); }
+    var o = {
+      id: ix, varianti: (g('Varianti') === '-' ? '' : g('Varianti')), pers: g('Personaggio'), text: g('Parola/Espressione'), nota: g('Nota'), spieg: g('Spiegazione'), tags: g('Tags'),
+      tipo: g('Tipo').toLowerCase(), art: g('Articolo'), lemma: g('Lemma'), trad: g('Traduzione'), fonte: g('Trad_Fonte'),
+      frase: g('Frase'), frasePt: g('Frase_PT'), vuoto: g('Vuoto'), conf: g('Confondibile con'),
+      esc: g('Escludi da').toLowerCase(),
+      alt: g('Alternative').split(';').map(function (s) { return s.trim(); }).filter(Boolean)
+    };
+    if (!o.frase && o.tipo === 'frase') o.frase = o.text;
+    o.tagList = o.tags.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+    o.uncertain = o.tagList.indexOf('da verificare') >= 0;
+    o.pos = ['sostantivo', 'aggettivo', 'verbo', 'espressione'].filter(function (p) { return o.tagList.indexOf(p) >= 0; })[0] || '';
+    o.themes = o.tagList.filter(function (x) { return !META[x]; });
+    return o;
+  });
+  ROWS = out;
+  return { hasNew: idx['Tipo'] != null && idx['Lemma'] != null };
+}
+
+/* ---------- regole di idoneità ---------- */
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function lowerFirst(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+function rand(n) { return Math.floor(Math.random() * n); }
+function take(a, n) { return shuffle(a).slice(0, n); }
+
+/* ---------- copertura: ogni voce idonea esce una volta per giro ----------
+   SEEN[«esercizio|foglio»] = { id della voce: 1 } per il giro in corso.
+   Una voce si segna come vista quando la domanda viene mostrata. Quando tutte le voci
+   idonee sono state viste, il giro ricomincia da capo. */
+var SEEN = {}, STORE = '';
+function seenOf(n) { var k = n + '|' + FOGLIO; return (SEEN[k] = SEEN[k] || {}); }
+function saveSeen() { try { localStorage.setItem(STORE, JSON.stringify(SEEN)); } catch (e) {} }
+function loadSeen() { SEEN = {}; try { SEEN = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { SEEN = {}; } }
+function hashText(t) { var h = 5381, i = 0; for (; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0; return h.toString(36); }
+/* sceglie `count` elementi dal pool: prima quelli non ancora visti nel giro; se finiscono, ricomincia il giro */
+function draw(n, pool, count) {
+  var S = seenOf(n), fresh = pool.filter(function (x) { return !S[x.id]; });
+  count = Math.min(count, pool.length);
+  var out = shuffle(fresh).slice(0, count), wrapAt = out.length;
+  if (out.length < count) {
+    var rest = shuffle(pool.filter(function (x) { return out.indexOf(x) < 0; }));
+    out = out.concat(rest.slice(0, count - out.length));
+  }
+  out.wrapAt = wrapAt;
+  return out;
+}
+/* segna sulla domanda quali voci rappresenta e se appartiene al nuovo giro */
+function stamp(item, ids, wrapped) { item._k = [].concat(ids); item._wrap = !!wrapped; return item; }
+function drawItems(n, pool, count, mk) {
+  var d = draw(n, pool, count);
+  return d.map(function (x, i) { return stamp(mk(x), x.id, i >= d.wrapAt); });
+}
+/* un insieme tematico di `size` voci, con le non viste per prime (Associazione e Memory) */
+function coverSet(n, pool, size, used) {
+  var S = seenOf(n), free = pool.filter(function (r) { return used.indexOf(r) < 0; });
+  var fresh = free.filter(function (r) { return !S[r.id]; }), set, wrap = false;
+  if (fresh.length >= size) set = themedSet(fresh, size, []);
+  else {
+    wrap = true; set = fresh.slice();
+    set = set.concat(themedSet(free.filter(function (r) { return set.indexOf(r) < 0; }), size - set.length, []));
+  }
+  if (set.length < size) { wrap = wrap || true; set = set.concat(shuffle(pool.filter(function (r) { return set.indexOf(r) < 0; })).slice(0, size - set.length)); }
+  return { set: set, wrap: wrap };
+}
+function roundsFor(poolLen, size, perRound) {
+  var want = NQ >= 1e9 ? Math.ceil(poolLen / size) : Math.max(1, Math.round(NQ / perRound));
+  return Math.max(1, Math.min(want, NQ >= 1e9 ? 40 : 12, Math.floor(poolLen / size + (NQ >= 1e9 ? 0.99 : 0))));
+}
+function answerText(r) { return !r.lemma ? '' : r.art ? r.art + (/'$/.test(r.art) ? '' : ' ') + r.lemma : r.lemma; }
+function disp(r) { return cap(answerText(r)); }
+function shown(r) { return r.tipo === 'parola' ? disp(r) : r.text; }
+function inFoglio(r) { return !FOGLIO || r.pers === FOGLIO; }
+/* una voce è idonea a un esercizio se non è «da verificare» e il nome dell'esercizio non è in «Escludi da» */
+function ok(r, key) { return !r.uncertain && inFoglio(r) && r.esc.split(/[;,\s]+/).indexOf(key) < 0; }
+function words(key) { return ROWS.filter(function (r) { return r.tipo === 'parola' && r.lemma && ok(r, key); }); }
+function wordsT(key) { return words(key).filter(function (r) { return r.trad; }); }
+function wordsAny() { return ROWS.filter(function (r) { return r.tipo === 'parola' && r.lemma && !r.uncertain && inFoglio(r); }); }
+function singleWord(r) { return /^[a-zà-ù]+$/i.test(r.lemma); }
+
+/* la Spiegazione non deve contenere la parola stessa */
+function leaks(r) {
+  var sp = norm(r.spieg).split(/[^a-z]+/).filter(Boolean);
+  return norm(r.lemma).split(/[^a-z]+/).filter(function (w) { return w.length >= 6; }).some(function (w) {
+    var stem = w.slice(0, Math.max(5, w.length - 2));
+    return sp.some(function (s) { return s.indexOf(stem) === 0; });
+  });
+}
+
+/* alternative plausibili: stessa classe grammaticale, più tag in comune prima */
+function similar(r, pool, k, label) {
+  var cand = shuffle(pool.filter(function (x) { return x !== r && x.pos === r.pos; }));
+  if (cand.length < k) cand = cand.concat(shuffle(pool.filter(function (x) { return x !== r && x.pos !== r.pos; })));
+  function score(x) { return x.themes.filter(function (t) { return r.themes.indexOf(t) >= 0; }).length; }
+  cand.sort(function (a, b) { return score(b) - score(a); });
+  var me = norm(label(r)), out = [], seen = {};
+  for (var i = 0; i < cand.length && out.length < k; i++) {
+    var l = label(cand[i]), n = norm(l);
+    if (!l || seen[n] || n.indexOf(me) >= 0 || me.indexOf(n) >= 0) continue;
+    seen[n] = 1; out.push(cand[i]);
+  }
+  return out;
+}
+
+/* insieme di voci con lo stesso tema (per Associazione e Memory) */
+function themedSet(pool, size, avoid) {
+  var base = pool.filter(function (r) { return !avoid || avoid.indexOf(r) < 0; });
+  if (base.length < size) base = pool.slice();
+  var by = {};
+  base.forEach(function (r) { r.themes.forEach(function (t) { (by[t] = by[t] || []).push(r); }); });
+  var maxSize = Math.max(size, Math.floor(base.length * 0.6));
+  var themes = Object.keys(by).filter(function (t) { return by[t].length >= size && by[t].length <= maxSize; });
+  if (!themes.length) themes = Object.keys(by).filter(function (t) { return by[t].length >= size; });
+  var chosen = themes.length ? shuffle(by[themes[rand(themes.length)]]) : [];
+  chosen = chosen.concat(shuffle(base.filter(function (r) { return chosen.indexOf(r) < 0; })));
+  var out = [], seen = {};
+  for (var i = 0; i < chosen.length && out.length < size; i++) {
+    var k = norm(chosen[i].trad);
+    if (seen[k]) continue;
+    seen[k] = 1; out.push(chosen[i]);
+  }
+  return out;
+}
+
+/* ---------- 2 · frase con spazio vuoto ---------- */
+function splitBlank(r) {
+  var re = new RegExp('(^|[^\\p{L}])(' + r.vuoto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?![\\p{L}])', 'iu');
+  var m = re.exec(r.frase);
+  if (!m) return null;
+  var start = m.index + m[1].length;
+  return { before: r.frase.slice(0, start), match: m[2], after: r.frase.slice(start + m[2].length) };
+}
+function poolCompletare() {
+  return ROWS.filter(function (r) { return r.frase && r.vuoto && r.alt.length >= 2 && ok(r, 'completare') && splitBlank(r); });
+}
+/* ---------- altri insiemi ---------- */
+function poolIndovinello() { return words('indovinello').filter(function (r) { return r.spieg && !leaks(r); }); }
+function poolVF() {
+  return ROWS.filter(function (r) { return r.trad && ((r.tipo === 'parola' && r.lemma) || r.tipo === 'espressione') && ok(r, 'vf'); });
+}
+function poolTrad() {
+  return ROWS.filter(function (r) {
+    return ok(r, 'traduzione') && ((r.tipo === 'parola' && r.lemma && r.trad) || (r.tipo === 'espressione' && r.spieg));
+  });
+}
+function poolImpiccato() {
+  return words('impiccato').filter(function (r) {
+    return singleWord(r) && r.lemma.length >= 6 && r.spieg && !leaks(r) && /^[abcdefghilmnopqrstuvz]+$/.test(norm(r.lemma));
+  });
+}
+function poolMischiate() { return wordsT('mischiate').filter(function (r) { return singleWord(r) && r.lemma.length >= 5 && r.lemma.length <= 12; }); }
+var ARTS = ['il', 'lo', 'la', "l'", 'i', 'gli', 'le'];
+function poolArticolo() { return words('articolo').filter(function (r) { return ARTS.indexOf(r.art.toLowerCase()) >= 0; }); }
+function poolRicostruire() {
+  return ROWS.filter(function (r) {
+    var n = r.frase ? r.frase.split(/\s+/).length : 0;
+    return r.frase && r.frasePt && n >= 3 && n <= 9 && ok(r, 'ricostruire');
+  });
+}
+function poolErrore() {
+  var out = [];
+  ROWS.forEach(function (r) {
+    if (!r.conf || !r.frase || !r.lemma || !ok(r, 'errore')) return;
+    var p = ROWS.filter(function (x) { return x.tipo === 'parola' && x.lemma && norm(x.lemma) === norm(r.conf) && !x.uncertain; })[0];
+    if (!p || p.art !== r.art) return;
+    var toks = r.frase.split(/\s+/), at = -1;
+    toks.forEach(function (t, i) { if (at < 0 && norm(t) === norm(r.lemma)) at = i; });
+    if (at < 0) return;
+    var punct = toks[at].match(/[.,;:!?]+$/), t2 = toks.slice();
+    t2[at] = p.lemma + (punct ? punct[0] : '');
+    out.push({ id: r.id, r: r, p: p, t: t2, wrong: at });
+  });
+  return out;
+}
+function poolDettato() {
+  var w = words('dettato').map(function (r) { return { id: r.id, answer: answerText(r) }; });
+  var f = ROWS.filter(function (r) { return r.tipo === 'frase' && r.frase && r.frase.split(/\s+/).length <= 6 && ok(r, 'dettato'); })
+    .map(function (r) { return { id: r.id, answer: r.frase }; });
+  return w.concat(f);
+}
+function whyArt(a) {
+  return ({
+    'il': 'Maschile singolare davanti a consonante: il.',
+    'lo': 'Maschile singolare davanti a s + consonante, z, gn o ps: lo.',
+    'la': 'Femminile singolare davanti a consonante: la.',
+    "l'": "Singolare davanti a vocale: l'.",
+    'i': 'Maschile plurale davanti a consonante: i.',
+    'gli': 'Maschile plurale davanti a vocale o a s + consonante: gli.',
+    'le': 'Femminile plurale: le.'
+  })[a] || '';
+}
+
+/* ======================================================
+   ESERCIZI: ogni voce ha pool() (le voci idonee) e gen() (una lezione nuova)
+   ====================================================== */
+var EX = [
+
+/* 1 · Associazione */
+{ n: 1, name: 'Associazione', desc: 'Coppie parola e traduzione, due colonne', cat: 'Riconoscere', auto: true, min: 4,
+  needs: 'parole con Traduzione (almeno 4)', pool: function () { return wordsT('assoc'); },
+  gen: function () {
+    var pool = wordsT('assoc'), items = [], used = [];
+    if (pool.length < 4) return [];
+    var size = Math.min(5, pool.length), rounds = roundsFor(pool.length, size, 5);
+    for (var i = 0; i < rounds; i++) {
+      var c = coverSet(1, pool, size, used), set = c.set;
+      if (set.length < 4) break;
+      used = used.concat(set);
+      items.push(stamp({ dir: i % 2 ? 'pt' : 'it', pairs: set.map(function (r) { return [disp(r), r.trad]; }) },
+        set.map(function (r) { return r.id; }), c.wrap));
+    }
+    return items;
+  },
+  title: 'Tocca le coppie corrispondenti',
+  render: function (item, ctx) {
+    var L = item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[0] : p[1], i: i }; });
+    var R = shuffle(item.pairs.map(function (p, i) { return { t: item.dir === 'it' ? p[1] : p[0], i: i }; }));
+    var sel = null, solved = 0, errors = 0, grid = h('div', { class: 'pairs-grid' });
+    function mk(side, o) {
+      var b = h('button', { class: 'pair-tile', type: 'button' }, o.t);
+      b.addEventListener('click', function () {
+        if (ctx.isDone() || b.classList.contains('matched-active') || b.classList.contains('completed')) return;
+        if (sel && sel.side === side) { sel.b.classList.remove('selected'); sel = null; }
+        if (!sel) { sel = { side: side, o: o, b: b }; b.classList.add('selected'); return; }
+        var a = sel; sel = null; a.b.classList.remove('selected');
+        if (a.o.i === o.i) {
+          [a.b, b].forEach(function (x) {
+            x.classList.add('matched-active');
+            x.append(h('i', { class: 'sparkle sp-a' }), h('i', { class: 'sparkle sp-b' }));
+          });
+          solved++;
+          setTimeout(function () { [a.b, b].forEach(function (x) { x.className = 'pair-tile completed'; x.replaceChildren(x.firstChild); }); }, 600);
+          if (solved === item.pairs.length) ctx.finish(true, '', errors ? 'Completato con ' + errors + (errors === 1 ? ' errore.' : ' errori.') : 'Nessun errore!');
+        } else {
+          errors++; ctx.lose();
+          [a.b, b].forEach(function (x) { x.classList.add('mismatch'); });
+          setTimeout(function () { [a.b, b].forEach(function (x) { x.classList.remove('mismatch'); }); }, 550);
+        }
+      });
+      return b;
+    }
+    item.pairs.forEach(function (p, k) { grid.append(mk('l', L[k]), mk('r', R[k])); });
+    ctx.body.append(h('p', { class: 'hint-line' }, item.dir === 'it' ? 'Italiano → Portoghese' : 'Portoghese → Italiano'), grid);
+  }
+},
+
+/* 2 · Completare frasi */
+{ n: 2, name: 'Completare frasi', desc: 'Frase con spazio vuoto e tre opzioni', cat: 'Capire le frasi', min: 3,
+  needs: 'voci con Frase, Vuoto e almeno 2 Alternative', pool: poolCompletare,
+  gen: function () {
+    return drawItems(2, poolCompletare(), NQ, function (r) {
+      var s = splitBlank(r), up = /^\p{Lu}/u.test(s.match);
+      var alts = take(r.alt.filter(function (a) { return norm(a) !== norm(s.match); }), 2).map(function (a) { return up ? cap(a) : a; });
+      return { before: s.before, after: s.after, answer: s.match, ch: [s.match].concat(alts),
+               hint: 'Portoghese: ' + (r.frasePt || r.trad), why: r.spieg };
+    });
+  },
+  title: 'Completa la frase',
+  render: function (item, ctx) {
+    var s = blankSentence(item.before, item.after);
+    var hint = h('p', { class: 'hint-line', hidden: true }, item.hint);
+    ctx.body.append(s.el,
+      h('button', { class: 'hint-btn', type: 'button', onclick: function () { hint.hidden = !hint.hidden; } }, 'Indizio'), hint,
+      choices(item, ctx, item.ch, item.answer, item.why, {
+        onSelect: function (c) { s.blank.textContent = c; },
+        onDone: function (ok) { s.blank.textContent = item.answer; s.blank.classList.add(ok ? 'ok' : 'bad'); }
+      }));
+  }
+},
+
+/* 3 · Indovinello */
+{ n: 3, name: 'Indovinello', desc: 'La spiegazione come indizio, quattro parole', cat: 'Riconoscere', min: 4,
+  needs: 'parole con Spiegazione che non contenga la parola', pool: poolIndovinello,
+  gen: function () {
+    return drawItems(3, poolIndovinello(), NQ, function (r) {
+      var d = similar(r, wordsAny(), 3, disp).map(disp);
+      return { q: r.spieg, answer: disp(r), ch: [disp(r)].concat(d), why: r.trad ? 'In portoghese: ' + r.trad + '.' : '' };
+    });
+  },
+  title: 'Qual è la parola?',
+  render: function (item, ctx) {
+    ctx.body.append(bubble('Spiegazione', '«' + item.q + '»'), choices(item, ctx, item.ch, item.answer, item.why));
+  }
+},
+
+/* 4 · Vero o falso */
+{ n: 4, name: 'Vero o falso', desc: 'La traduzione è giusta o scambiata?', cat: 'Riconoscere', min: 4,
+  needs: 'parole o espressioni con Traduzione', pool: poolVF,
+  gen: function () {
+    var pool = poolVF(), picked = draw(4, pool, NQ), nFalse = Math.floor(picked.length / 2), items = [];
+    picked.forEach(function (r, i) {
+      var partner = null;
+      if (i < nFalse) {
+        if (r.conf) partner = pool.filter(function (p) { return p.lemma && norm(p.lemma) === norm(r.conf) && norm(p.trad) !== norm(r.trad); })[0];
+        if (!partner) partner = similar(r, pool.filter(function (p) { return p.tipo === r.tipo; }), 1, function (x) { return x.trad; })[0];
+      }
+      var wrapped = i >= picked.wrapAt;
+      if (partner) items.push(stamp({ w: shown(r), t: partner.trad, answer: 'Falso',
+        why: shown(r) + ' = ' + r.trad + '. ' + partner.trad + ' sarebbe ' + lowerFirst(shown(partner)) + '.' }, r.id, wrapped));
+      else items.push(stamp({ w: shown(r), t: r.trad, answer: 'Vero', why: shown(r) + ' = ' + r.trad + '.' }, r.id, wrapped));
+    });
+    return shuffle(items);
+  },
+  title: 'Vero o falso?',
+  render: function (item, ctx) {
+    ctx.body.append(
+      h('div', { class: 'prompt-big' }, item.w),
+      h('div', { class: 'prompt-sub' }, 'significa «' + item.t + '»'),
+      choices(item, ctx, ['Vero', 'Falso'], item.answer, item.why, { layout: 'two', fixed: true }));
+  }
+},
+
+/* 5 · Gioco della memoria */
+{ n: 5, name: 'Gioco della memoria', desc: 'Carte coperte, trova le coppie', cat: 'Riconoscere', auto: true, min: 4,
+  needs: 'parole con Traduzione (almeno 4)', pool: function () { return wordsT('memory'); },
+  gen: function () {
+    var pool = wordsT('memory'), items = [], used = [];
+    if (pool.length < 4) return [];
+    var rounds = roundsFor(pool.length, 4, 5);
+    for (var i = 0; i < rounds; i++) {
+      var c = coverSet(5, pool, 4, used), set = c.set;
+      if (set.length < 4) break;
+      used = used.concat(set);
+      items.push(stamp({ pairs: set.map(function (r) { return [disp(r), r.trad]; }) }, set.map(function (r) { return r.id; }), c.wrap));
+    }
+    return items;
+  },
+  title: 'Trova le coppie',
+  render: function (item, ctx) {
+    var cards = shuffle(item.pairs.reduce(function (a, p, i) { return a.concat([{ t: p[0], i: i }, { t: p[1], i: i }]); }, []));
+    var open = [], moves = 0, found = 0, lock = false, grid = h('div', { class: 'pairs-grid' });
+    var counter = h('p', { class: 'moves' }, 'Mosse: 0');
+    cards.forEach(function (c) {
+      var b = h('button', { class: 'pair-tile mem-card down', type: 'button', 'aria-label': 'Carta coperta' }, '?');
+      c.el = b;
+      b.addEventListener('click', function () {
+        if (ctx.isDone() || lock || c.up || c.ok) return;
+        c.up = true; b.className = 'pair-tile mem-card up'; b.textContent = c.t; b.setAttribute('aria-label', c.t); open.push(c);
+        if (open.length < 2) return;
+        moves++; counter.textContent = 'Mosse: ' + moves;
+        var a = open[0], d = open[1]; open = [];
+        if (a.i === d.i) {
+          a.ok = d.ok = true; a.el.className = d.el.className = 'pair-tile mem-card matched-active'; found++;
+          if (found === item.pairs.length) ctx.finish(true, '', 'Completato in ' + moves + ' mosse.');
+        } else {
+          lock = true; ctx.lose();
+          [a, d].forEach(function (x) { x.el.className = 'pair-tile mem-card mismatch'; });
+          setTimeout(function () {
+            [a, d].forEach(function (x) { x.up = false; x.el.className = 'pair-tile mem-card down'; x.el.textContent = '?'; x.el.setAttribute('aria-label', 'Carta coperta'); });
+            lock = false;
+          }, 900);
+        }
+      });
+      grid.append(b);
+    });
+    ctx.body.append(grid, counter);
+  }
+},
+
+/* 6 · Scegli la traduzione */
+{ n: 6, name: 'Scegli la traduzione', desc: 'Parole e modi di dire, tre opzioni', cat: 'Riconoscere', min: 3,
+  needs: 'parole con Traduzione, espressioni con Spiegazione', pool: poolTrad,
+  gen: function () {
+    var pool = poolTrad(), ws = pool.filter(function (p) { return p.tipo === 'parola'; }), es = pool.filter(function (p) { return p.tipo === 'espressione'; });
+    return drawItems(6, pool, NQ, function (r) {
+      if (r.tipo === 'parola') {
+        var d = similar(r, ws, 2, function (x) { return x.trad; });
+        return { t: 'Qual è la traduzione?', w: disp(r), answer: r.trad, ch: [r.trad].concat(d.map(function (x) { return x.trad; })), why: r.spieg };
+      }
+      var e = similar(r, es, 2, function (x) { return x.spieg; });
+      return { t: 'Cosa significa?', w: r.text, answer: r.spieg, ch: [r.spieg].concat(e.map(function (x) { return x.spieg; })),
+               why: r.trad ? 'In portoghese: ' + r.trad + '.' : '' };
+    });
+  },
+  title: 'Scegli la traduzione',
+  render: function (item, ctx) {
+    ctx.title(item.t);
+    ctx.body.append(bubble('', item.w, item.w), choices(item, ctx, item.ch, item.answer, item.why));
+  }
+},
+
+/* 7 · Scrivi la parola */
+{ n: 7, name: 'Scrivi la parola', desc: "Dal portoghese all'italiano, scrivendo", cat: 'Ricordare', min: 3,
+  needs: 'parole con Traduzione', pool: function () { return wordsT('scrivi'); },
+  gen: function () { return drawItems(7, wordsT('scrivi'), NQ, function (r) { return { w: r.trad, answer: answerText(r) }; }); },
+  title: 'Scrivi in italiano',
+  render: function (item, ctx) {
+    var raw = item.answer.replace(ART, ''), hint = h('p', { class: 'hint-line', hidden: true }, raw.charAt(0) + ' ' + new Array(raw.length).join('_ ') + '(' + raw.length + ' lettere)');
+    ctx.body.append(bubble('Portoghese', item.w), typed(item, ctx),
+      h('button', { class: 'hint-btn', type: 'button', onclick: function () { hint.hidden = !hint.hidden; } }, 'Indizio: prima lettera'), hint);
+  }
+},
+
+/* 8 · Impiccato */
+{ n: 8, name: 'Impiccato', desc: 'Indovina la parola lettera per lettera', cat: 'Ricordare', auto: true, min: 3,
+  needs: 'parole singole di 6+ lettere con Spiegazione', pool: poolImpiccato,
+  gen: function () {
+    return drawItems(8, poolImpiccato(), NQ, function (r) {
+      var w = r.lemma.toLowerCase();
+      return { w: w, k: norm(w), s: r.spieg };
+    });
+  },
+  title: 'Indovina la parola',
+  render: function (item, ctx) {
+    var W = item.w.split(''), K = item.k.split(''), guessed = {}, lives = 6, over = false;
+    var shownEl = h('div', { class: 'hang', 'aria-label': 'Parola nascosta' }), lv = h('p', { class: 'lives' }), keys = h('div', { class: 'keys' });
+    function draw() {
+      shownEl.replaceChildren.apply(shownEl, W.map(function (c, i) { return h('span', {}, guessed[K[i]] || over ? c : ''); }));
+      lv.textContent = new Array(lives + 1).join('♥') + new Array(7 - lives).join('♡');
+      lv.setAttribute('aria-label', 'Vite: ' + lives + ' su 6');
+    }
+    'abcdefghilmnopqrstuvz'.split('').forEach(function (c) {
+      var b = h('button', { class: 'key', type: 'button' }, c);
+      b.addEventListener('click', function () {
+        if (over || b.disabled) return;
+        b.disabled = true;
+        if (item.k.indexOf(c) >= 0) { guessed[c] = true; b.classList.add('hit'); } else { lives--; b.classList.add('miss'); }
+        var won = K.every(function (x) { return guessed[x]; });
+        if (won || lives === 0) {
+          over = true; if (!won) shownEl.classList.add('lost'); draw();
+          keys.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+          ctx.finish(won, item.w, won ? '' : 'Finite le vite.');
+        } else draw();
+      });
+      keys.append(b);
+    });
+    ctx.body.append(bubble('Spiegazione', item.s), shownEl, lv, keys);
+    draw();
+  }
+},
+
+/* 9 · Lettere mischiate */
+{ n: 9, name: 'Lettere mischiate', desc: 'Rimetti le lettere in ordine', cat: 'Ricordare', min: 3,
+  needs: 'parole singole di 5-12 lettere con Traduzione', pool: poolMischiate,
+  gen: function () { return drawItems(9, poolMischiate(), NQ, function (r) { return { tokens: r.lemma.toLowerCase().split(''), hint: r.trad }; }); },
+  title: 'Metti le lettere in ordine',
+  render: function (item, ctx) {
+    ctx.body.append(bubble('Portoghese', item.hint));
+    builder(item, ctx, '', true).forEach(function (e) { ctx.body.append(e); });
+  }
+},
+
+/* 10 · Articolo e genere */
+{ n: 10, name: 'Articolo e genere', desc: "il, lo, la, l', i, le", cat: 'Ricordare', min: 3,
+  needs: 'parole con Articolo (il, lo, la, l\', i, gli, le)', pool: poolArticolo,
+  gen: function () {
+    var picked = draw(10, poolArticolo(), NQ), opts = ['il', 'lo', 'la', "l'", 'i', 'le'];
+    if (picked.some(function (r) { return r.art.toLowerCase() === 'gli'; })) opts.splice(5, 0, 'gli');
+    return picked.map(function (r, i) { var a = r.art.toLowerCase(); return stamp({ w: r.lemma, answer: a, ch: opts, why: whyArt(a) }, r.id, i >= picked.wrapAt); });
+  },
+  title: "Scegli l'articolo giusto",
+  render: function (item, ctx) {
+    var s = blankSentence('', ' ' + item.w);
+    s.el.style.fontSize = '30px';
+    ctx.body.append(s.el, choices(item, ctx, item.ch, item.answer, item.why, {
+      layout: 'grid', fixed: true,
+      onSelect: function (c) { s.blank.textContent = c; },
+      onDone: function (ok) { s.blank.textContent = item.answer; s.blank.classList.add(ok ? 'ok' : 'bad'); }
+    }));
+  }
+},
+
+/* 11 · Frase da ricostruire */
+{ n: 11, name: 'Frase da ricostruire', desc: 'Parole mescolate da rimettere in ordine', cat: 'Capire le frasi', min: 2,
+  needs: 'voci con Frase (3-9 parole) e Frase_PT', pool: poolRicostruire,
+  gen: function () { return drawItems(11, poolRicostruire(), NQ, function (r) { return { tokens: r.frase.split(/\s+/), hint: r.frasePt }; }); },
+  title: 'Ricostruisci la frase',
+  render: function (item, ctx) {
+    ctx.body.append(bubble('Portoghese', item.hint));
+    builder(item, ctx, ' ', false).forEach(function (e) { ctx.body.append(e); });
+  }
+},
+
+/* 12 · Trova l'errore */
+{ n: 12, name: "Trova l'errore", desc: 'Tocca la parola sbagliata', cat: 'Capire le frasi', min: 2,
+  needs: 'voci con «Confondibile con», Frase e Lemma', pool: poolErrore,
+  gen: function () {
+    return drawItems(12, poolErrore(), NQ, function (c) {
+      return { t: c.t, wrong: c.wrong, fix: c.r.lemma,
+               why: 'Qui serve ' + lowerFirst(disp(c.r)) + ', non ' + lowerFirst(disp(c.p)) + '. ' + c.r.spieg };
+    });
+  },
+  title: "Trova l'errore",
+  render: function (item, ctx) {
+    var sel = -1, line = h('div', { class: 'words-line' });
+    var chips = item.t.map(function (w, k) {
+      var b = h('button', { class: 'word-chip', type: 'button' }, w);
+      b.addEventListener('click', function () {
+        if (ctx.isDone()) return;
+        chips.forEach(function (x) { x.classList.remove('sel'); });
+        b.classList.add('sel'); sel = k;
+        ctx.ready(function () {
+          var fixed = item.t.map(function (x, i) { return i === item.wrong ? item.fix + x.replace(/^[^.,;!?]*/, '') : x; }).join(' ');
+          return { ok: sel === item.wrong, solution: fixed, note: item.why };
+        });
+      });
+      return b;
+    });
+    line.append.apply(line, chips);
+    ctx.after(function () {
+      chips.forEach(function (x, k) {
+        x.disabled = true;
+        if (k === item.wrong) { x.classList.remove('sel'); x.classList.add('right'); }
+        else if (x.classList.contains('sel')) { x.classList.remove('sel'); x.classList.add('wrong'); }
+      });
+    });
+    ctx.body.append(bubble('', 'Una parola è fuori posto. Toccala.'), line);
+  }
+},
+
+/* 13 · Dettato */
+{ n: 13, name: 'Dettato', desc: 'Ascolta e scrivi', cat: 'Ascoltare e parlare', min: 3,
+  needs: 'parole con Lemma, o frasi brevi', pool: poolDettato,
+  gen: function () { return drawItems(13, poolDettato(), NQ, function (x) { return { answer: x.answer }; }); },
+  title: 'Scrivi quello che senti',
+  render: function (item, ctx) {
+    var ok = 'speechSynthesis' in window;
+    var big = h('button', { class: 'audio-btn', type: 'button', disabled: !ok, 'aria-label': 'Ascolta', onclick: function () { speak(item.answer, .85); } });
+    big.innerHTML = SPEAKER;
+    var slow = h('button', { class: 'audio-btn slow', type: 'button', disabled: !ok, 'aria-label': 'Più lento', onclick: function () { speak(item.answer, .5); } });
+    slow.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 18h16v2H4zM12 4C7 4 4 8 4 13h16c0-5-3-9-8-9z"/></svg>';
+    ctx.body.append(
+      h('div', { class: 'speaker-section' }, mascot(), h('div', { class: 'speech-bubble', style: 'justify-content:center;gap:16px' }, big, slow)),
+      h('p', { class: 'hint-line' }, ok ? "Se il browser non ha una voce italiana, la lettura esce con l'accento di un'altra lingua." : 'Questo browser non ha la sintesi vocale.'),
+      typed(item, ctx));
+    if (ok) setTimeout(function () { if (!ctx.isDone()) speak(item.answer, .85); }, 350);
+  }
+}
+];
+
+/* ======================================================
+   MOTORE
+   ====================================================== */
+var cur, qi, hearts, score, checkFn, done, afterFn;
+
+var ctx = {
+  get body() { return $('body'); },
+  title: function (t) { $('title').textContent = t; },
+  isDone: function () { return done; },
+  after: function (fn) { afterFn = fn; },
+  ready: function (fn) {
+    checkFn = fn || null;
+    var b = $('footer').querySelector('.btn-main');
+    if (b && !done) b.disabled = !checkFn;
+  },
+  check: function () { runCheck(); },
+  lose: function () { hearts = Math.max(0, hearts - 1); $('hearts').textContent = hearts; },
+  finish: function (ok, solution, note) { finish(ok, solution, note); }
+};
+
+function footerIdle() {
+  var f = $('footer'); f.className = 'footer';
+  f.replaceChildren(
+    h('button', { class: 'btn-main', type: 'button', disabled: true, onclick: runCheck }, cur.auto ? 'Continua' : 'Controlla'),
+    h('div', { class: 'home-indicator' }));
+}
+function runCheck() {
+  if (!checkFn || done) return;
+  var r = checkFn();
+  finish(r.ok, r.solution, r.note);
+}
+function finish(ok, solution, note) {
+  if (done) return;
+  done = true; checkFn = null;
+  if (ok) score++; else ctx.lose();
+  $('body').querySelectorAll('input').forEach(function (i) { i.disabled = true; });
+  if (afterFn) afterFn(ok);
+  var last = qi === cur.items.length - 1;
+  var f = $('footer'); f.className = 'drawer ' + (ok ? 'good' : 'bad');
+  var icon = ok
+    ? '<svg width="28" height="28" viewBox="0 0 24 24" fill="#58cc02"><circle cx="12" cy="12" r="11"/><polyline points="8 12 11 15 16 9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+    : '<svg width="28" height="28" viewBox="0 0 24 24" fill="#ff4b4b"><circle cx="12" cy="12" r="11"/><line x1="8" y1="8" x2="16" y2="16" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="16" y1="8" x2="8" y2="16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>';
+  var praise = ['Esatto!', 'Ottimo!', 'Bravo!', 'Perfetto!'][Math.floor(Math.random() * 4)];
+  var status = h('div', { class: 'drawer-status', role: 'status' });
+  status.innerHTML = icon; status.append(h('span', {}, ok ? praise : 'Soluzione corretta:'));
+  f.replaceChildren(status,
+    !ok && solution ? h('div', { class: 'drawer-solution' }, solution) : null,
+    note ? h('div', { class: 'drawer-note' }, note) : null,
+    h('button', { class: 'btn-main', type: 'button', onclick: next }, last ? 'Fine' : 'Continua'),
+    h('div', { class: 'home-indicator' }));
+  f.querySelector('.btn-main').focus();
+}
+function next() { qi++; if (qi >= cur.items.length) showResult(); else showQ(); }
+
+function showQ() {
+  done = false; checkFn = null; afterFn = null;
+  var item = cur.items[qi];
+  $('prog').style.width = (qi / cur.items.length * 100) + '%';
+  ctx.title(cur.title);
+  $('body').className = '';
+  $('body').replaceChildren();
+  footerIdle();
+  cur.render(item, ctx);
+  $('title').scrollIntoView({ block: 'nearest' });
+}
+function showResult() {
+  $('prog').style.width = '100%';
+  ctx.title('Lezione completata!');
+  var b = $('body'); b.className = 'result'; b.replaceChildren(
+    mascot(),
+    h('h2', {}, 'Ben fatto!'),
+    h('p', {}, 'Hai risposto bene a ' + score + ' su ' + cur.items.length + '.'),
+    h('div', { class: 'stats' },
+      h('div', { class: 'stat y' }, h('b', {}, 'Punti'), h('span', {}, score + '/' + cur.items.length)),
+      h('div', { class: 'stat r' }, h('b', {}, 'Cuori'), h('span', {}, String(hearts)))));
+  $('title').textContent = '';
+  var f = $('footer'); f.className = 'footer';
+  f.replaceChildren(h('button', { class: 'btn-main', type: 'button', onclick: function () { load(cur.n); } }, 'Nuova lezione'), h('div', { class: 'home-indicator' }));
+}
+function showEmpty() {
+  $('prog').style.width = '0%';
+  ctx.title(cur.name);
+  var b = $('body'); b.className = 'result';
+  b.replaceChildren(mascot(true),
+    h('h2', { style: 'color:#3c3c3c;font-size:22px' }, 'Dati insufficienti'),
+    h('p', {}, 'Per questo esercizio servono ' + cur.needs + '. Voci idonee adesso: ' + cur.pool().length + '.'));
+  var f = $('footer'); f.className = 'footer';
+  f.replaceChildren(h('button', { class: 'btn-main', type: 'button', onclick: function () { load(cur.n); } }, 'Riprova'),
+    h('button', { class: 'btn-link home-link', type: 'button', onclick: function () { showHome(); } }, 'Torna alla home'), h('div', { class: 'home-indicator' }));
+}
+
+var VIEW = 'home', LASTEX = 1;
+function ico(name, cls) { return h('img', { class: 'ico ' + (cls || ''), src: ICON[name], alt: '', draggable: 'false' }); }
+
+/* ---------- Allenamento: tutte le voci da studiare prima degli esercizi ---------- */
+var TRAIN = { n: 0, name: 'Allenamento', title: 'Allenamento', items: [], pool: function () { return []; }, needs: '' };
+function sayText(r) { return r.tipo === 'parola' ? answerText(r) : r.text; }
+function trCard(r) {
+  var title = r.tipo === 'parola' ? disp(r) : r.text;
+  var tr = r.tipo === 'frase' ? (r.frasePt || r.nota) : (r.trad || r.nota);
+  var canSpeak = 'speechSynthesis' in window;
+  function spk(text, label, rate, cls) {
+    var b = h('button', { class: cls || 'tr-spk', type: 'button', disabled: !canSpeak, 'aria-label': label,
+      onclick: function (e) { e.stopPropagation(); speak(text, rate); } });
+    return b;
+  }
+  var main = spk(sayText(r), 'Ascolta: ' + title, .85); main.innerHTML = SPEAKER;
+  var box = h('div', { class: 'tr-box', hidden: true });
+  if (r.uncertain) box.append(h('div', { class: 'tr-warn' }, 'Lettura da verificare' + (r.varianti ? ': ' + r.varianti : '.')));
+  if (r.spieg) box.append(h('div', { class: 'tr-lab' }, 'Spiegazione'), h('div', { class: 'tr-sp' }, r.spieg));
+  if (r.tipo !== 'frase' && r.frase) {
+    var ex = spk(r.frase, 'Ascolta la frase', .85, 'tr-mini'); ex.textContent = '▶ Ascolta';
+    box.append(h('div', { class: 'tr-lab' }, 'Esempio'), h('div', { class: 'tr-ex' }, r.frase),
+      r.frasePt ? h('div', { class: 'tr-expt' }, r.frasePt) : '', ex);
+  }
+  if (r.nota && norm(r.nota) !== norm(tr || '')) box.append(h('div', { class: 'tr-lab' }, 'Appunto del quaderno'), h('div', { class: 'tr-sp' }, r.nota));
+  var slow = spk(sayText(r), 'Ascolta più lentamente', .5, 'tr-mini'); slow.textContent = '🐢 Più lento';
+  var tags = r.themes.slice(0, 6).map(function (t) { return h('span', { class: 'tr-tag' }, t); });
+  box.append(h('div', { class: 'tr-actions' }, slow), tags.length ? h('div', { class: 'tr-tags' }, tags) : '');
+  var chev = h('span', { class: 'tr-chev', 'aria-hidden': 'true' }, '▾');
+  var card = h('div', { class: 'tr-card' + (r.uncertain ? ' unsure' : '') });
+  var head = h('button', { class: 'tr-head', type: 'button', 'aria-expanded': 'false' },
+    h('div', { class: 'tr-txt' }, h('div', { class: 'tr-it' }, title), h('div', { class: 'tr-pt' }, tr || '')), chev);
+  function set(open) { box.hidden = !open; head.setAttribute('aria-expanded', String(open)); card.classList.toggle('open', open); }
+  head.addEventListener('click', function () { set(box.hidden); });
+  card.append(h('div', { class: 'tr-row' }, main, head), box);
+  card.set = set;
+  card.hay = norm([r.text, r.lemma, r.trad, r.nota, r.frasePt, r.spieg].join(' '));
+  return card;
+}
+function showTraining() {
+  cur = TRAIN; qi = 0; score = 0;
+  setMode('train'); setTop('Allenamento'); renderTabs();
+  var rows = ROWS.filter(inFoglio), cards = rows.map(trCard), open = false;
+  var list = h('div', { class: 'tr-list' });
+  var count = h('div', { class: 'tr-count' });
+  var search = h('input', { class: 'tr-search', type: 'search', placeholder: 'Cerca una voce…', 'aria-label': 'Cerca una voce' });
+  var toggle = h('button', { class: 'tr-toggle', type: 'button' }, 'Apri tutte');
+  function paint() {
+    var q = norm(search.value), vis = cards.filter(function (c) { return !q || c.hay.indexOf(q) >= 0; });
+    list.replaceChildren.apply(list, vis.length ? vis : [h('p', { class: 'tr-none' }, 'Nessuna voce trovata.')]);
+    count.textContent = vis.length + (vis.length === 1 ? ' voce' : ' voci') + (q ? ' su ' + cards.length : '');
+  }
+  search.addEventListener('input', paint);
+  toggle.addEventListener('click', function () { open = !open; cards.forEach(function (c) { c.set(open); }); toggle.textContent = open ? 'Chiudi tutte' : 'Apri tutte'; });
+  var b = $('body'); b.className = 'train';
+  b.replaceChildren(
+    h('p', { class: 'hint-line' }, 'Tocca una voce per la spiegazione. Il tasto con l\'altoparlante la legge ad alta voce.'),
+    h('div', { class: 'tr-bar' }, search, toggle), count, list);
+  $('body').scrollTop = 0; document.querySelector('.content').scrollTop = 0;
+  paint();
+  $('modal').hidden = true; $('sheet').hidden = true;
+}
+
+/* ---------- Home: sessioni (stellina) ed esercizi (libretto) ---------- */
+var HOME = { n: -1, name: 'Home', items: [], pool: function () { return []; }, needs: '' };
+function setMode(v) { VIEW = v; document.body.classList.toggle('mode-ex', v === 'ex'); }
+function subtitle() { return (FOGLIO || 'Tutti i fogli') + ' · ' + ROWS.filter(inFoglio).length + ' voci'; }
+function setTop(t) { $('top-title').textContent = t; $('top-sub').textContent = subtitle(); }
+function tabB(id, label, icon, go) {
+  return h('button', { class: 'tabb' + (VIEW === id ? ' on' : ''), type: 'button', 'aria-label': label, 'aria-current': VIEW === id ? 'page' : 'false', onclick: go },
+    ico(icon), h('span', {}, label));
+}
+function renderTabs() {
+  $('tabbar').replaceChildren(
+    tabB('home', 'Home', 'casa', function () { showHome(); }),
+    tabB('train', 'Allenamento', 'peso', function () { showTraining(); }));
+}
+function refreshView() { if (VIEW === 'train') showTraining(); else showHome(); }
+function showHome() {
+  cur = HOME; qi = 0;
+  setMode('home'); setTop('Home'); renderTabs();
+  var cats = [], b = $('body'); b.className = 'home';
+  EX.forEach(function (e) { if (cats.indexOf(e.cat) < 0) cats.push(e.cat); });
+  var out = [];
+  cats.forEach(function (c) {
+    var list = EX.filter(function (e) { return e.cat === c; });
+    out.push(h('div', { class: 'hm-sess' }, ico('stella'),
+      h('div', {}, h('div', { class: 'hm-sess-n' }, c), h('div', { class: 'hm-sess-s' }, list.length + (list.length === 1 ? ' esercizio' : ' esercizi')))));
+    out.push(h('div', { class: 'hm-list' }, list.map(function (e) {
+      var pool = e.pool(), cnt = pool.length, S = seenOf(e.n), seen = pool.filter(function (x) { return S[x.id]; }).length;
+      return h('button', { class: 'hm-ex' + (cnt < e.min ? ' off' : ''), type: 'button', onclick: function () { load(e.n); } },
+        ico('libretto'),
+        h('div', { class: 'hm-ex-t' }, h('div', { class: 'hm-ex-n' }, e.name),
+          h('div', { class: 'hm-ex-d' }, e.desc + ' · ' + (cnt < e.min ? 'dati insufficienti' : seen + '/' + cnt + ' voci viste')),
+          cnt >= e.min ? h('div', { class: 'hm-bar' }, h('i', { style: 'width:' + Math.round(100 * seen / Math.max(1, cnt)) + '%' })) : ''));
+    })));
+  });
+  out.push(h('p', { class: 'hm-note' }, 'Prima di cominciare puoi ripassare le voci in Allenamento.'));
+  b.replaceChildren.apply(b, out);
+  document.querySelector('.content').scrollTop = 0;
+  $('modal').hidden = true; $('sheet').hidden = true;
+}
+
+/* segna le voci della domanda come viste; se la domanda apre un nuovo giro, azzera prima il giro */
+var showResult_engine = showResult;
+showResult = function () {
+  showResult_engine();
+  var f = $('footer');
+  f.insertBefore(h('button', { class: 'btn-link home-link', type: 'button', onclick: function () { showHome(); } }, 'Torna alla home'), f.lastChild);
+};
+var showQ_engine = showQ;
+showQ = function () {
+  var it = cur.items && cur.items[qi];
+  if (it && it._k) {
+    var S = seenOf(cur.n);
+    if (it._wrap && !cur._wrapped) {
+      cur._wrapped = true;
+      Object.keys(S).forEach(function (k) { delete S[k]; });
+      cur.items.slice(0, qi).forEach(function (x) { (x._k || []).forEach(function (id) { S[id] = 1; }); });
+    }
+    it._k.forEach(function (id) { S[id] = 1; });
+    saveSeen();
+    buildSidebar();
+  }
+  showQ_engine();
+};
+
+function load(n) {
+  if (n === 0) return showTraining();
+  setMode('ex'); LASTEX = n;
+  cur = EX.filter(function (e) { return e.n === n; })[0];
+  cur._wrapped = false;
+  qi = 0; hearts = 5; score = 0;
+  $('hearts').textContent = hearts;
+  $('modal').hidden = true;
+  $('sheet').hidden = true;
+  cur.items = cur.gen();
+  if (!cur.items.length) showEmpty(); else showQ();
+}
+
+/* ---------- barra laterale e controlli ---------- */
+function coverage() {
+  var rows = ROWS.filter(inFoglio), cov = {};
+  EX.forEach(function (e) { e.pool().forEach(function (x) { cov[x.id] = 1; }); });
+  return { rows: rows, miss: rows.filter(function (r) { return !cov[r.id]; }) };
+}
+function why(r) {
+  return r.uncertain ? 'segnata «da verificare»: lettura non confermata' :
+    !r.tipo ? 'mancano le colonne per gli esercizi' : 'nessun esercizio ha i dati necessari';
+}
+function resetSeen() { SEEN = {}; saveSeen(); buildSidebar(); $('sheet').hidden = true; refreshView(); }
+
+function renderCover() {
+  var cv = coverage();
+  var box = h('div', { class: 'cover' },
+    h('div', { class: 'cover-t' }, 'Copertura'),
+    h('div', { class: 'cover-n' }, (cv.rows.length - cv.miss.length) + ' di ' + cv.rows.length + ' voci hanno almeno un esercizio'));
+  if (cv.miss.length) {
+    var det = h('details', { class: 'cover-d' }, h('summary', {}, cv.miss.length + (cv.miss.length === 1 ? ' voce senza esercizi' : ' voci senza esercizi')));
+    cv.miss.forEach(function (r) { det.append(h('div', { class: 'cover-r' }, h('b', {}, r.text), ' · ' + why(r))); });
+    box.append(det);
+  }
+  box.append(h('button', { class: 'cover-b', type: 'button', onclick: resetSeen }, 'Azzera i giri'));
+  $('cover-box').replaceChildren(box);
+}
+function buildSidebar() { renderCover(); }
+
+function setStatus(msg) { $('data-status').textContent = msg; }
+
+function fillFoglio() {
+  var sel = $('sel-foglio'), names = [];
+  ROWS.forEach(function (r) { if (r.pers && names.indexOf(r.pers) < 0) names.push(r.pers); });
+  sel.replaceChildren(h('option', { value: '' }, 'Tutti i fogli'));
+  names.forEach(function (nm) { sel.append(h('option', { value: nm }, nm)); });
+  if (names.indexOf(FOGLIO) < 0) FOGLIO = '';
+  sel.value = FOGLIO;
+}
+
+function applyCSV(text, label) {
+  var info;
+  try { info = loadRows(text); } catch (e) { setStatus('CSV non valido: ' + e.message); return false; }
+  STORE = 'ginestra-giri-' + hashText(text); loadSeen();
+  var skipped = ROWS.filter(function (r) { return r.uncertain; }).length;
+  setStatus((label || 'glossario') + ' · ' + ROWS.length + ' voci' + (skipped ? ' · ' + skipped + ' «da verificare» escluse' : '') +
+    (info.hasNew ? '' : ' · mancano le colonne Tipo e Lemma: nessun esercizio disponibile'));
+  fillFoglio();
+  buildSidebar();
+  return true;
+}
+
+(function () {
+  $('modal-mascot').innerHTML = mascotSvg(true);
+  $('close').addEventListener('click', function () { $('modal').hidden = false; });
+  $('keep').addEventListener('click', function () { $('modal').hidden = true; });
+  $('end').addEventListener('click', function () { showHome(); });
+  $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
+  $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
+  $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('sel-foglio').addEventListener('change', function () { FOGLIO = this.value; renderCover(); refreshView(); });
+  $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
+  $('csv-file').addEventListener('change', function () {
+    var f = this.files && this.files[0], input = this;
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () { if (applyCSV(String(rd.result), f.name)) { $('sheet').hidden = true; showHome(); } input.value = ''; };
+    rd.readAsText(f, 'utf-8');
+  });
+  cur = EX[0];
+  applyCSV(CSV_TEXT, 'glossario_aggiornato.csv');
+  showHome();
+})();
+</script>
+</body>
+</html>
