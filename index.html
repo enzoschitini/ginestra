@@ -544,6 +544,7 @@
             <div class="sheet" role="dialog" aria-label="Impostazioni">
               <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
               <div class="sheet-status" id="data-status"></div>
+              <label class="fld">Suoni<select id="sel-snd"><option value="1">Attivi</option><option value="0">Disattivati</option></select></label>
               <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
               <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
               <div class="fld">Categoria<div class="chips" id="f-cat"></div></div>
@@ -600,6 +601,34 @@ function speak(text, rate) {
     if (v) u.voice = v;
     speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
   } catch (e) { return false; }
+}
+/* ---------- suoni (sintetizzati con Web Audio, nessun file) ---------- */
+var SOUND_ON = true, AC = null;
+try { SOUND_ON = localStorage.getItem('ginestra-suoni') !== '0'; } catch (e) {}
+function tone(t0, f0, f1, dur, type, vol) {
+  var o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f0, t0);
+  if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function sfx(ok) {
+  if (!SOUND_ON) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    var t = AC.currentTime + 0.02;
+    if (ok) { /* arpeggio do-mi-sol, limpido */
+      [523.25, 659.25, 783.99].forEach(function (f, i) { tone(t + i * 0.09, f, f, 0.28, 'triangle', 0.28); });
+      tone(t + 0.27, 1046.5, 1046.5, 0.4, 'sine', 0.22);
+    } else { /* ronzio stonato che cala */
+      tone(t, 155, 70, 0.55, 'sawtooth', 0.32);
+      tone(t, 164, 74, 0.55, 'square', 0.18);
+      tone(t + 0.12, 110, 55, 0.45, 'sawtooth', 0.2);
+    }
+  } catch (e) {}
 }
 function svg(html) { var d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 
@@ -1344,6 +1373,7 @@ function runCheck() {
 function finish(ok, solution, note) {
   if (done) return;
   done = true; checkFn = null;
+  sfx(ok);
   if (ok) score++; else ctx.lose();
   $('body').querySelectorAll('input').forEach(function (i) { i.disabled = true; });
   if (afterFn) afterFn(ok);
@@ -1671,6 +1701,12 @@ function loadData() {
   $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
   $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
   $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('sel-snd').value = SOUND_ON ? '1' : '0';
+  $('sel-snd').addEventListener('change', function () {
+    SOUND_ON = this.value === '1';
+    try { localStorage.setItem('ginestra-suoni', SOUND_ON ? '1' : '0'); } catch (e) {}
+    sfx(true);
+  });
   $('f-reset').addEventListener('click', function () { FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
   $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
   cur = EX[0];
