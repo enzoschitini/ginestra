@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ginestra</title>
   <meta name="theme-color" content="#ffffff">
+  <script>try { if (localStorage.getItem('ginestra-tema') === 'scuro') document.documentElement.classList.add('dark'); } catch (e) {}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -496,6 +497,82 @@
     #cover-box .cover-b { color: #777; border-color: #cfcfcf; background: #fff; }
     body.app .apptop { padding-top: max(14px, env(safe-area-inset-top)); }
     body.app .lesson-bar { padding-top: max(14px, env(safe-area-inset-top)); }
+
+    .fld-sw { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #afafaf; cursor: pointer; }
+    .switch { position: relative; width: 52px; height: 30px; flex: none; }
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+    .switch i { position: absolute; inset: 0; border-radius: 15px; background: #e5e5e5; transition: background .2s; }
+    .switch i::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+    .switch input:checked + i { background: #58cc02; }
+    .switch input:checked + i::after { transform: translateX(22px); }
+    .switch input:focus-visible + i { outline: 3px solid #84d8ff; outline-offset: 2px; }
+    html.dark .fld-sw { color: #7d8e98; }
+    html.dark .switch i { background: #2f4049; }
+
+    /* ======================================================
+       TEMA SCURO (opzionale: il chiaro è lo standard)
+       ====================================================== */
+    html.dark body.app { background: #0b1419; }
+    html.dark body.app .preview-frame, html.dark .phone, html.dark .status-bar, html.dark .footer, html.dark .tabbar { background: #131f24; }
+    html.dark body.app .preview-frame { box-shadow: 0 0 0 1px #2b3a42, 0 0 40px rgba(0,0,0,.4); }
+    html.dark .phone, html.dark .title, html.dark .apptop-t, html.dark .sheet-h, html.dark .tr-it, html.dark .tr-sp, html.dark .tr-ex,
+    html.dark .hm-ex, html.dark .choice-card, html.dark .pair-tile, html.dark .fld select, html.dark .chip, html.dark .tr-search,
+    html.dark .text-in, html.dark #foglio-info .cover, html.dark #cover-box .cover, html.dark #cover-box .cover-r b { color: #f1f7fb; }
+    html.dark .status-bar { color: #fff; }
+    html.dark .prompt-sub, html.dark .hint-line, html.dark .result p, html.dark .drawer-note, html.dark .hm-ex-d, html.dark .tr-pt,
+    html.dark .tr-expt, html.dark .tr-tag, html.dark .tr-none, html.dark .sheet-status, html.dark .gear, html.dark #cover-box .cover-r,
+    html.dark #cover-box .cover-b, html.dark .close-btn:hover { color: #9fb0ba; }
+    html.dark .close-btn, html.dark .bubble-label, html.dark .apptop-s, html.dark .hm-note, html.dark .moves, html.dark .fld, html.dark .chip small,
+    html.dark .tr-chev, html.dark .tabb, html.dark #foglio-info .cover-t, html.dark #cover-box .cover-t, html.dark .sheet-x,
+    html.dark .answer-line-area:empty::before, html.dark .btn-ghost:disabled { color: #7d8e98; }
+    html.dark .progress-bg, html.dark .hm-bar, html.dark .word-chip.placed { background: #2b3a42; border-color: #2b3a42; }
+    html.dark .speech-bubble, html.dark .choice-card, html.dark .word-chip, html.dark .pair-tile, html.dark .btn-ghost, html.dark .key,
+    html.dark .hm-ex, html.dark .gear, html.dark .tr-search, html.dark .tr-toggle, html.dark .tr-card, html.dark .tr-mini,
+    html.dark .fld select, html.dark .chip, html.dark #cover-box .cover-b { background: #1c2b33; border-color: #2f4049; }
+    html.dark .choice-card, html.dark .word-chip, html.dark .pair-tile, html.dark .btn-ghost, html.dark .key, html.dark .speech-bubble { box-shadow: 0 3px 0 #2f4049; }
+    html.dark .choice-card:active, html.dark .word-chip:active, html.dark .pair-tile:active, html.dark .key:active { box-shadow: 0 1px 0 #2f4049; }
+    html.dark .speech-bubble::before { border-right-color: #2f4049; }
+    html.dark .speech-bubble::after { border-right-color: #1c2b33; }
+    html.dark .answer-line-area, html.dark .footer, html.dark .tabbar { border-color: #2b3a42; }
+    html.dark .tr-box { border-top-color: #2b3a42; }
+    html.dark .word-chip { color: #e2ecf1; }
+    html.dark .key { color: #e2ecf1; }
+    html.dark .choice-card:hover, html.dark .hm-ex:hover, html.dark .gear:hover, html.dark .tabb:not(.on):hover { background: #24363f; }
+    html.dark .audio-btn.slow { background: #1c2b33; border-color: #2f4049; box-shadow: 0 3px 0 #2f4049; color: #7d8e98; }
+    html.dark .text-in { background: #1c2b33; border-color: #2f4049; }
+    html.dark .text-in:focus { background: #131f24; border-color: #1cb0f6; }
+    html.dark .hang span { border-bottom-color: #9fb0ba; }
+    html.dark .choice-card.selected, html.dark .word-chip.sel, html.dark .pair-tile.selected, html.dark .mem-card.up, html.dark .chip.on, html.dark .tabb.on,
+    html.dark .audio-btn { background: #17394b; border-color: #1f6c93; color: #53c4f5; box-shadow: 0 3px 0 #1f6c93; }
+    html.dark .chip.on, html.dark .tabb.on { box-shadow: none; }
+    html.dark .chip.on small { color: #53c4f5; }
+    html.dark .choice-card.right, html.dark .word-chip.right, html.dark .pair-tile.matched-active, html.dark .key.hit { background: #1f3a16; border-color: #3f7a1f; color: #89e219; box-shadow: 0 3px 0 #3f7a1f; }
+    html.dark .choice-card.wrong, html.dark .word-chip.wrong, html.dark .pair-tile.mismatch, html.dark .key.miss { background: #3d1c20; border-color: #7a2f35; color: #ff7b7b; box-shadow: 0 3px 0 #7a2f35; }
+    html.dark .key.hit, html.dark .key.miss { box-shadow: none; }
+    html.dark .pair-tile.completed { border-color: #24343c; color: #3d4f59; }
+    html.dark .blank { color: #53c4f5; }
+    html.dark .blank.ok { color: #89e219; }
+    html.dark .blank.bad { color: #ff7b7b; }
+    html.dark .drawer.good { background: #1f3a16; border-top-color: #3f7a1f; }
+    html.dark .drawer.bad { background: #3d1c20; border-top-color: #7a2f35; }
+    html.dark .drawer.good .drawer-status, html.dark .drawer.good .drawer-note { color: #89e219; }
+    html.dark .drawer.bad .drawer-status, html.dark .drawer-solution { color: #ff7b7b; }
+    html.dark .btn-main:disabled { background: #2b3a42; color: #7d8e98; }
+    html.dark .hm-sess { background: #3a3012; border-color: #6b5a1c; }
+    html.dark .hm-sess-n { color: #ffd966; }
+    html.dark .hm-sess-s { color: #c9a53c; }
+    html.dark .tr-card.open { border-color: #1f6c93; }
+    html.dark .tr-spk:hover:not(:disabled) { background: #17394b; }
+    html.dark .tr-tag { background: #24363f; }
+    html.dark .tr-warn { background: #3a3012; color: #fbbf24; }
+    html.dark #foglio-info .cover, html.dark #cover-box .cover { background: #1c2b33; border-color: #2f4049; }
+    html.dark #cover-box .cover-d summary { color: #fbbf24; }
+    html.dark .stat.y span { color: #ffc800; }
+    html.dark .sheet { background: #131f24; }
+    html.dark .sheet-overlay { background: rgba(0,0,0,.65); }
+    html.dark .home-indicator { background: #fff; }
+    html.dark .tabb .ico { filter: grayscale(1) opacity(.7); }
+    html.dark .tabb.on .ico { filter: none; }
   </style>
 </head>
 <body class="app">
@@ -544,6 +621,7 @@
             <div class="sheet" role="dialog" aria-label="Impostazioni">
               <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
               <div class="sheet-status" id="data-status"></div>
+              <label class="fld-sw">Tema scuro<span class="switch"><input type="checkbox" id="sw-tema" role="switch"><i></i></span></label>
               <label class="fld">Suoni<select id="sel-snd"><option value="1">Attivi</option><option value="0">Disattivati</option></select></label>
               <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
               <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
@@ -1424,7 +1502,7 @@ function showEmpty() {
   ctx.title(cur.name);
   var b = $('body'); b.className = 'result';
   b.replaceChildren(mascot(true),
-    h('h2', { style: 'color:#3c3c3c;font-size:22px' }, 'Dati insufficienti'),
+    h('h2', { style: 'font-size:22px' }, 'Dati insufficienti'),
     h('p', {}, 'Per questo esercizio servono ' + cur.needs + '. Voci idonee adesso: ' + cur.pool().length + '.'));
   var f = $('footer'); f.className = 'footer';
   f.replaceChildren(h('button', { class: 'btn-main', type: 'button', onclick: function () { load(cur.n); } }, 'Riprova'),
@@ -1701,6 +1779,12 @@ function loadData() {
   $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
   $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
   $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('sw-tema').checked = document.documentElement.classList.contains('dark');
+  $('sw-tema').addEventListener('change', function () {
+    document.documentElement.classList.toggle('dark', this.checked);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', this.checked ? '#131f24' : '#ffffff');
+    try { localStorage.setItem('ginestra-tema', this.checked ? 'scuro' : 'chiaro'); } catch (e) {}
+  });
   $('sel-snd').value = SOUND_ON ? '1' : '0';
   $('sel-snd').addEventListener('change', function () {
     SOUND_ON = this.value === '1';
