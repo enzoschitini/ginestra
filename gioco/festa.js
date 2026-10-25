@@ -207,7 +207,8 @@
     return {
       el: el,
       dopo: function () {
-        sfxFesta(); if (R.perfetta || score >= R.tot * 0.8) coriandoli(R.perfetta ? 50 : 30);
+        if (window.SND) SND.play('congratulazioni'); else sfxFesta();
+        if (R.perfetta || score >= R.tot * 0.8) coriandoli(R.perfetta ? 50 : 30);
         later(function () { riempi.style.setProperty('--g-pct', pctA + '%'); }, 400);
         if (r.obiettivoRaggiunto) later(function () {
           baule.replaceChildren(ic('scrignoAperto', 34)); baule.classList.add('g-anim-pop'); sfxDing();
@@ -306,7 +307,7 @@
       h('button', { class: 'f-btn f-blu', type: 'button', onclick: function () { load(cur.n); } }, 'Riprova'),
       h('button', { class: 'f-btn f-grigio', type: 'button', onclick: function () { showHome(); } }, 'Torna al percorso'),
       h('div', { class: 'home-indicator' }));
-    sfxTriste();
+    if (!window.mostraSenzaCuori) { if (window.SND) SND.play('riprova'); else sfxTriste(); }
     var p = f.querySelector('.f-btn'); if (p) p.focus({ preventScroll: true });
   }
 })();

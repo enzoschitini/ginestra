@@ -1,6 +1,6 @@
 /* Ginestra gioco - Obiettivi e Lega. Usa le variabili --g-* di gioco.css */
 .pf { font-family: var(--g-font); color: var(--g-testo); }
-.pf-wrap { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 24px; max-width: 560px; margin: 0 auto; }
+.pf-wrap { box-sizing: border-box; width: 100%; display: flex; flex-direction: column; gap: 16px; padding: 4px 0 24px; max-width: 560px; margin: 0 auto; }
 .pf-ico { display: inline-flex; flex: none; line-height: 0; }
 .pf-ico svg { display: block; }
 .pf-sez { box-sizing: border-box; }

@@ -5,6 +5,7 @@
   var OGNI = 4;                       // uno scrigno ogni 4 nodi
   var OFFS = [0, 46, 70, 46, 0, -46, -70, -46]; // zig-zag in px (onda)
   var aperto = null;                  // popover aperto
+  var ultimo = null;                  // ultimo esercizio avviato: la Home ci torna a scrollare
 
   function sbloccaTutto() { try { return localStorage.getItem(KEY_SBLOCCA) === '1'; } catch (e) { return false; } }
   function setSblocca(v) { try { localStorage.setItem(KEY_SBLOCCA, v ? '1' : '0'); } catch (e) {} }
@@ -41,7 +42,19 @@
     wrap.appendChild(p);
     aperto = p;
     p.addEventListener('click', function (ev) { ev.stopPropagation(); });
-    try { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+    inVista(p, 'nearest');
+  }
+
+  /* scrolla solo .content: scrollIntoView muoverebbe anche body.app (overflow:hidden) e lascerebbe vuoto sotto la tab bar */
+  function inVista(el, modo) {
+    var ct = document.querySelector('.content');
+    if (!ct || !el) return;
+    var r = el.getBoundingClientRect(), c = ct.getBoundingClientRect();
+    var d = 0;
+    if (modo === 'center') d = (r.top + r.height / 2) - (c.top + c.height / 2);
+    else if (r.bottom > c.bottom) d = r.bottom - c.bottom + 8;
+    else if (r.top < c.top) d = r.top - c.top - 8;
+    if (d) ct.scrollTop += d;
   }
 
   function scuoti(el) {
@@ -50,7 +63,7 @@
   }
 
   function nodo(e, info, off) {
-    var wrap = h('div', { class: 'pc-nodo-wrap', style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
+    var wrap = h('div', { class: 'pc-nodo-wrap', 'data-ex': String(e.n), style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
     var cls = 'pc-nodo pc-' + info.stato;
     var btn = h('button', { class: cls, type: 'button', 'aria-label': e.name + ' - ' + info.etichetta });
     var pct = info.cnt ? info.seen / info.cnt : 0;
@@ -81,7 +94,7 @@
         popover(wrap, '<b>Bloccato</b><span>Completa almeno una lezione dell\'esercizio precedente per sbloccarlo.</span>', null, 'no');
       } else {
         popover(wrap, '<b>' + e.name + '</b><span>' + (e.desc || '') + '</span><span class="pc-sub">' + info.seen + '/' + info.cnt + ' voci viste</span>',
-          { testo: 'Inizia lezione +10 XP', fn: function () { load(e.n); } }, 'ok');
+          { testo: 'Inizia lezione +10 XP', fn: function () { ultimo = e.n; load(e.n); } }, 'ok');
       }
     });
     return wrap;
@@ -113,6 +126,7 @@
       onclick: function (ev) {
         ev.stopPropagation();
         if (box) { box.remove(); box = null; this.setAttribute('aria-expanded', 'false'); return; }
+        if (window.SND) SND.play('click');
         box = h('div', { class: 'pc-guida-box' }, [h('b', {}, 'In questa unità')].concat(list.map(function (e) { return h('div', {}, e.name + ' - ' + (e.desc || '')); })));
         banner.parentNode.insertBefore(box, banner.nextSibling);
         this.setAttribute('aria-expanded', 'true');
@@ -166,16 +180,18 @@
     var lab = h('label', { class: 'pc-switch' });
     var chk = h('input', { type: 'checkbox', 'aria-label': 'Sblocca tutto' });
     chk.checked = tutto;
-    chk.addEventListener('change', function () { setSblocca(chk.checked); showHome(); });
+    chk.addEventListener('change', function () { if (window.SND) SND.play('click'); setSblocca(chk.checked); showHome(); });
     lab.append(chk, h('span', { class: 'pc-switch-ui', 'aria-hidden': 'true' }), h('span', { class: 'pc-switch-t' }, 'Sblocca tutto'));
     out.push(h('div', { class: 'pc-fondo' }, lab,
-      h('p', { class: 'hm-note' }, 'Completati ' + nodiFatti + ' di ' + nodiTot + ' esercizi. Prima di cominciare puoi ripassare le voci in Allenamento.')));
+      h('p', { class: 'hm-note' }, 'Completati ' + nodiFatti + ' di ' + nodiTot + ' esercizi. Prima di cominciare puoi ripassare le voci in Ripasso.')));
 
     b.replaceChildren.apply(b, out);
     var ct = document.querySelector('.content'); if (ct) ct.scrollTop = 0;
     var sh = $('sheet'); if (sh) sh.hidden = true;
-    var cor = b.querySelector('.pc-corrente');
-    if (cor) setTimeout(function () { try { cor.scrollIntoView({ block: 'center' }); } catch (e) {} }, 60);
+    /* tornando da un esercizio si riporta in vista quel nodo (una volta sola), altrimenti il nodo corrente */
+    var cor = ultimo != null && b.querySelector('[data-ex="' + ultimo + '"]') || b.querySelector('.pc-corrente');
+    ultimo = null;
+    if (cor) setTimeout(function () { inVista(cor, 'center'); }, 60);
   };
   // showHome e' una function declaration globale: l'assegnazione sopra la sostituisce
   document.addEventListener('click', chiudi);
