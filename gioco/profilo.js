@@ -157,36 +157,70 @@
     fine(b, wrap);
   };
 
-  /* ---------- Lega ---------- */
-  function iniziali(n) { return n.charAt(0).toUpperCase(); }
-  function hashN(s) { var h = 0, i; for (i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
-  function giorniAFine() { var d = new Date().getDay(); return d === 0 ? 1 : 8 - d; } // fino al lunedi'
+  /* ---------- Lega personale: sfidi le tue settimane ---------- */
+  function dataBreve(wk) { var p = wk.split('-'); return p[2] + '/' + p[1]; }
+  function giorniTxt(n) { return n + (n === 1 ? ' giorno' : ' giorni'); }
+  function colonna(xp, max, target, corrente, classe, etichetta, mostraVal) {
+    var t = el('span', 'pf-gg-b', el('i')), l;
+    t.firstChild.style.height = Math.max(xp ? 6 : 0, Math.round(xp / max * 100)) + '%';
+    if (target) { l = el('u', 'pf-linea'); l.style.bottom = Math.round(target / max * 100) + '%'; t.append(l); }
+    return el('div', classe, [el('span', 'pf-gg-v', mostraVal ? String(xp) : ''), t, el('span', 'pf-gg-l', etichetta)]);
+  }
 
   window.showLega = function () {
-    var b = apri('Lega', 'pf-lega'), L = GS.lega(), wrap = el('div', 'pf-wrap'), lista = el('ol', 'pf-lista'), n = L.righe.length, i, r, pos, zona, riga, gg = giorniAFine();
+    var b = apri('Lega', 'pf-lega'), L = GS.lega(), wrap = el('div', 'pf-wrap'), i, r, box, max, msg, rischio, st;
+
+    /* intestazione */
     wrap.append(el('div', 'pf-lega-head', [
       gi('medaglia', 84, COL_LEGA[L.indice] || 'oro'),
       el('h2', 'pf-lega-t', 'Lega ' + L.nome),
-      el('p', 'pf-lega-s', 'Sei al ' + L.posizione + '° posto. Primi 10 in Lega ' + (GS.LEGHE[L.indice + 1] || 'massima') + '.'),
-      el('p', 'pf-lega-g', [gi('fiamma', 16), ' Finisce tra ' + gg + (gg === 1 ? ' giorno' : ' giorni')])
+      el('p', 'pf-lega-s', L.prossima ? 'Fai ' + L.target + ' XP entro domenica per salire in Lega ' + L.prossima + '.' : 'Sei nella lega più alta: fai ' + L.target + ' XP a settimana per restarci.'),
+      el('p', 'pf-lega-g', [gi('timer', 16), ' Finisce tra ' + giorniTxt(L.giorniRimasti)])
     ]));
-    for (i = 0; i < n; i++) {
-      r = L.righe[i]; pos = i + 1;
-      zona = pos <= 10 ? 'pf-su' : (pos > n - 5 ? 'pf-giu' : '');
-      riga = el('li', 'pf-r ' + zona + (r.tu ? ' pf-tu' : ''), [
-        el('span', 'pf-pos', String(pos)),
-        el('span', 'pf-av', iniziali(r.nome)),
-        el('span', 'pf-nome', r.tu ? 'Tu' : r.nome),
-        el('span', 'pf-xp', fmtN(r.xp) + ' XP')
-      ]);
-      riga.children[1].style.background = r.tu ? 'var(--g-verde)' : COL_AV[hashN(r.nome) % COL_AV.length];
-      if (r.tu) riga.setAttribute('aria-current', 'true');
-      riga.setAttribute('aria-label', pos + ' posto, ' + r.nome + ', ' + r.xp + ' XP' + (pos <= 10 ? ', zona promozione' : zona ? ', zona retrocessione' : ''));
-      lista.append(riga);
-      if (pos === 10) lista.append(el('li', 'pf-sep pf-sep-su', 'Zona promozione ▲'));
-      if (pos === n - 5) lista.append(el('li', 'pf-sep pf-sep-giu', 'Zona retrocessione ▼'));
+
+    /* progresso della settimana */
+    rischio = L.indice > 0 && L.xp < L.retro && L.giorniRimasti <= 2;
+    if (L.xp >= L.target) msg = L.prossima ? 'Obiettivo raggiunto! Lunedì sali in Lega ' + L.prossima + '.' : 'Obiettivo raggiunto! Resti in Lega ' + L.nome + '.';
+    else if (L.xp === 0) msg = 'Questa settimana non hai ancora guadagnato XP: bastano ' + L.perGiorno + ' XP al giorno.';
+    else msg = 'Ancora ' + L.mancanti + ' XP: circa ' + L.perGiorno + ' al giorno per ' + giorniTxt(L.giorniRimasti) + '.';
+    wrap.append(el('section', 'g-card pf-sez pf-ob', [
+      el('div', 'pf-ob-top', [el('h3', 'pf-h', 'Questa settimana'), el('b', 'pf-ob-n', [gi('fulmine', 18), ' ' + fmtN(L.xp) + ' / ' + fmtN(L.target) + ' XP'])]),
+      barra(L.pct * 100, L.xp >= L.target ? '' : 'g-bar-blu'),
+      el('p', 'pf-ob-m' + (rischio ? ' pf-rischio' : ''), (rischio ? 'Attenzione: sotto i ' + L.retro + ' XP a fine settimana scendi di lega. ' : '') + msg)
+    ]));
+
+    /* giorno per giorno */
+    max = Math.max(10, GS.state.obiettivoXp);
+    for (i = 0; i < L.giorni.length; i++) max = Math.max(max, L.giorni[i].xp);
+    box = el('div', 'pf-gg');
+    for (i = 0; i < L.giorni.length; i++) {
+      r = L.giorni[i];
+      box.append(colonna(r.futuro ? 0 : r.xp, max, 0, r.oggi, 'pf-gg-c' + (r.oggi ? ' pf-ora' : '') + (r.futuro ? ' pf-fut' : ''), r.lettera, !r.futuro));
     }
-    wrap.append(lista, el('p', 'g-sotto pf-simulata', 'Sfidanti simulati: gli avversari sono generati dall\'app, non sono persone reali.'));
+    wrap.append(el('section', 'g-card pf-sez', [el('h3', 'pf-h', 'Giorno per giorno'), box]));
+
+    /* le tue settimane */
+    st = L.storia.slice(-5).concat([{ wk: 'questa', xp: L.xp, target: L.target, corrente: true }]);
+    for (max = 10, i = 0; i < st.length; i++) max = Math.max(max, st[i].xp, st[i].target || 0);
+    box = el('div', 'pf-sett');
+    for (i = 0; i < st.length; i++) {
+      r = st[i];
+      box.append(colonna(r.xp, max, r.target, r.corrente, 'pf-sett-c' + (r.corrente ? ' pf-ora' : '') + (r.target && r.xp >= r.target ? ' pf-ok' : ''), r.corrente ? 'Ora' : dataBreve(r.wk), true));
+    }
+    wrap.append(el('section', 'g-card pf-sez', [el('h3', 'pf-h', 'Le tue settimane'), box,
+      el('p', 'pf-nota-l', 'La linea gialla è l\'obiettivo di quella settimana. In verde le settimane in cui lo hai raggiunto.')]));
+
+    /* record */
+    wrap.append(el('div', 'pf-recs', [
+      riquadro(['timer', 22], fmtN(L.settimanaScorsa) + ' XP', 'Settimana scorsa'),
+      riquadro(['trofeo', 22], fmtN(L.record) + ' XP', 'Record'),
+      riquadro(['fulmine', 22], fmtN(L.media4) + ' XP', 'Media 4 sett.')
+    ]));
+    if (L.settimanaScorsa > 0) wrap.append(el('p', 'pf-sfida' + (L.batteScorsa ? ' pf-sfida-ok' : ''),
+      L.batteScorsa ? 'Stai battendo la tua settimana scorsa! (' + fmtN(L.xp) + ' contro ' + fmtN(L.settimanaScorsa) + ' XP)' :
+        'Sfida: batti la tua settimana scorsa. Ti mancano ' + fmtN(L.settimanaScorsa - L.xp + 1) + ' XP.'));
+
+    wrap.append(el('p', 'g-sotto pf-simulata', 'Come funziona: gareggi contro te stesso, non ci sono altri giocatori. Con almeno ' + L.target + ' XP sali di lega; con meno di ' + L.retro + ' XP scendi. Se in una settimana non studi, la lega resta com\'è.'));
     fine(b, wrap);
   };
 })();

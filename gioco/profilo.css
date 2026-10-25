@@ -98,3 +98,27 @@
   .pf-g { font-size: 12px; border-radius: 10px; }
   .pf-griglia { gap: 2px; }
 }
+
+/* lega personale */
+.pf-ob-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.pf-ob-top .pf-h { margin: 0; }
+.pf-ob-n { display: inline-flex; align-items: center; gap: 4px; font: 900 15px/1 var(--g-font); white-space: nowrap; }
+.pf-ob-m { margin: 10px 0 0; font: 700 14px/1.4 var(--g-font); color: var(--g-testo-2); }
+.pf-rischio { color: var(--g-rosso); }
+.pf-gg, .pf-sett { display: flex; align-items: flex-end; gap: 8px; height: 132px; margin-top: 8px; }
+.pf-gg-c, .pf-sett-c { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pf-gg-v { height: 14px; font: 800 11px/14px var(--g-font); color: var(--g-testo-2); }
+.pf-gg-b { position: relative; flex: 1; width: 100%; max-width: 34px; display: flex; align-items: flex-end; background: var(--g-barra-bg); border-radius: 8px; }
+.pf-gg-b > i { display: block; width: 100%; background: var(--g-blu); border-radius: 8px; transition: height .5s; }
+.pf-gg-l { font: 800 12px/1 var(--g-font); color: var(--g-testo-3); }
+.pf-ora .pf-gg-l { color: var(--g-testo); }
+.pf-ora .pf-gg-b > i { background: var(--g-arancio); }
+.pf-ok .pf-gg-b > i { background: var(--g-verde); }
+.pf-fut .pf-gg-b { opacity: .5; }
+.pf-linea { position: absolute; left: -3px; right: -3px; height: 0; border-top: 3px dashed var(--g-giallo); text-decoration: none; pointer-events: none; }
+.pf-nota-l { margin: 10px 0 0; font: 700 12px/1.4 var(--g-font); color: var(--g-testo-3); }
+.pf-recs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 0; }
+.pf-recs .pf-stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; }
+.pf-sfida { margin: 12px 0 0; padding: 12px 14px; border: 2px solid var(--g-bordo); border-radius: var(--g-raggio); font: 800 14px/1.4 var(--g-font); color: var(--g-testo-2); }
+.pf-sfida-ok { color: var(--g-verde-ombra); border-color: var(--g-verde); background: rgba(88, 204, 2, .12); }
+.pf-lega .pf-simulata { margin-top: 14px; }

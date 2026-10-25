@@ -285,7 +285,7 @@
     var su = risultato.r.legaPromossa === true, nome = (GS.LEGHE && GS.LEGHE[GS.state.lega]) || 'Lega';
     return {
       el: schermata(su ? 'Sei salito in Lega ' + nome + '!' : 'Sei sceso in Lega ' + nome,
-        su ? 'Ottimo lavoro in classifica. Sfidanti simulati.' : 'Fai qualche lezione in più questa settimana per risalire.',
+        su ? 'Hai raggiunto l\'obiettivo settimanale. Ottimo lavoro!' : 'La settimana scorsa hai fatto pochi XP. Questa settimana puoi risalire!',
         h('div', { class: 'f-hero-ico g-anim-pop' }, ic(su ? 'trofeo' : 'lucchetto', su ? 84 : 110)), null, 'f-lega'),
       dopo: function () { if (su) { sfxFesta(); coriandoli(50); } else sfxTriste(); }
     };

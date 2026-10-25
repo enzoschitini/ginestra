@@ -15,7 +15,10 @@
  *  GS.streakGiorni(n=7) -> [{data, attivo, oggi, lettera}]  (lettere italiane D L M M G V S)
  *  GS.mese(anno, mese0) -> griglia con settimana da lunedi'; null di padding iniziale e finale
  *  GS.setObiettivo(xp)             10/20/30/50
- *  GS.TRAGUARDI, GS.LEGHE, GS.lega() -> {nome, indice, righe:[{nome,xp,tu}], posizione (1-based), simulata:true}
+ *  GS.TRAGUARDI, GS.LEGHE, GS.TARGET
+ *  GS.lega() -> lega personale (nessun avversario): {nome, indice, prossima, target, retro, xp, pct, mancanti, giorniRimasti,
+ *        perGiorno, giorni[7], storia[8 settimane], settimanaScorsa, media4, record, batteScorsa, simulata:false}
+ *        a fine settimana: xp >= target sale, xp < 35% del target scende (solo se hai studiato)
  *  GS.setNow(fnOrMs)               solo per test (orologio finto); setNow() ripristina
  */
 (function (root) {
@@ -23,8 +26,8 @@
   var KEY = 'ginestra-gioco';
   var MAXC = 5, REGEN = 30 * 60 * 1000, DAY = 86400000;
   var LEGHE = ['Bronzo', 'Argento', 'Oro', 'Zaffiro', 'Rubino', 'Ametista'];
-  var NOMI = ['Giulia', 'Marco', 'Sofia', 'Luca', 'Chiara', 'Matteo', 'Francesca', 'Alessandro', 'Martina', 'Davide',
-    'Elisa', 'Lorenzo', 'Giorgia', 'Andrea', 'Beatrice', 'Federico', 'Valentina', 'Simone', 'Aurora', 'Tommaso'];
+  var TARGET = [60, 120, 200, 300, 420, 560]; // XP settimanali per salire dalla lega i -> i+1
+  var RETRO = 0.35;                           // sotto il 35% dell'obiettivo si scende
   var LETTERE = ['D', 'L', 'M', 'M', 'G', 'V', 'S'];
 
   var nowFn = null, store = null, mem = null, S = null, ls = {};
@@ -48,7 +51,7 @@
   function defaults() {
     return { xp: 0, xpOggi: 0, giorno: '', gemme: 0, cuori: MAXC, cuoriTs: 0, streak: 0, streakMax: 0, giorni: {},
       obiettivoXp: 20, corone: {}, lezioni: {}, traguardi: {}, lega: 0, xpSettimana: 0, settimana: '', congelamenti: 0,
-      ultimoGiorno: '', scrigni: {}, perfette: 0, gemmeTotali: 0, xpLega: 0, legaEsito: null };
+      ultimoGiorno: '', scrigni: {}, perfette: 0, gemmeTotali: 0, xpLega: 0, legaEsito: null, storia: [], record: 0 };
   }
   function carica() {
     var s = defaults(), raw = null, k;
@@ -69,41 +72,12 @@
     for (i = 0; i < a.length; i++) { try { a[i](dati); } catch (e) {} }
   };
 
-  // ---- lega simulata ----
-  function hash(str) {
-    var h = 2166136261, i;
-    for (i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return h >>> 0;
-  }
-  function rng(seed) {
-    var a = seed >>> 0;
-    return function () {
-      a = (a + 0x6D2B79F5) >>> 0;
-      var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  function righeLega(wk, indice, xpTu, frac) {
-    var righe = [], i, r, base = 120 + indice * 70, target, e;
-    for (i = 0; i < NOMI.length; i++) {
-      r = rng(hash(wk + '|' + NOMI[i]));
-      target = base * (0.25 + r() * 1.5);
-      e = 0.8 + r() * 0.4;
-      righe.push({ nome: NOMI[i], xp: Math.floor(target * Math.pow(Math.max(0, Math.min(1, frac)), e)), tu: false });
-    }
-    righe.push({ nome: 'Tu', xp: xpTu, tu: true });
-    righe.sort(function (a, b) { return b.xp - a.xp || (b.tu ? 1 : 0) - (a.tu ? 1 : 0) || (a.nome < b.nome ? -1 : 1); });
-    return righe;
-  }
-  function posizione(righe) { var i; for (i = 0; i < righe.length; i++) if (righe[i].tu) return i + 1; return righe.length; }
-  function fraSettimana() {
-    var d = parse(S.settimana || lunedi(oggi()));
-    return Math.max(0, Math.min(1, (now() - d.getTime()) / (7 * DAY)));
-  }
+  // ---- lega personale: sfidi le tue settimane passate ----
+  function addData(d, n) { var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
 
   // ---- cambio giorno / settimana ----
   function ensure() {
-    var o = oggi(), wk = lunedi(o), pos, righe, missed;
+    var o = oggi(), wk = lunedi(o), tgt, missed;
     if (S.giorno !== o) { S.giorno = o; S.xpOggi = S.giorni[o] || 0; }
     if (S.ultimoGiorno && S.streak > 0) {
       missed = diffGiorni(S.ultimoGiorno, o) - 1;
@@ -111,11 +85,12 @@
     }
     if (S.settimana !== wk) {
       if (S.settimana && S.xpSettimana > 0) {
-        righe = righeLega(S.settimana, S.lega, S.xpSettimana, 1);
-        pos = posizione(righe);
-        if (pos <= 10 && S.lega < LEGHE.length - 1) { S.lega++; S.legaEsito = true; }
-        else if (pos >= 16 && S.lega > 0) { S.lega--; S.legaEsito = false; }
-        GS.emit('lega', { posizione: pos, esito: S.legaEsito });
+        tgt = TARGET[S.lega];
+        S.storia = (S.storia || []).concat([{ wk: S.settimana, xp: S.xpSettimana, target: tgt, lega: S.lega }]).slice(-12);
+        if (S.xpSettimana > (S.record || 0)) S.record = S.xpSettimana;
+        if (S.xpSettimana >= tgt && S.lega < LEGHE.length - 1) { S.lega++; S.legaEsito = true; }
+        else if (S.xpSettimana < tgt * RETRO && S.lega > 0) { S.lega--; S.legaEsito = false; }
+        GS.emit('lega', { xp: S.xpSettimana, target: tgt, esito: S.legaEsito });
       }
       S.settimana = wk; S.xpSettimana = 0;
     }
@@ -265,10 +240,31 @@
   };
 
   // ---- lega ----
+  GS.TARGET = TARGET;
   GS.lega = function () {
     ensure();
-    var righe = righeLega(S.settimana, S.lega, S.xpSettimana, fraSettimana());
-    return { nome: LEGHE[S.lega], indice: S.lega, righe: righe, posizione: posizione(righe), simulata: true };
+    var inizio = parse(S.settimana), oggiD = parse(oggi()), i, d, k, w, tgt = TARGET[S.lega], xp = S.xpSettimana;
+    var giorni = [], storia = [], mappa = {}, ultime = [], somma = 0, scorsa = 0;
+    for (i = 0; i < 7; i++) {
+      d = addData(inizio, i); k = fmt(d);
+      giorni.push({ data: k, lettera: ['L', 'M', 'M', 'G', 'V', 'S', 'D'][i], xp: S.giorni[k] || 0, oggi: k === oggi(), futuro: d.getTime() > oggiD.getTime() });
+    }
+    (S.storia || []).forEach(function (r) { mappa[r.wk] = r; });
+    for (i = 8; i >= 1; i--) {
+      w = fmt(addData(inizio, -7 * i));
+      storia.push(mappa[w] || { wk: w, xp: 0, target: null, lega: null });
+    }
+    scorsa = storia[storia.length - 1].xp;
+    ultime = storia.slice(-4).map(function (r) { return r.xp; });
+    ultime.forEach(function (x) { somma += x; });
+    var rimasti = Math.max(1, Math.round((addData(inizio, 7).getTime() - oggiD.getTime()) / DAY));
+    return {
+      nome: LEGHE[S.lega], indice: S.lega, prossima: LEGHE[S.lega + 1] || null,
+      target: tgt, retro: Math.ceil(tgt * RETRO), xp: xp, pct: Math.min(1, xp / tgt),
+      mancanti: Math.max(0, tgt - xp), giorniRimasti: rimasti, perGiorno: Math.ceil(Math.max(0, tgt - xp) / rimasti),
+      giorni: giorni, storia: storia, settimanaScorsa: scorsa, media4: Math.round(somma / 4), record: Math.max(S.record || 0, xp),
+      batteScorsa: xp > scorsa, simulata: false
+    };
   };
 
   S = carica(); GS.state = S; ensure(); save();

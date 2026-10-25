@@ -10,7 +10,7 @@ Obiettivo: far somigliare Ginestra a Duolingo / a un videogioco. Riferimenti: le
 - Non copiare gli asset di Duolingo (gufo, ecc.): usa la mascotte di Ginestra (`mascot()`), le icone in `ICON`/`layout/assets` e SVG propri.
 - Accessibilità: bottoni veri, `aria-label`, `prefers-reduced-motion` rispettato per le animazioni.
 - Salvataggio: solo `localStorage`, sempre in try/catch. Nessun backend.
-- La classifica è **simulata** (avversari fittizi generati in modo deterministico) e deve dichiararlo in UI ("Sfidanti simulati").
+- La Lega è **personale**: nessun avversario, né reale né finto. Si gareggia contro le proprie settimane passate (vedi `GS.lega()`).
 
 ## Contratto dati: `window.GS` (file `gioco/stato.js`, chiave `ginestra-gioco`)
 ```
@@ -31,7 +31,7 @@ GS.registraLezione({ex, giuste, totali, combo}) -> risultato:
 GS.streakGiorni(n) -> [{data, attivo, oggi, lettera}]   // ultimi n giorni (default 7) per la riga S M T W T F S
 GS.mese(anno, mese0) -> [{data, giorno, xp, attivo, oggi, futuro}|null ...]   // griglia calendario con padding
 GS.TRAGUARDI -> [{id, nome, descr, icona, livelli:[soglie], valore: fn(state)}]
-GS.lega() -> {nome, indice, righe:[{nome, xp, tu:bool}], posizione}   // simulata
+GS.lega() -> {nome, indice, prossima, target, retro, xp, pct, mancanti, giorniRimasti, perGiorno, giorni[7], storia[8], settimanaScorsa, media4, record, batteScorsa}
 GS.reset()
 ```
 Regole di gioco: lezione = 10 XP base; +5 XP "combo" se ≥5 risposte giuste di fila; +5 se lezione perfetta; obiettivo giornaliero 20 XP (modificabile 10/20/30/50); gemme = 5 per lezione + 5 se perfetta + 15 al raggiungimento obiettivo; streak +1 se prima attività del giorno, si azzera se salta un giorno (a meno di un "congelamento"); corone per esercizio da 0 a 5 (una per lezione completata con ≥80%, la quinta richiede lezione perfetta); leghe Bronzo→Argento→Oro→Zaffiro→Rubino→Ametista, si promuove a fine settimana (lunedì) se in top 10 simulata.

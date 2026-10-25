@@ -12,7 +12,7 @@ Funzioni:
 - **Cuori**: 5 cuori, uno si rigenera ogni 30 minuti; senza cuori si puo ricaricare con 100 gemme o allenarsi gratis.
 - **Fine lezione**: sequenza di schermate (riepilogo, streak, obiettivo, corona, traguardi, lega).
 - **Obiettivi**: statistiche, calendario mensile, obiettivo giornaliero, traguardi a livelli.
-- **Lega**: classifica **simulata** (sfidanti generati dall'app, non persone reali).
+- **Lega**: sfida personale, senza altri giocatori. Ogni lega ha un obiettivo settimanale di XP (60, 120, 200, 300, 420, 560): a fine settimana lo raggiungi e sali, sotto il 35% scendi, se non studi non cambia nulla. La pagina mostra progresso, giorno per giorno, ultime settimane, record e media.
 
 File: `stato.js` (stato `window.GS`, salvato in `localStorage` alla chiave `ginestra-gioco`), `icone.js` (`window.GI`, usa le immagini di `layout/assets/`), `gioco.css`, `hud.js`, `percorso.js/.css`, `festa.js/.css`, `profilo.js/.css`, `SPEC.md` (contratto), `stato.test.js` (`node gioco/stato.test.js`).
 

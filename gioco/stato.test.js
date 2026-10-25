@@ -94,24 +94,28 @@ test('calendario: streakGiorni e mese', function () {
   assert.ok(c[20].oggi && c[20].attivo && c[20].xp === 15); assert.ok(c[21].futuro); assert.ok(!c[19].futuro);
 });
 
-test('lega simulata deterministica e promozione', function () {
-  var a = GS.lega(), b = GS.lega();
-  assert.deepStrictEqual(a, b);
-  assert.strictEqual(a.righe.length, 21); assert.strictEqual(a.nome, 'Bronzo'); assert.ok(a.simulata);
-  assert.strictEqual(a.righe.filter(function (r) { return r.tu; }).length, 1);
-  var xp1 = GS.lega().righe.reduce(function (s, r) { return s + r.xp; }, 0);
-  giorno(3);
-  var xp2 = GS.lega().righe.reduce(function (s, r) { return s + r.xp; }, 0);
-  assert.ok(xp2 > xp1);
-  // lunedi 2026-10-19 e' la settimana corrente; molti XP -> primo, promozione al lunedi dopo
-  clock = t0;
-  GS.addXP(5000, 'test'); assert.strictEqual(GS.lega().posizione, 1);
+test('lega personale: obiettivo, storico, promozione e retrocessione', function () {
+  var a = GS.lega();
+  assert.strictEqual(a.nome, 'Bronzo'); assert.strictEqual(a.target, 60); assert.strictEqual(a.simulata, false);
+  assert.strictEqual(a.giorni.length, 7); assert.strictEqual(a.storia.length, 8);
+  assert.strictEqual(a.mancanti, 60);
+  GS.addXP(25, 'test');
+  a = GS.lega(); assert.strictEqual(a.xp, 25); assert.strictEqual(a.mancanti, 35); assert.ok(a.perGiorno >= 1);
+  GS.addXP(100, 'test'); assert.strictEqual(GS.lega().pct, 1); assert.strictEqual(GS.lega().record, 125);
   clock = new Date(2026, 9, 26, 9, 0, 0).getTime(); // lunedi successivo
   var r = GS.registraLezione({ ex: 1, giuste: 5, totali: 5, combo: 0 });
   assert.strictEqual(r.legaPromossa, true); assert.strictEqual(GS.state.lega, 1);
   assert.strictEqual(GS.state.xpSettimana, 15);
+  a = GS.lega(); assert.strictEqual(a.settimanaScorsa, 125); assert.strictEqual(a.target, 120); assert.strictEqual(a.batteScorsa, false);
   r = GS.registraLezione({ ex: 1, giuste: 5, totali: 5, combo: 0 });
   assert.strictEqual(r.legaPromossa, null);
+  // settimana successiva con pochi XP: retrocede (15+15 = 30 < 35% di 120)
+  clock = new Date(2026, 10, 2, 9, 0, 0).getTime();
+  r = GS.registraLezione({ ex: 1, giuste: 5, totali: 5, combo: 0 });
+  assert.strictEqual(r.legaPromossa, false); assert.strictEqual(GS.state.lega, 0);
+  // settimana senza XP: nessun cambio
+  clock = new Date(2026, 10, 16, 9, 0, 0).getTime();
+  assert.strictEqual(GS.lega().indice, 0);
 });
 
 test('traguardi a livelli', function () {
