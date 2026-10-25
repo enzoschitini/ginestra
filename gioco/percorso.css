@@ -76,12 +76,11 @@ html.dark .pc-pop-no { background: var(--g-bg-2); border: 2px solid var(--g-bord
 .pc-scrigno { border: 0; background: transparent; padding: 0; cursor: pointer; filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .12)); -webkit-tap-highlight-color: transparent; }
 .pc-scrigno:focus-visible { outline: 3px solid var(--g-blu); outline-offset: 4px; border-radius: 12px; }
 .pc-scrigno svg { display: block; }
-.pc-scrigno.pc-chiuso-bloccato { filter: grayscale(.7) opacity(.7); }
 .pc-scrigno:not(.pc-aperto):not(.pc-chiuso-bloccato) { animation: g-bounce 1.2s ease-in-out infinite; }
 .pc-scrigno-wrap { width: 96px; }
 
 .pc-fondo { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 16px 12px; }
-.pc-switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font: 900 14px/1 var(--g-font); color: var(--g-testo-2); }
+.pc-switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font: 900 14px/1 var(--g-font); color: var(--g-testo-2); }
 .pc-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .pc-switch-ui { position: relative; width: 46px; height: 26px; border-radius: 999px; background: var(--g-grigio); transition: background .2s; }
 .pc-switch-ui::after { content: ''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 2px 0 rgba(0, 0, 0, .15); }
