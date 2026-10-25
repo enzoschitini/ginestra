@@ -157,7 +157,8 @@
     .close-btn { background: none; border: none; cursor: pointer; color: #afafaf; display: flex; align-items: center; }
     .close-btn:hover { color: #777; }
     .progress-bg { flex: 1; height: 14px; background: #e5e5e5; border-radius: 7px; overflow: hidden; }
-    .progress-fill { width: 0; height: 100%; background: #ffc800; border-radius: 7px; transition: width .35s ease; }
+    .progress-fill { position: relative; width: 0; height: 100%; background: #58cc02; border-radius: 7px; transition: width .35s ease; }
+    .progress-fill::after { content: ''; position: absolute; top: 3px; left: 7px; right: 7px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.3); }
     .heart-stat { display: flex; align-items: center; gap: 6px; color: #ff4b4b; font-size: 16px; font-weight: 900; }
 
     .content { flex: 1; padding: 12px 20px 16px; display: flex; flex-direction: column; overflow-y: auto; min-height: 0; }
@@ -498,6 +499,19 @@
     body.app .apptop { padding-top: max(14px, env(safe-area-inset-top)); }
     body.app .lesson-bar { padding-top: max(14px, env(safe-area-inset-top)); }
 
+    /* scheda di avvio */
+    .splash { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; transition: opacity .4s ease, visibility .4s; }
+    .splash.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-logo { width: 140px; height: 140px; object-fit: contain; display: block; -webkit-user-drag: none; user-select: none; animation: splash-pop .7s ease-out both; }
+    .splash-name { font-size: 34px; font-weight: 900; color: #58cc02; letter-spacing: -.5px; }
+    .splash-bar { width: min(240px, 60vw); height: 14px; border-radius: 7px; background: #e5e5e5; overflow: hidden; margin-top: 10px; }
+    .splash-fill { position: relative; width: 0; height: 100%; border-radius: 7px; background: #58cc02; transition: width .35s ease; }
+    .splash-fill::after { content: ''; position: absolute; top: 3px; left: 7px; right: 7px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.3); }
+    @keyframes splash-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+    html.dark .splash { background: #131f24; }
+    html.dark .splash-bar { background: #2b3a42; }
+    @media (prefers-reduced-motion: reduce) { .splash-logo { animation: none; } .splash, .splash-fill { transition: none; } }
+
     .fld-sw { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; color: #afafaf; cursor: pointer; }
     .switch { position: relative; width: 52px; height: 30px; flex: none; }
     .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
@@ -576,6 +590,12 @@
   </style>
 </head>
 <body class="app">
+
+  <div class="splash" id="splash" aria-hidden="true">
+    <img class="splash-logo" src="layout/assets/logo%202.png" alt="" width="1226" height="1226">
+    <div class="splash-name">Ginestra</div>
+    <div class="splash-bar"><div class="splash-fill" id="splash-fill"></div></div>
+  </div>
 
   <div class="app-layout">
 
@@ -1773,6 +1793,22 @@ function loadData() {
     $('body').replaceChildren(h('p', { class: 'hm-note' }, 'Dati non disponibili: apri le impostazioni per i dettagli.'));
   });
 }
+
+/* scheda di avvio: caricamento finto, a ogni apertura della pagina */
+(function () {
+  var fill = $('splash-fill'), splash = $('splash'), p = 0, t0 = Date.now(), TOT = 2200;
+  var iv = setInterval(function () {
+    var k = Math.min(1, (Date.now() - t0) / TOT);
+    var target = 100 * (1 - Math.pow(1 - k, 2)) * (0.9 + Math.random() * 0.1);
+    p = Math.max(p, Math.min(100, target));
+    fill.style.width = p + '%';
+    if (k >= 1) {
+      clearInterval(iv);
+      fill.style.width = '100%';
+      setTimeout(function () { splash.classList.add('done'); }, 350);
+    }
+  }, 180);
+})();
 
 (function () {
   $('close').addEventListener('click', function () { showHome(); });
