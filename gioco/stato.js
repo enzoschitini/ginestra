@@ -203,8 +203,8 @@
     ensure();
     var giuste = p.giuste | 0, totali = p.totali | 0, combo = p.combo | 0, ex = String(p.ex);
     var perfetta = totali > 0 && giuste >= totali;
-    var xpBase = 10, xpCombo = combo >= 5 ? 5 : 0, xpPerfetta = perfetta ? 5 : 0;
-    var gemme = 5 + (perfetta ? 5 : 0);
+    var xpBase = giuste > 0 ? 10 : 0, xpCombo = combo >= 5 ? 5 : 0, xpPerfetta = perfetta ? 5 : 0;
+    var gemme = giuste > 0 ? 5 + (perfetta ? 5 : 0) : 0;
     var prima = S.xpOggi, o = S.giorno, streakPrima = S.streak, aumentata = false, missed, c, corona = false, obiettivo;
     var res;
 

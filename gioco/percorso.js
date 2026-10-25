@@ -50,7 +50,7 @@
   }
 
   function nodo(e, info, off) {
-    var wrap = h('div', { class: 'pc-nodo-wrap', style: 'transform:translateX(' + off + 'px)' });
+    var wrap = h('div', { class: 'pc-nodo-wrap', style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
     var cls = 'pc-nodo pc-' + info.stato;
     var btn = h('button', { class: cls, type: 'button', 'aria-label': e.name + ' - ' + info.etichetta });
     var pct = info.cnt ? info.seen / info.cnt : 0;

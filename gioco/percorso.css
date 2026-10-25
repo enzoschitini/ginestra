@@ -24,7 +24,7 @@
 }
 .pc-guida-box b { display: block; margin-bottom: 4px; font-weight: 900; }
 
-.pc-strada { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 6px 0 18px; overflow-x: clip; }
+.pc-strada { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 56px 0 18px; overflow-x: clip; }
 .pc-nodo-wrap { position: relative; display: flex; flex-direction: column; align-items: center; width: 96px; }
 
 .pc-nodo {
@@ -49,7 +49,7 @@
 .pc-nodo-wrap:has(.pc-corone) .pc-nome { margin-top: 26px; }
 
 .pc-start {
-  position: absolute; top: -34px; left: 50%; margin-left: -28px; padding: 5px 12px; z-index: 2;
+  position: absolute; top: -46px; left: 50%; margin-left: -28px; padding: 5px 12px; z-index: 2;
   font: 900 13px/1 var(--g-font); letter-spacing: .8px; color: var(--g-verde); background: var(--g-card);
   border: 2px solid var(--g-bordo); border-radius: 12px;
 }
@@ -59,10 +59,11 @@
 .pc-mascotte svg { width: 100%; height: 100%; }
 
 .pc-pop {
-  position: absolute; top: 100%; left: 50%; z-index: 20; width: 230px; margin: 8px 0 0 -115px; padding: 14px;
+  position: absolute; top: 100%; left: calc(50% - var(--off, 0px)); z-index: 20; width: min(230px, calc(100vw - 48px)); margin: 8px 0 0 calc(min(230px, 100vw - 48px) / -2); padding: 14px;
   display: flex; flex-direction: column; gap: 6px; color: #fff; border-radius: var(--g-raggio); text-align: left;
   font: 700 14px/1.35 var(--g-font); animation: g-pop .25s cubic-bezier(.2, .9, .3, 1.3) both;
 }
+.pc-pop { scroll-margin-bottom: 96px; }
 .pc-pop b { font-weight: 900; font-size: 16px; }
 .pc-pop .pc-sub { opacity: .9; font-size: 13px; }
 .pc-pop-ok { background: var(--g-verde); box-shadow: 0 4px 0 var(--g-verde-ombra); }
