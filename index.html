@@ -1600,7 +1600,11 @@ function subtitle() {
   var what = FILT.pers.length === 1 && !FILT.per.length && !FILT.cat.length ? FILT.pers[0] : n ? n + (n === 1 ? ' filtro' : ' filtri') : 'Tutti i fogli';
   return what + ' · ' + ROWS.filter(inFoglio).length + ' voci';
 }
-function setTop(t) { $('top-title').textContent = t; $('top-sub').textContent = subtitle(); }
+function setTop(t) {
+  $('top-title').textContent = t;
+  var sub = (VIEW === 'profilo' || VIEW === 'lega') ? '' : subtitle();
+  $('top-sub').textContent = sub; $('top-sub').hidden = !sub;
+}
 function tabB(id, label, icon, go) {
   return h('button', { class: 'tabb' + (VIEW === id ? ' on' : ''), type: 'button', 'aria-label': label, 'aria-current': VIEW === id ? 'page' : 'false', onclick: go },
     ico(icon), h('span', {}, label));
@@ -1610,7 +1614,12 @@ function renderTabs() {
     tabB('home', 'Home', 'casa', function () { showHome(); }),
     tabB('train', 'Allenamento', 'peso', function () { showTraining(); }));
 }
-function refreshView() { if (VIEW === 'train') showTraining(); else showHome(); }
+function refreshView() {
+  if (VIEW === 'train') showTraining();
+  else if (VIEW === 'profilo' && typeof showProfilo === 'function') showProfilo();
+  else if (VIEW === 'lega' && typeof showLega === 'function') showLega();
+  else showHome();
+}
 function showHome() {
   cur = HOME; qi = 0;
   setMode('home'); setTop('Home'); renderTabs();
@@ -1833,5 +1842,15 @@ function loadData() {
   loadData();
 })();
 </script>
+<link rel="stylesheet" href="gioco/gioco.css">
+<link rel="stylesheet" href="gioco/percorso.css">
+<link rel="stylesheet" href="gioco/festa.css">
+<link rel="stylesheet" href="gioco/profilo.css">
+<script src="gioco/icone.js" onerror="void 0"></script>
+<script src="gioco/stato.js" onerror="void 0"></script>
+<script src="gioco/festa.js" onerror="void 0"></script>
+<script src="gioco/hud.js" onerror="void 0"></script>
+<script src="gioco/percorso.js" onerror="void 0"></script>
+<script src="gioco/profilo.js" onerror="void 0"></script>
 </body>
 </html>

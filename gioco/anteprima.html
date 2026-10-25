@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anteprima grafica gioco</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="gioco.css">
+<style>
+  body { margin: 0; padding: 16px; background: var(--g-bg); color: var(--g-testo); font-family: var(--g-font); }
+  h2 { margin: 24px 0 10px; font-weight: 900; }
+  .griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; }
+  .cella { text-align: center; padding: 12px 6px; }
+  .cella small { display: block; margin-top: 6px; font-weight: 800; color: var(--g-testo-2); font-size: 12px; }
+  .col { display: flex; flex-direction: column; gap: 12px; max-width: 420px; }
+  .righe { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="righe"><h1 class="g-titolo">Anteprima grafica</h1>
+  <button class="g-btn g-btn-grigio" id="tema" type="button">Tema chiaro / scuro</button>
+  <button class="g-btn g-btn-blu" id="festa" type="button">Coriandoli</button></div>
+
+<h2>Icone</h2>
+<div class="griglia" id="icone"></div>
+
+<h2>Pulsanti</h2>
+<div class="col">
+  <button class="g-btn g-btn-verde g-btn-blocco" type="button">Continua</button>
+  <button class="g-btn g-btn-blu g-btn-blocco" type="button">Inizia</button>
+  <button class="g-btn g-btn-grigio g-btn-blocco" type="button">Salta</button>
+  <button class="g-btn g-btn-rosso g-btn-blocco" type="button">Esci</button>
+  <button class="g-btn g-btn-blocco" type="button" disabled>Bloccato</button>
+</div>
+
+<h2>Card, pill, barre</h2>
+<div class="col">
+  <div class="g-card">
+    <div class="righe" id="pills"></div>
+    <p class="g-sotto">Obiettivo giornaliero</p>
+    <div class="g-bar" style="--g-pct:70%"><i></i></div>
+    <div class="g-bar g-bar-blu g-bar-sottile" style="--g-pct:40%; margin-top:10px"><i></i></div>
+    <div class="g-bar g-bar-arancio g-bar-sottile" style="--g-pct:90%; margin-top:10px"><i></i></div>
+  </div>
+  <div class="g-card g-card-verde">Card verde</div>
+  <div class="g-card g-card-blu g-anim-pop" id="pop">Animazione pop (clic per ripetere)</div>
+  <div class="g-card g-card-arancio" id="shake">Animazione shake (clic)</div>
+</div>
+
+<div class="g-confetti" id="conf" aria-hidden="true"></div>
+<script src="icone.js"></script>
+<script>
+  var nomi = ['fiamma','fiammaSpenta','gemma','cuore','cuoreSpezzato','fulmine','scrigno','scrignoAperto','corona','lucchetto','stella','trofeo','bersaglio'];
+  var h = '';
+  nomi.forEach(function (n) { h += '<div class="g-card cella">' + GI[n](56) + '<small>' + n + '</small></div>'; });
+  ['bronzo','argento','oro','blu','verde','viola','rosso'].forEach(function (c) {
+    h += '<div class="g-card cella">' + GI.medaglia(56, c) + '<small>medaglia(' + c + ')</small></div>';
+  });
+  document.getElementById('icone').innerHTML = h;
+  document.getElementById('pills').innerHTML =
+    '<span class="g-pill g-pill-fiamma">' + GI.fiamma(22) + '12</span>' +
+    '<span class="g-pill g-pill-gemma">' + GI.gemma(22) + '340</span>' +
+    '<span class="g-pill g-pill-cuore">' + GI.cuore(22) + '5</span>';
+  document.getElementById('tema').onclick = function () { document.documentElement.classList.toggle('dark'); };
+  function replay(id, cls) { var e = document.getElementById(id); e.classList.remove(cls); void e.offsetWidth; e.classList.add(cls); }
+  document.getElementById('pop').onclick = function () { replay('pop', 'g-anim-pop'); };
+  document.getElementById('shake').onclick = function () { replay('shake', 'g-anim-shake'); };
+  document.getElementById('festa').onclick = function () {
+    var c = ['#58cc02','#1cb0f6','#ffc800','#ff4b4b','#ce82ff','#ff9600'], s = '';
+    for (var i = 0; i < 40; i++) s += '<i class="g-confetto" style="--x:' + (Math.random() * 100) + '%;--c:' + c[i % 6] + ';--d:' + (Math.random() * .8) + 's;--t:' + (2 + Math.random() * 1.5) + 's"></i>';
+    var e = document.getElementById('conf'); e.innerHTML = s; setTimeout(function () { e.innerHTML = ''; }, 4500);
+  };
+</script>
+</body>
+</html>
