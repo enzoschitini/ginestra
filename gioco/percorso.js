@@ -42,7 +42,19 @@
     wrap.appendChild(p);
     aperto = p;
     p.addEventListener('click', function (ev) { ev.stopPropagation(); });
-    try { p.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+    inVista(p, 'nearest');
+  }
+
+  /* scrolla solo .content: scrollIntoView muoverebbe anche body.app (overflow:hidden) e lascerebbe vuoto sotto la tab bar */
+  function inVista(el, modo) {
+    var ct = document.querySelector('.content');
+    if (!ct || !el) return;
+    var r = el.getBoundingClientRect(), c = ct.getBoundingClientRect();
+    var d = 0;
+    if (modo === 'center') d = (r.top + r.height / 2) - (c.top + c.height / 2);
+    else if (r.bottom > c.bottom) d = r.bottom - c.bottom + 8;
+    else if (r.top < c.top) d = r.top - c.top - 8;
+    if (d) ct.scrollTop += d;
   }
 
   function scuoti(el) {
@@ -179,7 +191,7 @@
     /* tornando da un esercizio si riporta in vista quel nodo (una volta sola), altrimenti il nodo corrente */
     var cor = ultimo != null && b.querySelector('[data-ex="' + ultimo + '"]') || b.querySelector('.pc-corrente');
     ultimo = null;
-    if (cor) setTimeout(function () { try { cor.scrollIntoView({ block: 'center' }); } catch (e) {} }, 60);
+    if (cor) setTimeout(function () { inVista(cor, 'center'); }, 60);
   };
   // showHome e' una function declaration globale: l'assegnazione sopra la sostituisce
   document.addEventListener('click', chiudi);
