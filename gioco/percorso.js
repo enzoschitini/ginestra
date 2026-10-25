@@ -5,7 +5,8 @@
   var OGNI = 4;                       // uno scrigno ogni 4 nodi
   var OFFS = [0, 46, 70, 46, 0, -46, -70, -46]; // zig-zag in px (onda)
   var aperto = null;                  // popover aperto
-  var ultimo = null;                  // ultimo esercizio avviato: la Home ci torna a scrollare
+  var tieniSheet = false;             // showHome richiamata dal foglio impostazioni: non chiuderlo
+  var ultimo = null;                 // ultimo esercizio avviato: la Home ci torna a scrollare
 
   function sbloccaTutto() { try { return localStorage.getItem(KEY_SBLOCCA) === '1'; } catch (e) { return false; } }
   function setSblocca(v) { try { localStorage.setItem(KEY_SBLOCCA, v ? '1' : '0'); } catch (e) {} }
@@ -177,17 +178,15 @@
     });
 
     // interruttore sblocca tutto
-    var lab = h('label', { class: 'pc-switch' });
-    var chk = h('input', { type: 'checkbox', 'aria-label': 'Sblocca tutto' });
-    chk.checked = tutto;
-    chk.addEventListener('change', function () { if (window.SND) SND.play('click'); setSblocca(chk.checked); showHome(); });
-    lab.append(chk, h('span', { class: 'pc-switch-ui', 'aria-hidden': 'true' }), h('span', { class: 'pc-switch-t' }, 'Sblocca tutto'));
-    out.push(h('div', { class: 'pc-fondo' }, lab,
+    var chk = $('sw-sblocca');
+    if (chk) chk.checked = tutto;
+    out.push(h('div', { class: 'pc-fondo' },
       h('p', { class: 'hm-note' }, 'Completati ' + nodiFatti + ' di ' + nodiTot + ' esercizi. Prima di cominciare puoi ripassare le voci in Ripasso.')));
 
     b.replaceChildren.apply(b, out);
     var ct = document.querySelector('.content'); if (ct) ct.scrollTop = 0;
-    var sh = $('sheet'); if (sh) sh.hidden = true;
+    var sh = $('sheet'); if (sh && !tieniSheet) sh.hidden = true;
+    tieniSheet = false;
     /* tornando da un esercizio si riporta in vista quel nodo (una volta sola), altrimenti il nodo corrente */
     var cor = ultimo != null && b.querySelector('[data-ex="' + ultimo + '"]') || b.querySelector('.pc-corrente');
     ultimo = null;
@@ -195,6 +194,16 @@
   };
   // showHome e' una function declaration globale: l'assegnazione sopra la sostituisce
   document.addEventListener('click', chiudi);
+  // interruttore nelle impostazioni: ridisegna la Home restando nel foglio
+  var sw = $('sw-sblocca');
+  if (sw) {
+    sw.checked = sbloccaTutto();
+    sw.addEventListener('change', function () {
+      if (window.SND) SND.play('click');
+      setSblocca(sw.checked);
+      if (typeof VIEW !== 'undefined' && VIEW === 'home') { tieniSheet = true; showHome(); }
+    });
+  }
   if (window.GS && GS.on) {
     GS.on('lezione', function () { if (typeof VIEW !== 'undefined' && VIEW === 'home') showHome(); });
   }
