@@ -1486,11 +1486,11 @@ function finish(ok, solution, note) {
   var praise = ['Esatto!', 'Ottimo!', 'Bravo!', 'Perfetto!'][Math.floor(Math.random() * 4)];
   var status = h('div', { class: 'drawer-status', role: 'status' });
   status.innerHTML = icon; status.append(h('span', {}, ok ? praise : 'Soluzione corretta:'));
-  f.replaceChildren(status,
+  f.replaceChildren.apply(f, [status,
     !ok && solution ? h('div', { class: 'drawer-solution' }, solution) : null,
     note ? h('div', { class: 'drawer-note' }, note) : null,
     h('button', { class: 'btn-main', type: 'button', onclick: next }, last ? 'Fine' : 'Continua'),
-    h('div', { class: 'home-indicator' }));
+    h('div', { class: 'home-indicator' })].filter(Boolean));
   f.querySelector('.btn-main').focus();
 }
 function next() { qi++; if (qi >= cur.items.length) showResult(); else showQ(); }
@@ -1605,7 +1605,7 @@ function subtitle() {
 }
 function setTop(t) {
   $('top-title').textContent = t;
-  var sub = (VIEW === 'profilo' || VIEW === 'lega') ? '' : subtitle();
+  var sub = VIEW === 'profilo' ? 'Streak, traguardi e obiettivo giornaliero' : VIEW === 'lega' ? 'La tua sfida personale della settimana' : VIEW === 'home' ? 'Il tuo percorso, una lezione alla volta' : VIEW === 'train' ? 'Allena le parole che conosci meno' : subtitle();
   $('top-sub').textContent = sub || ' '; $('top-sub').style.visibility = sub ? '' : 'hidden';
 }
 function tabB(id, label, icon, go) {

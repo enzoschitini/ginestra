@@ -16,7 +16,7 @@
   /* ---------- stile ---------- */
   var st = document.createElement('style');
   st.textContent =
-    '.g-hud{display:none;align-items:center;justify-content:space-between;gap:4px;padding:2px 14px 4px;font-family:var(--g-font,inherit)}' +
+    '.g-hud{display:none;align-items:center;justify-content:space-around;gap:4px;margin:4px 14px 8px;padding:8px 10px;background:var(--g-card);border:2px solid var(--g-bordo);border-radius:var(--g-raggio);font-family:var(--g-font,inherit)}' +
     'body:not(.mode-ex) .g-hud{display:flex}' +
     '.g-hud .g-pill{padding:4px 6px;min-width:0}' +
     '.g-hud .g-pill b{font-weight:900}' +
@@ -36,7 +36,7 @@
     '.g-modale-x{background:none;border:0;cursor:pointer;font:900 14px var(--g-font,inherit);letter-spacing:.8px;text-transform:uppercase;color:var(--g-blu-ombra,#1899d6);padding:10px}' +
     '.tabbar .tabb.g-tab{padding-left:2px;padding-right:2px;letter-spacing:.2px}' +
     '@media (max-width:420px){.tabbar{gap:2px;padding-left:8px;padding-right:8px}.tabbar .tabb.g-tab span{font-size:11px;letter-spacing:0;text-transform:none}}' +
-    '@media (max-width:380px){.g-hud{padding:2px 8px 4px}.g-hud .g-pill{font-size:14px;gap:4px}}' +
+    '@media (max-width:380px){.g-hud{margin:4px 8px 8px;padding:6px 6px}.g-hud .g-pill{font-size:14px;gap:4px}}' +
     '@media (prefers-reduced-motion:reduce){.g-modale{animation:none}}';
   document.head.appendChild(st);
 
