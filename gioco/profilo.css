@@ -1,0 +1,100 @@
+/* Ginestra gioco - Obiettivi e Lega. Usa le variabili --g-* di gioco.css */
+.pf { font-family: var(--g-font); color: var(--g-testo); }
+.pf-wrap { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 24px; max-width: 560px; margin: 0 auto; }
+.pf-ico { display: inline-flex; flex: none; line-height: 0; }
+.pf-ico svg { display: block; }
+.pf-sez { box-sizing: border-box; }
+.pf-h { font: 900 18px/1.2 var(--g-font); margin: 0 0 12px; color: var(--g-testo); }
+.pf-h-riga { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.pf-h-riga .pf-h { margin: 0; }
+.pf-link { background: none; border: 0; padding: 6px 4px; font: 900 13px/1 var(--g-font); letter-spacing: .6px; text-transform: uppercase; color: var(--g-blu); cursor: pointer; }
+.pf-link:focus-visible, .pf-freccia:focus-visible, .pf-opt:focus-visible, .pf-oggi-btn:focus-visible { outline: 3px solid var(--g-blu); outline-offset: 2px; }
+
+/* statistiche */
+.pf-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pf-stat { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 12px; background: var(--g-card); border: 2px solid var(--g-bordo); border-radius: var(--g-raggio); }
+.pf-stat-t { display: flex; flex-direction: column; min-width: 0; }
+.pf-stat-t b { font: 900 20px/1.1 var(--g-font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf-stat-t span { font: 800 12px/1.2 var(--g-font); color: var(--g-testo-2); }
+
+/* calendario */
+.pf-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.pf-cal-mese { margin: 0; font: 900 18px/1 var(--g-font); }
+.pf-freccia { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--g-bordo); background: var(--g-card); color: var(--g-blu); font: 900 24px/1 var(--g-font); cursor: pointer; }
+.pf-griglia { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.pf-gl { text-align: center; font: 900 12px/1.6 var(--g-font); color: var(--g-testo-3); }
+.pf-g { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1; min-width: 0; border-radius: 12px; font: 800 13px/1 var(--g-font); color: var(--g-testo); }
+.pf-g em { font-style: normal; }
+.pf-vuoto { visibility: hidden; }
+.pf-futuro { color: var(--g-testo-3); opacity: .5; }
+.pf-attivo { background: rgba(255, 150, 0, .14); }
+.pf-attivo em { font-size: 10px; color: var(--g-arancio); margin-top: -2px; }
+.pf-attivo svg { width: 22px; height: 22px; }
+.pf-attivo img { height: 18px !important; }
+.pf-attivo .pf-ico { display: flex; }
+.pf-attivo em { margin-top: 1px; }
+.pf-oggi { outline: 3px solid var(--g-blu); outline-offset: -3px; background: rgba(28, 176, 246, .14); }
+.pf-cal-sotto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 2px solid var(--g-bordo); }
+.pf-cs { display: flex; align-items: center; gap: 8px; }
+.pf-cs div { display: flex; flex-direction: column; }
+.pf-cs b { font: 900 16px/1.1 var(--g-font); }
+.pf-cs span { font: 800 12px/1.2 var(--g-font); color: var(--g-testo-2); }
+.pf-oggi-btn { margin-top: 12px; width: 100%; background: none; border: 0; padding: 8px; font: 900 13px/1 var(--g-font); letter-spacing: .6px; text-transform: uppercase; color: var(--g-blu); cursor: pointer; }
+
+/* obiettivo giornaliero */
+.pf-ob-riga { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.pf-ob-t { display: flex; flex-direction: column; }
+.pf-ob-t b { font: 900 16px/1.2 var(--g-font); }
+.pf-ob-t span { font: 800 13px/1.2 var(--g-font); color: var(--g-testo-2); }
+.pf-nota { margin: 12px 0 8px; }
+.pf-opz { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pf-opt { min-height: 44px; padding: 8px 2px; border-radius: 14px; border: 2px solid var(--g-bordo); box-shadow: 0 3px 0 var(--g-bordo); background: var(--g-card); color: var(--g-testo-2); font: 900 14px/1 var(--g-font); cursor: pointer; }
+.pf-opt.on { border-color: var(--g-blu); box-shadow: 0 3px 0 var(--g-blu-ombra); background: rgba(28, 176, 246, .14); color: var(--g-blu); }
+
+/* traguardi */
+.pf-tr { display: flex; flex-direction: column; gap: 14px; }
+.pf-t { display: flex; gap: 12px; align-items: center; }
+.pf-t0 { opacity: .6; }
+.pf-t-ico { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: var(--g-bg-2); border: 2px solid var(--g-bordo); }
+.pf-t-c { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pf-t-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.pf-t-top b { font: 900 16px/1.2 var(--g-font); }
+.pf-t-liv { font: 900 12px/1.2 var(--g-font); color: var(--g-arancio); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+.pf-t-bot { display: flex; justify-content: space-between; gap: 8px; font: 800 12px/1.3 var(--g-font); color: var(--g-testo-2); }
+.pf-t-bot b { font-weight: 900; white-space: nowrap; }
+
+/* reset */
+.pf-reset { text-align: center; }
+.pf-conf { margin: 0 0 12px; font: 800 14px/1.4 var(--g-font); color: var(--g-testo-2); }
+.pf-conf-b { display: flex; gap: 10px; }
+.pf-conf-b .g-btn { flex: 1; padding-left: 8px; padding-right: 8px; }
+.pf-reset-b { color: var(--g-rosso); }
+
+/* lega */
+.pf-lega-head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 8px 0 4px; }
+.pf-lega-t { margin: 8px 0 0; font: 900 26px/1.1 var(--g-font); }
+.pf-lega-s { margin: 0; font: 800 14px/1.3 var(--g-font); color: var(--g-testo-2); }
+.pf-lega-g { margin: 4px 0 0; display: inline-flex; align-items: center; gap: 4px; font: 900 13px/1 var(--g-font); color: var(--g-arancio); text-transform: uppercase; letter-spacing: .5px; }
+.pf-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.pf-r { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 16px; border: 2px solid transparent; }
+.pf-pos { width: 24px; text-align: center; font: 900 16px/1 var(--g-font); color: var(--g-testo-2); }
+.pf-su .pf-pos { color: var(--g-verde); }
+.pf-giu .pf-pos { color: var(--g-rosso); }
+.pf-av { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: #fff; font: 900 18px/1 var(--g-font); }
+.pf-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 900 16px/1.2 var(--g-font); }
+.pf-xp { font: 800 14px/1 var(--g-font); color: var(--g-testo-2); white-space: nowrap; }
+.pf-tu { background: rgba(88, 204, 2, .16); border-color: var(--g-verde); }
+.pf-tu .pf-nome, .pf-tu .pf-xp { color: var(--g-testo); }
+.pf-sep { display: flex; align-items: center; gap: 8px; margin: 4px 0; font: 900 12px/1 var(--g-font); text-transform: uppercase; letter-spacing: .6px; }
+.pf-sep::before, .pf-sep::after { content: ''; flex: 1; height: 2px; background: currentColor; opacity: .35; }
+.pf-sep-su { color: var(--g-verde); }
+.pf-sep-giu { color: var(--g-rosso); }
+.pf-simulata { text-align: center; margin: 4px 0 0; }
+
+@media (max-width: 380px) {
+  .pf-stat { padding: 10px 8px; gap: 6px; }
+  .pf-stat-t b { font-size: 17px; }
+  .pf-t-ico { width: 52px; height: 52px; }
+  .pf-g { font-size: 12px; border-radius: 10px; }
+  .pf-griglia { gap: 2px; }
+}

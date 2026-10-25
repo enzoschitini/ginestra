@@ -1,0 +1,84 @@
+/* Ginestra gioco - festa di fine lezione e banner combo. Usa le variabili --g-* di gioco.css con fallback. */
+#body.festa { display: flex; flex-direction: column; flex: 1; min-height: 0; align-items: center; justify-content: center; text-align: center; font-family: var(--g-font, 'Nunito', system-ui, sans-serif); color: var(--g-testo, #3c3c3c); }
+.f-scr { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 420px; padding: 4px 0; animation: f-entra .35s ease both; }
+.f-hero { display: flex; justify-content: center; }
+.f-mascotte .mascot { width: 104px; }
+.f-hero-ico { display: flex; justify-content: center; }
+#body.festa .f-titolo { margin: 0; font: 900 26px/1.15 var(--g-font, 'Nunito', system-ui, sans-serif); color: var(--g-giallo-ombra, #d9a900); }
+#body.festa .f-sotto { margin: 0; font: 800 15px/1.35 var(--g-font, 'Nunito', system-ui, sans-serif); color: var(--g-testo-2, #777); }
+.f-ico { display: inline-flex; line-height: 0; }
+.f-ico svg { display: block; }
+
+/* riquadri XP / combo / gemme */
+.f-stats { display: flex; gap: 8px; width: 100%; margin: 6px 0 14px; }
+.f-stat { --c: var(--g-giallo, #ffc800); flex: 1; min-width: 0; border-radius: 16px; background: var(--c); padding: 2px; box-shadow: 0 3px 0 rgba(0, 0, 0, .15); }
+.f-stat.f-combo { --c: var(--g-arancio, #ff9600); }
+.f-stat.f-gem { --c: var(--g-blu, #1cb0f6); }
+.f-stat-t { font: 900 12px/1 var(--g-font, sans-serif); letter-spacing: .8px; text-transform: uppercase; color: #fff; padding: 6px 0 5px; }
+.f-stat-c { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--g-card, #fff); border-radius: 13px; padding: 12px 4px; color: var(--c); }
+.f-val { font: 900 22px/1 var(--g-font, sans-serif); font-variant-numeric: tabular-nums; }
+
+/* obiettivo giornaliero */
+.f-ob { width: 100%; text-align: left; }
+.f-ob-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 900 14px/1.2 var(--g-font, sans-serif); color: var(--g-testo-2, #777); margin-bottom: 8px; }
+.f-ob-n { color: var(--g-arancio, #ff9600); font-variant-numeric: tabular-nums; }
+.f-ob-r { display: flex; align-items: center; gap: 10px; }
+.f-bar { flex: 1; }
+.f-bar > i { background: var(--g-arancio, #ff9600); transition-duration: .9s; }
+.f-scrigno { flex: none; display: flex; }
+.f-scrigno .f-ico { display: inline-flex; }
+
+/* streak */
+.f-fiamma-big { position: relative; display: flex; justify-content: center; animation: f-pulsa 1.6s ease-in-out infinite; }
+.f-streak-n { position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%); font: 900 44px/1 var(--g-font, sans-serif); color: #fff; text-shadow: 0 2px 0 rgba(0, 0, 0, .25); }
+#body.festa .f-streak .f-titolo { color: var(--g-arancio, #ff9600); }
+.f-giorni { display: flex; justify-content: space-between; gap: 4px; width: 100%; margin-top: 8px; padding: 12px 8px; border: 2px solid var(--g-bordo, #e5e5e5); border-radius: 18px; background: var(--g-card, #fff); box-sizing: border-box; }
+.f-g { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+.f-g-l { font: 900 13px/1 var(--g-font, sans-serif); color: var(--g-testo-3, #afafaf); }
+.f-g.f-oggi .f-g-l { color: var(--g-arancio, #ff9600); }
+.f-g.f-acceso .f-ico { animation: f-boing .6s cubic-bezier(.2, .9, .3, 1.4) both; }
+
+/* premi / corone */
+.f-premio { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 999px; border: 2px solid var(--g-bordo, #e5e5e5); background: var(--g-card, #fff); font: 900 22px/1 var(--g-font, sans-serif); color: var(--g-blu, #1cb0f6); }
+.f-premio.f-persa { color: var(--g-rosso, #ff4b4b); }
+.f-corone { display: flex; gap: 6px; }
+.f-corone .f-spenta { filter: grayscale(1); opacity: .35; }
+#body.festa .f-lega .f-titolo, #body.festa .f-traguardo .f-titolo { color: var(--g-blu, #1cb0f6); }
+#body.festa .f-fallita .f-titolo { color: var(--g-rosso, #ff4b4b); }
+#body.festa .f-fallita .mascot { width: 120px; }
+
+/* pulsanti */
+.f-footer { display: flex; flex-direction: column; gap: 12px; }
+.f-btn { display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; min-height: 50px; padding: 14px 20px; border: 0; border-radius: 16px; font: 900 16px/1 var(--g-font, 'Nunito', sans-serif); letter-spacing: .8px; text-transform: uppercase; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .08s; }
+.f-blu { background: var(--g-blu, #1cb0f6); color: #fff; box-shadow: 0 4px 0 var(--g-blu-ombra, #1899d6); }
+.f-grigio { background: transparent; color: var(--g-blu, #1cb0f6); border: 2px solid var(--g-bordo, #e5e5e5); box-shadow: 0 4px 0 var(--g-bordo, #e5e5e5); }
+.f-btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+.f-btn:focus-visible { outline: 3px solid var(--g-blu, #1cb0f6); outline-offset: 3px; }
+
+/* banner combo */
+.f-banner { position: fixed; top: 72px; left: 50%; z-index: 9000; display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 999px; background: var(--g-giallo, #ffc800); color: #7a4a00; font: 900 20px/1 var(--g-font, 'Nunito', sans-serif); box-shadow: 0 4px 0 var(--g-giallo-ombra, #d9a900), 0 8px 20px rgba(0, 0, 0, .2); pointer-events: none; transform: translateX(-50%); animation: f-banner .45s cubic-bezier(.2, .9, .3, 1.3) both; white-space: nowrap; }
+.f-banner.f-medio { background: var(--g-arancio, #ff9600); color: #fff; box-shadow: 0 4px 0 var(--g-arancio-ombra, #d97f00), 0 8px 20px rgba(0, 0, 0, .2); }
+.f-banner.f-forte { background: var(--g-rosso, #ff4b4b); color: #fff; box-shadow: 0 4px 0 var(--g-rosso-ombra, #d93a3a), 0 8px 20px rgba(0, 0, 0, .25); font-size: 24px; }
+.f-banner.f-esce { animation: f-banner-esce .45s ease forwards; }
+
+/* coriandoli */
+.f-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+.f-confetti i { position: absolute; top: 0; left: var(--x, 50%); width: 9px; height: 14px; border-radius: 2px; background: var(--c, #ffc800); transform: rotate(var(--r, 0deg)); animation: f-cade var(--t, 2.6s) linear var(--d, 0s) both; }
+
+@keyframes f-entra { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes f-pulsa { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes f-boing { 0% { transform: scale(.3); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes f-banner { from { opacity: 0; transform: translate(-50%, -30px) scale(.6); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+@keyframes f-banner-esce { to { opacity: 0; transform: translate(-50%, -20px) scale(.9); } }
+@keyframes f-cade { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: .9; } }
+
+@media (max-width: 380px) {
+  #body.festa .f-titolo { font-size: 23px; }
+  .f-val { font-size: 19px; }
+  .f-stat-c { padding: 10px 2px; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .f-scr, .f-fiamma-big, .f-banner, .f-banner.f-esce, .f-g.f-acceso .f-ico { animation: none; }
+  .f-confetti { display: none; }
+  .f-bar > i, .f-btn { transition: none; }
+}

@@ -1,0 +1,114 @@
+/* Ginestra gioco - stili comuni. Variabili --g-*, classi g-*. Tema scuro: html.dark */
+:root {
+  --g-verde: #58cc02; --g-verde-ombra: #46a302;
+  --g-blu: #1cb0f6; --g-blu-ombra: #1899d6;
+  --g-arancio: #ff9600; --g-arancio-ombra: #d97f00;
+  --g-giallo: #ffc800; --g-giallo-ombra: #d9a900;
+  --g-rosso: #ff4b4b; --g-rosso-ombra: #d93a3a;
+  --g-viola: #ce82ff;
+  --g-bg: #ffffff; --g-bg-2: #f7f7f7;
+  --g-card: #ffffff; --g-bordo: #e5e5e5;
+  --g-testo: #3c3c3c; --g-testo-2: #777777; --g-testo-3: #afafaf;
+  --g-grigio: #e5e5e5; --g-grigio-ombra: #cfcfcf; --g-grigio-testo: #afafaf;
+  --g-barra-bg: #e5e5e5;
+  --g-raggio: 16px; --g-raggio-grande: 22px;
+  --g-font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+html.dark {
+  --g-bg: #131f24; --g-bg-2: #1a2a31;
+  --g-card: #1f2f36; --g-bordo: #37464f;
+  --g-testo: #f1f7fb; --g-testo-2: #a9b8c0; --g-testo-3: #6b7b84;
+  --g-grigio: #37464f; --g-grigio-ombra: #2a363d; --g-grigio-testo: #6b7b84;
+  --g-barra-bg: #37464f;
+}
+
+/* Pulsanti con bordo basso */
+.g-btn {
+  --b: var(--g-verde); --bo: var(--g-verde-ombra); --bt: #fff;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  box-sizing: border-box; min-height: 48px; padding: 12px 22px;
+  font: 900 15px/1 var(--g-font); letter-spacing: .8px; text-transform: uppercase; text-decoration: none;
+  color: var(--bt); background: var(--b);
+  border: 0; border-radius: var(--g-raggio); box-shadow: 0 4px 0 var(--bo);
+  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: transform .08s, box-shadow .08s, filter .15s;
+}
+.g-btn:hover { filter: brightness(1.06); }
+.g-btn:active, .g-btn.g-premuto { transform: translateY(4px); box-shadow: 0 0 0 var(--bo); }
+.g-btn:focus-visible { outline: 3px solid var(--g-blu); outline-offset: 3px; }
+.g-btn-verde { --b: var(--g-verde); --bo: var(--g-verde-ombra); }
+.g-btn-blu { --b: var(--g-blu); --bo: var(--g-blu-ombra); }
+.g-btn-rosso { --b: var(--g-rosso); --bo: var(--g-rosso-ombra); }
+.g-btn-arancio { --b: var(--g-arancio); --bo: var(--g-arancio-ombra); }
+.g-btn-grigio { --b: var(--g-card); --bo: var(--g-bordo); --bt: var(--g-blu); border: 2px solid var(--g-bordo); box-shadow: 0 4px 0 var(--g-bordo); }
+.g-btn-blocco { display: flex; width: 100%; }
+.g-btn[disabled], .g-btn.g-disabilitato { --b: var(--g-grigio); --bo: var(--g-grigio-ombra); --bt: var(--g-grigio-testo); cursor: not-allowed; filter: none; }
+.g-btn[disabled]:active, .g-btn.g-disabilitato:active { transform: none; box-shadow: 0 4px 0 var(--bo); }
+
+/* Card */
+.g-card {
+  background: var(--g-card); color: var(--g-testo);
+  border: 2px solid var(--g-bordo); border-radius: var(--g-raggio-grande);
+  box-shadow: 0 4px 0 var(--g-bordo); padding: 16px; font-family: var(--g-font);
+}
+.g-card-verde { border-color: var(--g-verde); box-shadow: 0 4px 0 var(--g-verde-ombra); }
+.g-card-blu { border-color: var(--g-blu); box-shadow: 0 4px 0 var(--g-blu-ombra); }
+.g-card-arancio { border-color: var(--g-arancio); box-shadow: 0 4px 0 var(--g-arancio-ombra); }
+
+/* Pill (contatori: streak, gemme, cuori) */
+.g-pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+  font: 900 15px/1 var(--g-font); color: var(--g-testo); background: transparent;
+}
+.g-pill svg { display: block; flex: none; }
+.g-pill-fiamma { color: var(--g-arancio); }
+.g-pill-gemma { color: var(--g-blu); }
+.g-pill-cuore { color: var(--g-rosso); }
+.g-pill-xp { color: var(--g-giallo-ombra); }
+.g-pill-fondo { background: var(--g-bg-2); border: 2px solid var(--g-bordo); }
+
+/* Barra di progresso */
+.g-bar {
+  position: relative; height: 16px; border-radius: 999px; overflow: hidden;
+  background: var(--g-barra-bg);
+}
+.g-bar > i, .g-bar-riempi {
+  display: block; position: relative; height: 100%; width: var(--g-pct, 0%); min-width: 0;
+  border-radius: 999px; background: var(--g-verde); transition: width .5s cubic-bezier(.2, .8, .2, 1);
+}
+.g-bar > i::after, .g-bar-riempi::after {
+  content: ''; position: absolute; left: 8px; right: 8px; top: 3px; height: 4px;
+  border-radius: 999px; background: rgba(255, 255, 255, .35);
+}
+.g-bar-blu > i, .g-bar-blu .g-bar-riempi { background: var(--g-blu); }
+.g-bar-arancio > i, .g-bar-arancio .g-bar-riempi { background: var(--g-arancio); }
+.g-bar-giallo > i, .g-bar-giallo .g-bar-riempi { background: var(--g-giallo); }
+.g-bar-sottile { height: 10px; }
+.g-bar-sottile > i::after, .g-bar-sottile .g-bar-riempi::after { top: 2px; height: 3px; }
+
+/* Utilita */
+.g-titolo { font: 900 22px/1.2 var(--g-font); color: var(--g-testo); margin: 0; }
+.g-sotto { font: 800 14px/1.3 var(--g-font); color: var(--g-testo-2); }
+.g-riga { display: flex; align-items: center; gap: 10px; }
+.g-nascosto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Animazioni */
+@keyframes g-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes g-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+@keyframes g-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes g-confetti { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: .9; } }
+.g-anim-pop { animation: g-pop .45s cubic-bezier(.2, .9, .3, 1.3) both; }
+.g-anim-shake { animation: g-shake .45s both; }
+.g-anim-bounce { animation: g-bounce 1s ease-in-out infinite; }
+/* Contenitore coriandoli: aggiungere N <i class="g-confetto" style="--x:..;--c:..;--d:..;--t:.."> dentro .g-confetti */
+.g-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+.g-confetto {
+  position: absolute; top: 0; left: var(--x, 50%); width: 9px; height: 14px; border-radius: 2px;
+  background: var(--c, var(--g-giallo)); animation: g-confetti var(--t, 2.6s) linear var(--d, 0s) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-btn, .g-bar > i, .g-bar-riempi { transition: none; }
+  .g-anim-pop, .g-anim-shake, .g-anim-bounce { animation: none; }
+  .g-confetti { display: none; }
+}
