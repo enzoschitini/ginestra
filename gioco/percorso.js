@@ -5,6 +5,7 @@
   var OGNI = 4;                       // uno scrigno ogni 4 nodi
   var OFFS = [0, 46, 70, 46, 0, -46, -70, -46]; // zig-zag in px (onda)
   var aperto = null;                  // popover aperto
+  var ultimo = null;                  // ultimo esercizio avviato: la Home ci torna a scrollare
 
   function sbloccaTutto() { try { return localStorage.getItem(KEY_SBLOCCA) === '1'; } catch (e) { return false; } }
   function setSblocca(v) { try { localStorage.setItem(KEY_SBLOCCA, v ? '1' : '0'); } catch (e) {} }
@@ -50,7 +51,7 @@
   }
 
   function nodo(e, info, off) {
-    var wrap = h('div', { class: 'pc-nodo-wrap', style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
+    var wrap = h('div', { class: 'pc-nodo-wrap', 'data-ex': String(e.n), style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
     var cls = 'pc-nodo pc-' + info.stato;
     var btn = h('button', { class: cls, type: 'button', 'aria-label': e.name + ' - ' + info.etichetta });
     var pct = info.cnt ? info.seen / info.cnt : 0;
@@ -81,7 +82,7 @@
         popover(wrap, '<b>Bloccato</b><span>Completa almeno una lezione dell\'esercizio precedente per sbloccarlo.</span>', null, 'no');
       } else {
         popover(wrap, '<b>' + e.name + '</b><span>' + (e.desc || '') + '</span><span class="pc-sub">' + info.seen + '/' + info.cnt + ' voci viste</span>',
-          { testo: 'Inizia lezione +10 XP', fn: function () { load(e.n); } }, 'ok');
+          { testo: 'Inizia lezione +10 XP', fn: function () { ultimo = e.n; load(e.n); } }, 'ok');
       }
     });
     return wrap;
@@ -175,7 +176,9 @@
     b.replaceChildren.apply(b, out);
     var ct = document.querySelector('.content'); if (ct) ct.scrollTop = 0;
     var sh = $('sheet'); if (sh) sh.hidden = true;
-    var cor = b.querySelector('.pc-corrente');
+    /* tornando da un esercizio si riporta in vista quel nodo (una volta sola), altrimenti il nodo corrente */
+    var cor = ultimo != null && b.querySelector('[data-ex="' + ultimo + '"]') || b.querySelector('.pc-corrente');
+    ultimo = null;
     if (cor) setTimeout(function () { try { cor.scrollIntoView({ block: 'center' }); } catch (e) {} }, 60);
   };
   // showHome e' una function declaration globale: l'assegnazione sopra la sostituisce
