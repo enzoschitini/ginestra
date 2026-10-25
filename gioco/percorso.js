@@ -113,6 +113,7 @@
       onclick: function (ev) {
         ev.stopPropagation();
         if (box) { box.remove(); box = null; this.setAttribute('aria-expanded', 'false'); return; }
+        if (window.SND) SND.play('click');
         box = h('div', { class: 'pc-guida-box' }, [h('b', {}, 'In questa unità')].concat(list.map(function (e) { return h('div', {}, e.name + ' - ' + (e.desc || '')); })));
         banner.parentNode.insertBefore(box, banner.nextSibling);
         this.setAttribute('aria-expanded', 'true');
@@ -166,10 +167,10 @@
     var lab = h('label', { class: 'pc-switch' });
     var chk = h('input', { type: 'checkbox', 'aria-label': 'Sblocca tutto' });
     chk.checked = tutto;
-    chk.addEventListener('change', function () { setSblocca(chk.checked); showHome(); });
+    chk.addEventListener('change', function () { if (window.SND) SND.play('click'); setSblocca(chk.checked); showHome(); });
     lab.append(chk, h('span', { class: 'pc-switch-ui', 'aria-hidden': 'true' }), h('span', { class: 'pc-switch-t' }, 'Sblocca tutto'));
     out.push(h('div', { class: 'pc-fondo' }, lab,
-      h('p', { class: 'hm-note' }, 'Completati ' + nodiFatti + ' di ' + nodiTot + ' esercizi. Prima di cominciare puoi ripassare le voci in Allenamento.')));
+      h('p', { class: 'hm-note' }, 'Completati ' + nodiFatti + ' di ' + nodiTot + ' esercizi. Prima di cominciare puoi ripassare le voci in Ripasso.')));
 
     b.replaceChildren.apply(b, out);
     var ct = document.querySelector('.content'); if (ct) ct.scrollTop = 0;

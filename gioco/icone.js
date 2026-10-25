@@ -37,7 +37,7 @@
   GI.campana = function (size) { return img('Icon=Bell, Size=Small.png', size, 'Notifiche'); };
   GI.spunta = function (size) { return img('Icon=Check, Size=Small.png', size, 'Fatto'); };
   GI.casa = function (size) { return img('Icon=House, Size=Small.png', size, 'Home'); };
-  GI.pesi = function (size) { return img('Icon=Weights, Size=Small.png', size, 'Allenamento'); };
+  GI.pesi = function (size) { return img('Icon=Weights, Size=Small.png', size, 'Ripasso'); };
   GI.altro = function (size) { return img('Icon=More, Size=Small.png', size, 'Altro'); };
   GI.logo = function (size) { return img('logo 2.png', size, 'Ginestra'); };
   /* nodi del percorso (71x65): completato, oro (corrente, con stella), non disponibile */

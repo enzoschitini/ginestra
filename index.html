@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ginestra</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="layout/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="layout/assets/favicon-180.png">
   <meta name="theme-color" content="#ffffff">
   <script>try { if (localStorage.getItem('ginestra-tema') === 'scuro') document.documentElement.classList.add('dark'); } catch (e) {}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,7 +368,7 @@
     .header-btn.alt { background: #334155; box-shadow: 0 3px 0 #1e293b; display: inline-block; }
     label.header-btn { cursor: pointer; }
     .screen-item.off { opacity: .45; }
-    /* ---------- Allenamento ---------- */
+    /* ---------- Ripasso ---------- */
     #body.train { flex: none; }
     .tr-bar { display: flex; gap: 8px; margin: 4px 0 6px; }
     .tr-search { flex: 1; min-width: 0; border: 2px solid #e5e5e5; border-radius: 12px; padding: 9px 12px; font-size: 14px; font-weight: 700; color: #3c3c3c; background: #fff; }
@@ -398,7 +400,7 @@
     .tr-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
     .tr-tag { font-size: 11px; font-weight: 800; color: #777; background: #f3f4f6; border-radius: 8px; padding: 3px 8px; }
     .tr-none { color: #777; font-weight: 700; text-align: center; padding: 20px 0; }
-    /* ---------- navigazione Home / Allenamento ---------- */
+    /* ---------- navigazione Home / Ripasso ---------- */
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
     .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px 9px; border-radius: 14px; border: 2px solid #334155; border-bottom-width: 4px; background: #0f172a; color: #94a3b8; font-weight: 900; font-size: 13px; cursor: pointer; font-family: inherit; }
     .tab:hover { background: #334155; color: #fff; }
@@ -433,7 +435,7 @@
     body.app .content { padding-left: 20px; padding-right: 20px; }
     @media (min-width: 640px) { body.app .content { padding-left: 40px; padding-right: 40px; } .apptop { padding-left: 40px !important; padding-right: 40px !important; } }
 
-    /* barra superiore di Home e Allenamento */
+    /* barra superiore di Home e Ripasso */
     .apptop { display: none; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px 6px; }
     body:not(.mode-ex) .apptop { display: flex; }
     body:not(.mode-ex) .lesson-bar, body:not(.mode-ex) .title, body:not(.mode-ex) #footer { display: none; }
@@ -728,6 +730,7 @@ function sfx(ok) {
     }
   } catch (e) {}
 }
+function clickSnd() { if (window.SND) SND.play('click'); }
 function svg(html) { var d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 
 var SPEAKER = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
@@ -1532,8 +1535,8 @@ function showEmpty() {
 var VIEW = 'home', LASTEX = 1;
 function ico(name, cls) { return h('img', { class: 'ico ' + (cls || ''), src: ICON[name], alt: '', draggable: 'false' }); }
 
-/* ---------- Allenamento: tutte le voci da studiare prima degli esercizi ---------- */
-var TRAIN = { n: 0, name: 'Allenamento', title: 'Allenamento', items: [], pool: function () { return []; }, needs: '' };
+/* ---------- Ripasso: tutte le voci da studiare prima degli esercizi ---------- */
+var TRAIN = { n: 0, name: 'Ripasso', title: 'Ripasso', items: [], pool: function () { return []; }, needs: '' };
 function sayText(r) { return r.tipo === 'parola' ? answerText(r) : r.text; }
 function trCard(r) {
   var title = r.tipo === 'parola' ? disp(r) : r.text;
@@ -1570,7 +1573,7 @@ function trCard(r) {
 }
 function showTraining() {
   cur = TRAIN; qi = 0; score = 0;
-  setMode('train'); setTop('Allenamento'); renderTabs();
+  setMode('train'); setTop('Ripasso'); renderTabs();
   var rows = ROWS.filter(inFoglio), cards = rows.map(trCard), open = false;
   var list = h('div', { class: 'tr-list' });
   var count = h('div', { class: 'tr-count' });
@@ -1603,7 +1606,7 @@ function subtitle() {
 function setTop(t) {
   $('top-title').textContent = t;
   var sub = (VIEW === 'profilo' || VIEW === 'lega') ? '' : subtitle();
-  $('top-sub').textContent = sub; $('top-sub').hidden = !sub;
+  $('top-sub').textContent = sub || ' '; $('top-sub').style.visibility = sub ? '' : 'hidden';
 }
 function tabB(id, label, icon, go) {
   return h('button', { class: 'tabb' + (VIEW === id ? ' on' : ''), type: 'button', 'aria-label': label, 'aria-current': VIEW === id ? 'page' : 'false', onclick: go },
@@ -1612,7 +1615,7 @@ function tabB(id, label, icon, go) {
 function renderTabs() {
   $('tabbar').replaceChildren(
     tabB('home', 'Home', 'casa', function () { showHome(); }),
-    tabB('train', 'Allenamento', 'peso', function () { showTraining(); }));
+    tabB('train', 'Ripasso', 'peso', function () { showTraining(); }));
 }
 function refreshView() {
   if (VIEW === 'train') showTraining();
@@ -1639,7 +1642,7 @@ function showHome() {
           cnt >= e.min ? h('div', { class: 'hm-bar' }, h('i', { style: 'width:' + Math.round(100 * seen / Math.max(1, cnt)) + '%' })) : ''));
     })));
   });
-  out.push(h('p', { class: 'hm-note' }, 'Prima di cominciare puoi ripassare le voci in Allenamento.'));
+  out.push(h('p', { class: 'hm-note' }, 'Prima di cominciare puoi ripassare le voci in Ripasso.'));
   b.replaceChildren.apply(b, out);
   document.querySelector('.content').scrollTop = 0;
   $('sheet').hidden = true;
@@ -1724,6 +1727,7 @@ function chipGroup(boxId, group, opts) {
     var on = FILT[group].indexOf(o.v) >= 0;
     return h('button', { class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), disabled: !o.n && !on,
       onclick: function () {
+        clickSnd();
         var i = FILT[group].indexOf(o.v);
         if (i >= 0) FILT[group].splice(i, 1); else FILT[group].push(o.v);
         filtersChanged();
@@ -1821,11 +1825,12 @@ function loadData() {
 
 (function () {
   $('close').addEventListener('click', function () { showHome(); });
-  $('gear').addEventListener('click', function () { renderCover(); $('sheet').hidden = false; });
-  $('sheet-x').addEventListener('click', function () { $('sheet').hidden = true; });
-  $('sheet').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('gear').addEventListener('click', function () { clickSnd(); renderCover(); $('sheet').hidden = false; });
+  $('sheet-x').addEventListener('click', function () { clickSnd(); $('sheet').hidden = true; });
+  $('sheet').addEventListener('click', function (e) { if (e.target === this) { clickSnd(); this.hidden = true; } });
   $('sw-tema').checked = document.documentElement.classList.contains('dark');
   $('sw-tema').addEventListener('change', function () {
+    clickSnd();
     document.documentElement.classList.toggle('dark', this.checked);
     document.querySelector('meta[name="theme-color"]').setAttribute('content', this.checked ? '#131f24' : '#ffffff');
     try { localStorage.setItem('ginestra-tema', this.checked ? 'scuro' : 'chiaro'); } catch (e) {}
@@ -1836,8 +1841,8 @@ function loadData() {
     try { localStorage.setItem('ginestra-suoni', SOUND_ON ? '1' : '0'); } catch (e) {}
     sfx(true);
   });
-  $('f-reset').addEventListener('click', function () { FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
-  $('sel-n').addEventListener('change', function () { NQ = this.value === 'tutte' ? 1e9 : +this.value; });
+  $('f-reset').addEventListener('click', function () { clickSnd(); FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
+  $('sel-n').addEventListener('change', function () { clickSnd(); NQ = this.value === 'tutte' ? 1e9 : +this.value; });
   cur = EX[0];
   loadData();
 })();
@@ -1846,6 +1851,7 @@ function loadData() {
 <link rel="stylesheet" href="gioco/percorso.css">
 <link rel="stylesheet" href="gioco/festa.css">
 <link rel="stylesheet" href="gioco/profilo.css">
+<script src="gioco/suoni.js" onerror="void 0"></script>
 <script src="gioco/icone.js" onerror="void 0"></script>
 <script src="gioco/stato.js" onerror="void 0"></script>
 <script src="gioco/festa.js" onerror="void 0"></script>

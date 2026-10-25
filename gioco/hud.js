@@ -92,7 +92,7 @@
   renderTabs = function () {
     var tb = document.getElementById('tabbar'); if (!tb) return;
     var home = tab('home', 'Home', function () { return 'casa'; }, '', function () { showHome(); });
-    var train = tab('train', 'Allenamento', function () { return 'pesi'; }, '', function () { showTraining(); });
+    var train = tab('train', 'Ripasso', function () { return 'pesi'; }, '', function () { showTraining(); });
     var ob = tab('profilo', 'Obiettivi', function () { return 'bersaglio'; }, '🎯',
       typeof showProfilo === 'function' ? function () { showProfilo(); } : null);
     var lega = tab('lega', 'Lega', function () { return 'trofeo'; }, '🏆',
@@ -106,6 +106,7 @@
   window.mostraSenzaCuori = function (onRicarica, onEsci) {
     chiudiModale();
     var costo = 100, gem = (GS.state && GS.state.gemme) || 0, puo = gem >= costo;
+    if (window.SND) SND.play('riprova');
     var ov = document.createElement('div'); ov.className = 'g-modale-ov';
     var m = document.createElement('div'); m.className = 'g-modale';
     m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-label', 'Hai finito i cuori');
@@ -122,7 +123,7 @@
       if (GS.ricaricaCuori(costo)) { chiudiModale(); perso0 = false; aggiorna(); if (onRicarica) onRicarica(); }
     });
     if (!puo) { r.disabled = true; r.setAttribute('aria-label', 'Ricarica: servono ' + costo + ' gemme, ne hai ' + gem); }
-    btn('g-btn g-btn-verde g-btn-blocco', 'Allenati (gratis)', function () { chiudiModale(); perso0 = false; showTraining(); });
+    btn('g-btn g-btn-verde g-btn-blocco', 'Ripassa (gratis)', function () { chiudiModale(); perso0 = false; showTraining(); });
     var x = document.createElement('button'); x.type = 'button'; x.className = 'g-modale-x'; x.textContent = 'Esci';
     x.onclick = function () { chiudiModale(); perso0 = false; if (onEsci) onEsci(); else showHome(); };
     m.appendChild(x);
