@@ -509,6 +509,7 @@
     .splash-bar { width: min(240px, 60vw); height: 14px; border-radius: 7px; background: #e5e5e5; overflow: hidden; margin-top: 10px; }
     .splash-fill { position: relative; width: 0; height: 100%; border-radius: 7px; background: #58cc02; transition: width .35s ease; }
     .splash-fill::after { content: ''; position: absolute; top: 3px; left: 7px; right: 7px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.3); }
+    .splash-by { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; font-size: 14px; font-weight: 700; color: #afafaf; }
     @keyframes splash-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
     html.dark .splash { background: #131f24; }
     html.dark .splash-bar { background: #2b3a42; }
@@ -524,6 +525,7 @@
     .switch input:focus-visible + i { outline: 3px solid #84d8ff; outline-offset: 2px; }
     html.dark .fld-sw { color: #7d8e98; }
     html.dark .switch i { background: #2f4049; }
+    html.dark .switch input:checked + i { background: #58cc02; }
 
     /* ======================================================
        TEMA SCURO (opzionale: il chiaro è lo standard)
@@ -597,6 +599,7 @@
     <img class="splash-logo" src="layout/assets/logo%202.png" alt="" width="1226" height="1226">
     <div class="splash-name">Ginestra</div>
     <div class="splash-bar"><div class="splash-fill" id="splash-fill"></div></div>
+    <div class="splash-by">By Enzo Schitini</div>
   </div>
 
   <div class="app-layout">
@@ -644,6 +647,7 @@
               <div class="sheet-h"><b>Impostazioni</b><button class="sheet-x" id="sheet-x" type="button" aria-label="Chiudi">&times;</button></div>
               <div class="sheet-status" id="data-status"></div>
               <label class="fld-sw">Tema scuro<span class="switch"><input type="checkbox" id="sw-tema" role="switch"><i></i></span></label>
+              <label class="fld-sw">Sblocca tutto<span class="switch"><input type="checkbox" id="sw-sblocca" role="switch"><i></i></span></label>
               <label class="fld">Suoni<select id="sel-snd"><option value="1">Attivi</option><option value="0">Disattivati</option></select></label>
               <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
               <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
@@ -1758,7 +1762,17 @@ function renderInfo() {
     h('div', { class: 'cover-t' }, 'Foglio · ' + periodLabel(SUMM[sel[0]].data)),
     h('div', { class: 'cover-n' }, SUMM[sel[0]].spieg))] : []);
 }
-function filtersChanged() { fillFilters(); renderInfo(); renderCover(); refreshView(); $('sheet').hidden = false; }
+function filtersChanged() { fillFilters(); saveFilt(); renderInfo(); renderCover(); refreshView(); $('sheet').hidden = false; }
+
+/* i filtri scelti si ricordano tra una visita e l'altra (anche «nessun filtro» = tutti i fogli) */
+function saveFilt() { try { localStorage.setItem('ginestra-filtri', JSON.stringify(FILT)); } catch (e) {} }
+function loadFilt() {
+  try {
+    var f = JSON.parse(localStorage.getItem('ginestra-filtri') || 'null');
+    if (f && Array.isArray(f.pers) && Array.isArray(f.per) && Array.isArray(f.cat)) return { pers: f.pers, per: f.per, cat: f.cat };
+  } catch (e) {}
+  return null;
+}
 
 function applyCSV(text, label) {
   var info;
@@ -1797,9 +1811,14 @@ function loadData() {
   return Promise.all([fetchText('glossario.csv'), fetchText('riassunto.csv').catch(function () { return ''; })]).catch(function () { return local; }).then(function (res) {
     loadSummary(res[1]);
     applyCSV(res[0], 'glossario.csv');
-    /* all'avvio parte dall'ultimo foglio del glossario: meno voci da preparare, app più veloce */
-    var last = ROWS.length ? ROWS[ROWS.length - 1].pers : '';
-    if (last && !FILT.pers.length && !FILT.per.length && !FILT.cat.length) { FILT.pers = [last]; fillFilters(); renderInfo(); renderCover(); }
+    /* all'avvio si riprendono i filtri salvati; solo la prima volta (o se i fogli salvati non esistono più)
+       parte dall'ultimo foglio del glossario: meno voci da preparare, app più veloce */
+    var saved = loadFilt(), last = ROWS.length ? ROWS[ROWS.length - 1].pers : '';
+    if (saved) { FILT = saved; fillFilters(); }
+    var vuoti = !FILT.pers.length && !FILT.per.length && !FILT.cat.length;
+    var persi = saved && vuoti && (saved.pers.length + saved.per.length + saved.cat.length) > 0;
+    if (last && ((!saved && vuoti) || persi)) { FILT.pers = [last]; fillFilters(); }
+    renderInfo(); renderCover();
     showHome();
   }).catch(function (e) {
     setStatus('Impossibile caricare i dati (' + e.message + '). Esegui «node sync-dati.js» nella cartella per creare dati.js, oppure avvia «python -m http.server» e apri http://localhost:8000.');
@@ -1818,6 +1837,7 @@ function loadData() {
     if (k >= 1) {
       clearInterval(iv);
       fill.style.width = '100%';
+      if (window.SND) SND.play('corretta');
       setTimeout(function () { splash.classList.add('done'); }, 350);
     }
   }, 180);
