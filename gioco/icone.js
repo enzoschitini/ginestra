@@ -58,15 +58,7 @@
       '<rect x="26" y="38" width="12" height="12" rx="3" fill="#ffc800" stroke="#c99400" stroke-width="2"/>',
       grad(a, '#d98a3a', '#a85d16') + grad(b, '#b8691f', '#82430c') + grad(c, '#ffe45c', '#ff9600'), 'Scrigno aperto');
   };
-  GI.corona = function (size) {
-    var a = gid();
-    return svg(size, '0 0 64 64',
-      '<path d="M6 48L4 18l16 14L32 10l12 22 16-14-2 30z" fill="url(#' + a + ')" stroke="#d99a00" stroke-width="2" stroke-linejoin="round"/>' +
-      '<rect x="8" y="48" width="48" height="8" rx="3" fill="#ffb000" stroke="#d99a00" stroke-width="2"/>' +
-      '<circle cx="32" cy="10" r="4" fill="#ff4b4b"/><circle cx="4" cy="18" r="3" fill="#1cb0f6"/><circle cx="60" cy="18" r="3" fill="#58cc02"/>' +
-      '<path d="M16 40l-1-8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/>',
-      grad(a, '#ffe45c', '#ffb000'), 'Corona');
-  };
+  GI.corona = function (size) { return img('Icon=Crown.png', size, 'Corona'); };
   GI.lucchetto = function (size) {
     var a = gid();
     return svg(size, '0 0 64 64',
