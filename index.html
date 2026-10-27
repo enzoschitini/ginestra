@@ -403,8 +403,9 @@
     .tr-head { padding-right: 4px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
     .tr-clear { display: block; width: 100%; margin: 4px 0 6px; border: 2px solid #ff4b4b; border-bottom-width: 4px; background: #fff; color: #ea2b2b; border-radius: 12px; padding: 9px 12px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
     .tr-clear[hidden] { display: none; }
-    .tr-chk { display: none; flex: none; width: 22px; height: 22px; align-self: center; margin-left: 12px; border: 2px solid #cbd5e1; border-radius: 50%; color: transparent; font-size: 14px; font-weight: 900; line-height: 18px; text-align: center; }
-    .tr-list.selmode .tr-chk { display: block; }
+    .tr-chk { display: none; flex: none; width: 22px; height: 22px; align-self: center; margin: 0 11px; cursor: pointer; border: 2px solid #58cc02; border-radius: 50%; color: transparent; font-size: 14px; font-weight: 900; line-height: 18px; text-align: center; }
+    .tr-card.picked .tr-chk { display: block; }
+    .tr-card.picked .tr-chev { display: none; }
     .tr-card.picked { border-color: #58cc02; background: #f0fbe6; }
     .tr-card.picked .tr-chk { background: #58cc02; border-color: #58cc02; color: #fff; }
     html.dark .tr-clear { background: #1e293b; color: #ff7b7b; }
@@ -1595,6 +1596,7 @@ function trCard(r) {
   function mark() { card.classList.toggle('picked', !!SEL[key]); }
   function toggleSel() { if (SEL[key]) delete SEL[key]; else SEL[key] = 1; mark(); selChanged(); }
   function cancel() { clearTimeout(timer); }
+  chk.addEventListener('click', toggleSel);
   head.addEventListener('pointerdown', function (e) {
     if (e.button) return;
     sx = e.clientX; sy = e.clientY; cancel();
@@ -1607,7 +1609,7 @@ function trCard(r) {
     if (Date.now() - heldAt < 800) return; /* il rilascio dopo la pressione lunga non è un tocco */
     if (selCount()) toggleSel(); else set(box.hidden);
   });
-  card.append(h('div', { class: 'tr-row' }, chk, main, head, chev), box);
+  card.append(h('div', { class: 'tr-row' }, main, head, chev, chk), box);
   card.set = set; card.mark = mark; mark();
   card.hay = norm([r.text, r.lemma, r.trad, r.nota, r.frasePt, r.spieg].join(' '));
   return card;
