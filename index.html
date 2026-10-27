@@ -399,6 +399,16 @@
     .tr-actions { margin-top: 10px; }
     .tr-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
     .tr-tag { font-size: 11px; font-weight: 800; color: #777; background: #f3f4f6; border-radius: 8px; padding: 3px 8px; }
+    .tr-chev { flex: none; width: 44px; border: 0; background: transparent; cursor: pointer; font-family: inherit; }
+    .tr-head { padding-right: 4px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    .tr-clear { display: block; width: 100%; margin: 4px 0 6px; border: 2px solid #ff4b4b; border-bottom-width: 4px; background: #fff; color: #ea2b2b; border-radius: 12px; padding: 9px 12px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+    .tr-clear[hidden] { display: none; }
+    .tr-chk { display: none; flex: none; width: 22px; height: 22px; align-self: center; margin-left: 12px; border: 2px solid #cbd5e1; border-radius: 50%; color: transparent; font-size: 14px; font-weight: 900; line-height: 18px; text-align: center; }
+    .tr-list.selmode .tr-chk { display: block; }
+    .tr-card.picked { border-color: #58cc02; background: #f0fbe6; }
+    .tr-card.picked .tr-chk { background: #58cc02; border-color: #58cc02; color: #fff; }
+    html.dark .tr-clear { background: #1e293b; color: #ff7b7b; }
+    html.dark .tr-card.picked { border-color: #3f8f02; background: #1c2a14; }
     .tr-none { color: #777; font-weight: 700; text-align: center; padding: 20px 0; }
     /* ---------- navigazione Home / Ripasso ---------- */
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
@@ -652,6 +662,7 @@
               <div class="fld">Personaggio<div class="chips" id="f-pers"></div></div>
               <div class="fld">Periodo<div class="chips" id="f-per"></div></div>
               <div class="fld">Categoria<div class="chips" id="f-cat"></div></div>
+              <label class="fld">Gruppo<select id="sel-gruppo"><option value="">Tutte le voci</option><option value="parola">Solo parole</option><option value="espressione">Solo espressioni</option><option value="frase">Solo frasi</option></select></label>
               <button class="cover-b f-reset" id="f-reset" type="button">Azzera filtri</button>
               <label class="fld">Domande per lezione<select id="sel-n"><option value="5">5</option><option value="8">8</option><option value="10">10</option><option value="20">20</option><option value="tutte">Tutte le voci</option></select></label>
               <div id="foglio-info"></div>
@@ -858,6 +869,13 @@ var ICON = {"stella": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEcAAABBCAY
    DATI: il glossario (CSV) è l'unica fonte degli esercizi
    ====================================================== */
 var ROWS = [], FILT = { pers: [], per: [], cat: [] }, NQ = 5, SUMM = {};
+/* gruppo: dopo i filtri, restringe alle voci di un tipo ('' = tutte, 'parola', 'espressione' o 'frase') */
+var GRUPPO = '';
+/* voci scelte a mano nel Ripasso (pressione prolungata): se ce n'è almeno una, esercizi e conteggi usano solo quelle */
+var SEL = {}, SELUI = null;
+function selKey(r) { return r.pers + '|' + r.text; }
+function selCount() { return Object.keys(SEL).length; }
+function selChanged() { saveFilt(); if (SELUI) SELUI(); }
 
 /* il confronto ignora accenti, maiuscole e punteggiatura (tranne l'apostrofo) */
 norm = function (s) {
@@ -927,7 +945,7 @@ function take(a, n) { return shuffle(a).slice(0, n); }
    Una voce si segna come vista quando la domanda viene mostrata. Quando tutte le voci
    idonee sono state viste, il giro ricomincia da capo. */
 var SEEN = {}, STORE = '';
-function seenOf(n) { var k = n + '|' + ['pers', 'per', 'cat'].map(function (g) { return FILT[g].slice().sort().join(';'); }).join('|'); return (SEEN[k] = SEEN[k] || {}); }
+function seenOf(n) { var k = n + '|' + ['pers', 'per', 'cat'].map(function (g) { return FILT[g].slice().sort().join(';'); }).join('|') + '|' + GRUPPO + (selCount() ? '|' + hashText(Object.keys(SEL).sort().join(';')) : ''); return (SEEN[k] = SEEN[k] || {}); }
 function saveSeen() { try { localStorage.setItem(STORE, JSON.stringify(SEEN)); } catch (e) {} }
 function loadSeen() { SEEN = {}; try { SEEN = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { SEEN = {}; } }
 function hashText(t) { var h = 5381, i = 0; for (; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0; return h.toString(36); }
@@ -970,11 +988,12 @@ function disp(r) { return cap(answerText(r)); }
 function shown(r) { return r.tipo === 'parola' ? disp(r) : r.text; }
 /* filtri: tra gruppi vale «e», dentro un gruppo vale «o» */
 function periodOf(r) { return (SUMM[r.pers] || {}).data || ''; }
-function inFoglio(r) {
-  return (!FILT.pers.length || FILT.pers.indexOf(r.pers) >= 0) &&
+function inBase(r) {
+  return (!GRUPPO || r.tipo === GRUPPO) && (!FILT.pers.length || FILT.pers.indexOf(r.pers) >= 0) &&
     (!FILT.per.length || FILT.per.indexOf(periodOf(r)) >= 0) &&
     (!FILT.cat.length || FILT.cat.some(function (t) { return r.tagList.indexOf(t) >= 0; }));
 }
+function inFoglio(r) { return inBase(r) && (!selCount() || !!SEL[selKey(r)]); }
 /* una voce è idonea a un esercizio se non è «da verificare» e il nome dell'esercizio non è in «Escludi da» */
 function ok(r, key) { return !r.uncertain && inFoglio(r) && r.esc.split(/[;,\s]+/).indexOf(key) < 0; }
 function words(key) { return ROWS.filter(function (r) { return r.tipo === 'parola' && r.lemma && ok(r, key); }); }
@@ -1564,22 +1583,47 @@ function trCard(r) {
   var slow = spk(sayText(r), 'Ascolta più lentamente', .5, 'tr-mini'); slow.textContent = '🐢 Più lento';
   var tags = r.themes.slice(0, 6).map(function (t) { return h('span', { class: 'tr-tag' }, t); });
   box.append(h('div', { class: 'tr-actions' }, slow), tags.length ? h('div', { class: 'tr-tags' }, tags) : '');
-  var chev = h('span', { class: 'tr-chev', 'aria-hidden': 'true' }, '▾');
+  /* la freccia apre/chiude sempre la sezione; il resto della riga la apre solo fuori dalla selezione */
+  var chev = h('button', { class: 'tr-chev', type: 'button', 'aria-expanded': 'false', 'aria-label': 'Apri o chiudi: ' + title }, '▾');
   var card = h('div', { class: 'tr-card' + (r.uncertain ? ' unsure' : '') });
-  var head = h('button', { class: 'tr-head', type: 'button', 'aria-expanded': 'false' },
-    h('div', { class: 'tr-txt' }, h('div', { class: 'tr-it' }, title), h('div', { class: 'tr-pt' }, tr || '')), chev);
-  function set(open) { box.hidden = !open; head.setAttribute('aria-expanded', String(open)); card.classList.toggle('open', open); }
-  head.addEventListener('click', function () { set(box.hidden); });
-  card.append(h('div', { class: 'tr-row' }, main, head), box);
-  card.set = set;
+  var head = h('button', { class: 'tr-head', type: 'button' },
+    h('div', { class: 'tr-txt' }, h('div', { class: 'tr-it' }, title), h('div', { class: 'tr-pt' }, tr || '')));
+  function set(open) { box.hidden = !open; chev.setAttribute('aria-expanded', String(open)); card.classList.toggle('open', open); }
+  chev.addEventListener('click', function () { set(box.hidden); });
+  /* pressione prolungata = seleziona la voce; da lì in poi un tocco seleziona/deseleziona le altre */
+  var chk = h('span', { class: 'tr-chk', 'aria-hidden': 'true' }, '✓'), key = selKey(r), timer = 0, heldAt = 0, sx = 0, sy = 0;
+  function mark() { card.classList.toggle('picked', !!SEL[key]); }
+  function toggleSel() { if (SEL[key]) delete SEL[key]; else SEL[key] = 1; mark(); selChanged(); }
+  function cancel() { clearTimeout(timer); }
+  head.addEventListener('pointerdown', function (e) {
+    if (e.button) return;
+    sx = e.clientX; sy = e.clientY; cancel();
+    timer = setTimeout(function () { heldAt = Date.now(); set(false); toggleSel(); if (navigator.vibrate) navigator.vibrate(15); }, 450);
+  });
+  head.addEventListener('pointermove', function (e) { if (Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10) cancel(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { head.addEventListener(ev, cancel); });
+  head.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  head.addEventListener('click', function () {
+    if (Date.now() - heldAt < 800) return; /* il rilascio dopo la pressione lunga non è un tocco */
+    if (selCount()) toggleSel(); else set(box.hidden);
+  });
+  card.append(h('div', { class: 'tr-row' }, chk, main, head, chev), box);
+  card.set = set; card.mark = mark; mark();
   card.hay = norm([r.text, r.lemma, r.trad, r.nota, r.frasePt, r.spieg].join(' '));
   return card;
 }
 function showTraining() {
   cur = TRAIN; qi = 0; score = 0;
   setMode('train'); setTop('Ripasso'); renderTabs();
-  var rows = ROWS.filter(inFoglio), cards = rows.map(trCard), open = false;
+  var rows = ROWS.filter(inBase), cards = rows.map(trCard), open = false;
   var list = h('div', { class: 'tr-list' });
+  var clear = h('button', { class: 'tr-clear', type: 'button', hidden: true });
+  clear.addEventListener('click', function () { clickSnd(); SEL = {}; cards.forEach(function (c) { c.mark(); }); selChanged(); });
+  SELUI = function () {
+    var n = selCount();
+    clear.hidden = !n; clear.textContent = 'Cancella le selezioni (' + n + ')';
+    list.classList.toggle('selmode', n > 0);
+  };
   var count = h('div', { class: 'tr-count' });
   var search = h('input', { class: 'tr-search', type: 'search', placeholder: 'Cerca una voce…', 'aria-label': 'Cerca una voce' });
   var toggle = h('button', { class: 'tr-toggle', type: 'button' }, 'Apri tutte');
@@ -1592,10 +1636,10 @@ function showTraining() {
   toggle.addEventListener('click', function () { open = !open; cards.forEach(function (c) { c.set(open); }); toggle.textContent = open ? 'Chiudi tutte' : 'Apri tutte'; });
   var b = $('body'); b.className = 'train';
   b.replaceChildren(
-    h('p', { class: 'hint-line' }, 'Tocca una voce per la spiegazione. Il tasto con l\'altoparlante la legge ad alta voce.'),
-    h('div', { class: 'tr-bar' }, search, toggle), count, list);
+    h('p', { class: 'hint-line' }, 'Tocca una voce per la spiegazione. Tieni premuto per sceglierne un gruppo da usare negli esercizi.'),
+    clear, h('div', { class: 'tr-bar' }, search, toggle), count, list);
   $('body').scrollTop = 0; document.querySelector('.content').scrollTop = 0;
-  paint();
+  paint(); SELUI();
   $('sheet').hidden = true;
 }
 
@@ -1605,7 +1649,9 @@ function setMode(v) { VIEW = v; document.body.classList.toggle('mode-ex', v === 
 function subtitle() {
   var n = FILT.pers.length + FILT.per.length + FILT.cat.length;
   var what = FILT.pers.length === 1 && !FILT.per.length && !FILT.cat.length ? FILT.pers[0] : n ? n + (n === 1 ? ' filtro' : ' filtri') : 'Tutti i fogli';
-  return what + ' · ' + ROWS.filter(inFoglio).length + ' voci';
+  if (GRUPPO) what += ' · ' + ({ parola: 'solo parole', espressione: 'solo espressioni', frase: 'solo frasi' })[GRUPPO];
+  var n2 = ROWS.filter(inFoglio).length;
+  return what + ' · ' + n2 + (selCount() ? (n2 === 1 ? ' voce scelta' : ' voci scelte') : ' voci');
 }
 function setTop(t) {
   $('top-title').textContent = t;
@@ -1754,7 +1800,8 @@ function fillFilters() {
   chipGroup('f-pers', 'pers', pers.map(function (v) { return { v: v, l: v, n: cnt.pers[v] || 0 }; }));
   chipGroup('f-per', 'per', per.map(function (v) { return { v: v, l: periodLabel(v), n: cnt.per[v] || 0 }; }));
   chipGroup('f-cat', 'cat', CATS.map(function (c) { return { v: c[1], l: c[0], n: cnt.cat[c[1]] || 0 }; }));
-  $('f-reset').hidden = !(FILT.pers.length + FILT.per.length + FILT.cat.length);
+  $('f-reset').hidden = !(FILT.pers.length + FILT.per.length + FILT.cat.length || GRUPPO);
+  $('sel-gruppo').value = GRUPPO;
 }
 function renderInfo() {
   var box = $('foglio-info'), sel = FILT.pers.filter(function (p) { return SUMM[p]; });
@@ -1765,10 +1812,12 @@ function renderInfo() {
 function filtersChanged() { fillFilters(); saveFilt(); renderInfo(); renderCover(); refreshView(); $('sheet').hidden = false; }
 
 /* i filtri scelti si ricordano tra una visita e l'altra (anche «nessun filtro» = tutti i fogli) */
-function saveFilt() { try { localStorage.setItem('ginestra-filtri', JSON.stringify(FILT)); } catch (e) {} }
+function saveFilt() { try { localStorage.setItem('ginestra-filtri', JSON.stringify({ pers: FILT.pers, per: FILT.per, cat: FILT.cat, gruppo: GRUPPO, scelte: Object.keys(SEL) })); } catch (e) {} }
 function loadFilt() {
   try {
     var f = JSON.parse(localStorage.getItem('ginestra-filtri') || 'null');
+    if (f) GRUPPO = ['parola', 'espressione', 'frase'].indexOf(f.gruppo) >= 0 ? f.gruppo : '';
+    if (f && Array.isArray(f.scelte)) f.scelte.forEach(function (k) { SEL[k] = 1; });
     if (f && Array.isArray(f.pers) && Array.isArray(f.per) && Array.isArray(f.cat)) return { pers: f.pers, per: f.per, cat: f.cat };
   } catch (e) {}
   return null;
@@ -1778,6 +1827,9 @@ function applyCSV(text, label) {
   var info;
   try { info = loadRows(text); } catch (e) { setStatus('CSV non valido: ' + e.message); return false; }
   STORE = 'ginestra-giri-' + hashText(text); loadSeen();
+  /* una voce scelta che non esiste più nei dati si toglie */
+  var have = {}; ROWS.forEach(function (r) { have[selKey(r)] = 1; });
+  Object.keys(SEL).forEach(function (k) { if (!have[k]) delete SEL[k]; });
   var skipped = ROWS.filter(function (r) { return r.uncertain; }).length;
   setStatus((label || 'glossario') + ' · ' + ROWS.length + ' voci' + (skipped ? ' · ' + skipped + ' «da verificare» escluse' : '') +
     (info.hasNew ? '' : ' · mancano le colonne Tipo e Lemma: nessun esercizio disponibile'));
@@ -1861,7 +1913,8 @@ function loadData() {
     try { localStorage.setItem('ginestra-suoni', SOUND_ON ? '1' : '0'); } catch (e) {}
     sfx(true);
   });
-  $('f-reset').addEventListener('click', function () { clickSnd(); FILT = { pers: [], per: [], cat: [] }; filtersChanged(); });
+  $('f-reset').addEventListener('click', function () { clickSnd(); FILT = { pers: [], per: [], cat: [] }; GRUPPO = ''; filtersChanged(); });
+  $('sel-gruppo').addEventListener('change', function () { clickSnd(); GRUPPO = this.value; filtersChanged(); });
   $('sel-n').addEventListener('change', function () { clickSnd(); NQ = this.value === 'tutte' ? 1e9 : +this.value; });
   cur = EX[0];
   loadData();
@@ -1878,5 +1931,6 @@ function loadData() {
 <script src="gioco/hud.js" onerror="void 0"></script>
 <script src="gioco/percorso.js" onerror="void 0"></script>
 <script src="gioco/profilo.js" onerror="void 0"></script>
+<script src="gioco/swipe.js" onerror="void 0"></script>
 </body>
 </html>
