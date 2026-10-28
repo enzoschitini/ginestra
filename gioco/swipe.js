@@ -54,6 +54,7 @@
 
   el.addEventListener('pointerdown', function (e) {
     if (g || (e.pointerType === 'mouse' && e.button !== 0) || !e.isPrimary) return;
+    if (e.pointerType === 'mouse' && matchMedia('(min-width: 768px)').matches) return; /* su PC si naviga dalla barra laterale */
     if (!schede() || ignora(e.target, e.pointerType === 'mouse')) return;
     g = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, tipo: '', mouse: e.pointerType === 'mouse' };
   });
