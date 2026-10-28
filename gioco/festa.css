@@ -15,8 +15,9 @@
 .f-stat.f-combo { --c: var(--g-arancio, #ff9600); }
 .f-stat.f-gem { --c: var(--g-blu, #1cb0f6); }
 .f-stat-t { font: 900 12px/1 var(--g-font, sans-serif); letter-spacing: .8px; text-transform: uppercase; color: #fff; padding: 6px 0 5px; }
-.f-stat-c { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--g-card, #fff); border-radius: 13px; padding: 12px 4px; color: var(--c); }
-.f-val { font: 900 22px/1 var(--g-font, sans-serif); font-variant-numeric: tabular-nums; }
+.f-stat-c { display: flex; align-items: center; justify-content: center; gap: 4px; background: var(--g-card, #fff); border-radius: 13px; padding: 12px 8px; color: var(--c); }
+.f-stat-c svg, .f-stat-c img { width: 20px; height: 20px; flex: none; }
+.f-val { font: 900 clamp(15px, 5vw, 22px)/1 var(--g-font, sans-serif); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* obiettivo giornaliero */
 .f-ob { width: 100%; text-align: left; }
@@ -74,8 +75,7 @@
 
 @media (max-width: 380px) {
   #body.festa .f-titolo { font-size: 23px; }
-  .f-val { font-size: 19px; }
-  .f-stat-c { padding: 10px 2px; gap: 4px; }
+  .f-stat-c { padding: 10px 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .f-scr, .f-fiamma-big, .f-banner, .f-banner.f-esce, .f-g.f-acceso .f-ico { animation: none; }

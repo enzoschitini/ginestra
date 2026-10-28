@@ -861,7 +861,7 @@ function typed(item, ctx) {
     ctx.ready(input.value.trim() ? function () { return judge(input.value, item.answer); } : null);
   });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ctx.check(); } });
-  setTimeout(function () { if (!ctx.isDone()) input.focus(); }, 50);
+  setTimeout(function () { if (!ctx.isDone()) { input.focus({ preventScroll: true }); window.scrollTo(0, 0); } }, 50);
   return input;
 }
 
@@ -1528,7 +1528,9 @@ function showQ() {
   $('body').replaceChildren();
   footerIdle();
   cur.render(item, ctx);
-  $('title').scrollIntoView({ block: 'nearest' });
+  /* scrolla solo .content: scrollIntoView muoverebbe anche body.app (overflow:hidden) e nasconderebbe la barra con la X */
+  var cont = document.querySelector('.content'); if (cont) cont.scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 function showResult() {
   $('prog').style.width = '100%';
@@ -1899,6 +1901,8 @@ function loadData() {
 
 (function () {
   $('close').addEventListener('click', function () { showHome(); });
+  /* rete di sicurezza: la pagina non deve mai scorrere (la barra con la X resta sempre visibile) */
+  window.addEventListener('scroll', function () { if (document.body.classList.contains('app') && window.scrollY) window.scrollTo(0, 0); }, { passive: true });
   $('gear').addEventListener('click', function () { clickSnd(); renderCover(); $('sheet').hidden = false; });
   $('sheet-x').addEventListener('click', function () { clickSnd(); $('sheet').hidden = true; });
   $('sheet').addEventListener('click', function (e) { if (e.target === this) { clickSnd(); this.hidden = true; } });
@@ -1926,6 +1930,7 @@ function loadData() {
 <link rel="stylesheet" href="gioco/percorso.css">
 <link rel="stylesheet" href="gioco/festa.css">
 <link rel="stylesheet" href="gioco/profilo.css">
+<link rel="stylesheet" href="gioco/desktop.css?v=2">
 <script src="gioco/suoni.js" onerror="void 0"></script>
 <script src="gioco/icone.js?v=2" onerror="void 0"></script>
 <script src="gioco/stato.js" onerror="void 0"></script>
@@ -1933,6 +1938,6 @@ function loadData() {
 <script src="gioco/hud.js" onerror="void 0"></script>
 <script src="gioco/percorso.js" onerror="void 0"></script>
 <script src="gioco/profilo.js" onerror="void 0"></script>
-<script src="gioco/swipe.js" onerror="void 0"></script>
+<script src="gioco/swipe.js?v=2" onerror="void 0"></script>
 </body>
 </html>
