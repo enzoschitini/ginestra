@@ -75,4 +75,12 @@
   });
   el.addEventListener('pointerup', function (e) { if (g && e.pointerId === g.id) fine(); });
   el.addEventListener('pointercancel', function (e) { if (g && e.pointerId === g.id) { g.dx = 0; fine(); } });
+  /* PC: la rotellina funziona anche sopra le zone vuote ai lati della colonna centrale */
+  document.addEventListener('wheel', function (e) {
+    if (e.ctrlKey || e.defaultPrevented || el.contains(e.target)) return;
+    for (var n = e.target; n && n !== document.body; n = n.parentElement) {
+      if (n.nodeType === 1 && !n.contains(el) && /auto|scroll/.test(getComputedStyle(n).overflowY) && n.scrollHeight > n.clientHeight) return;
+    }
+    el.scrollTop += e.deltaY;
+  }, { passive: true });
 })();

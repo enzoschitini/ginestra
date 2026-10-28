@@ -3,6 +3,10 @@
    Tablet (768-1023px): barra laterale stretta con sole icone, contenuto centrato.
    PC (>= 1024px): barra laterale con logo, percorso al centro, pannello statistiche a destra. */
 
+/* ---------- nessuna barra di scorrimento visibile, lo scorrimento resta attivo ---------- */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
 /* ---------- tablet e PC: la tab bar diventa una barra laterale ---------- */
 @media (min-width: 768px) {
   body.app { --lat: 96px; }
@@ -53,9 +57,6 @@
   body.app .tabbar .tabb.g-tab { justify-content: flex-start; padding: 12px 16px; gap: 16px; border-radius: 16px; }
   body.app .tabbar .tabb.g-tab span { display: block; font-size: 15px; letter-spacing: .8px; text-transform: uppercase; }
 
-  /* il percorso scorre senza barra, come nei siti moderni */
-  body.app:not(.mode-ex) .content { scrollbar-width: none; }
-  body.app:not(.mode-ex) .content::-webkit-scrollbar { display: none; }
 }
 
 /* ---------- esercizi e lezioni su schermo largo: una colonna centrata, senza barra laterale ---------- */
@@ -69,4 +70,9 @@
 }
 @media (min-width: 1024px) {
   body.app.mode-ex .phone > .lesson-bar { padding-top: 28px; }
+}
+
+/* ---------- Obiettivi e Lega: occupano tutta la colonna disponibile ---------- */
+@media (min-width: 768px) {
+  body.app .pf-wrap { max-width: none; }
 }
