@@ -8,7 +8,6 @@
 
   /* regole della Maratona */
   var TEMPO0 = 90, TEMPO_MAX = 120, BONUS = 5, PENALITA = 8, PUNTI = 10, COMBO_MAX = 5;
-  var TIPI = [2, 3, 4, 6, 7, 9, 10, 11, 12]; // esercizi a domanda singola, adatti alla corsa
   var M = { on: false };
 
   function suona(n) { try { if (window.SND) SND.play(n); } catch (e) {} }
@@ -24,7 +23,13 @@
     var S = GS.state; S.sfide = S.sfide || {};
     return S.sfide.maratona = S.sfide.maratona || { record: 0, giuste: 0, combo: 0, partite: 0 };
   }
-  function tipiPronti() { return EX.filter(function (e) { return TIPI.indexOf(e.n) >= 0 && e.pool().length >= (e.min || 1); }); }
+  /* solo traduzioni a risposta multipla (un tocco): si misura la memoria, non la velocita' di scrittura */
+  function paroleCorsa() {
+    return ROWS.filter(function (r) {
+      return r.tipo === 'parola' && r.lemma && r.trad && !r.uncertain && inFoglio(r) && r.trad.length <= 28 && disp(r).length <= 28;
+    });
+  }
+  function tipiPronti() { return paroleCorsa().length >= 6 ? [1] : []; }
   function mmss(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60); }
 
   /* ---------- scheda nella schermata Obiettivi ---------- */
@@ -37,7 +42,7 @@
       el('div', 'sf-card', [
         el('div', 'sf-ico', el('span', '', '')),
         el('div', 'sf-t', [el('b', '', 'Maratona'),
-          el('span', '', 'Corri contro il tempo: ogni risposta giusta ti regala ' + BONUS + ' secondi.'),
+          el('span', '', 'Traduci più in fretta che puoi, dal portoghese all\'italiano e viceversa. Ogni risposta giusta ti regala ' + BONUS + ' secondi.'),
           el('span', 'sf-rec', d.record ? 'Record: ' + d.record + ' punti' : 'Nessun record: stabiliscilo!')]),
         b]),
       el('p', 'g-sotto pf-nota', 'Altre sfide arriveranno presto.'));
@@ -45,33 +50,34 @@
     return box;
   };
 
-  /* ---------- domande: gli esercizi della Home, mescolati ---------- */
-  function rifornisci() {
-    var gruppi = shuffle(tipiPronti()).map(function (e) {
-      var it = [];
-      try { it = e.gen() || []; } catch (x) {}
-      return shuffle(it).map(function (q) { delete q._k; delete q._wrap; q._ex = e; return q; });
-    }), out = [], i, vivo = true;
-    while (vivo) {
-      vivo = false;
-      for (i = 0; i < gruppi.length; i++) if (gruppi[i].length) { out.push(gruppi[i].shift()); vivo = true; }
+  /* ---------- domande: traduzioni veloci, nei due sensi ---------- */
+  var TRAD = {
+    title: 'Traduzione veloce',
+    render: function (item, ctx) {
+      ctx.title(item.t);
+      ctx.body.append(bubble('', item.w, item.audio), choices(item, ctx, item.ch, item.answer, item.why));
     }
-    // mai due domande dello stesso tipo di fila
-    for (i = 1; i < out.length; i++) {
-      if (out[i]._ex === out[i - 1]._ex) {
-        for (var j = i + 1; j < out.length; j++) if (out[j]._ex !== out[i - 1]._ex) { var t = out[i]; out[i] = out[j]; out[j] = t; break; }
-      }
+  };
+  function domandaTrad(pool, verso) {
+    var libere = pool.filter(function (r) { return !M.viste[r.id]; }), r;
+    if (libere.length < 3) { M.viste = {}; libere = pool; }
+    r = libere[rand(libere.length)]; M.viste[r.id] = 1;
+    var note = disp(r) + ' = ' + r.trad + '.';
+    if (verso === 'it') { // dall'italiano al portoghese
+      var d1 = similar(r, pool, 2, function (x) { return x.trad; });
+      return { t: 'Come si dice in portoghese?', w: disp(r), audio: disp(r), answer: r.trad, ch: [r.trad].concat(d1.map(function (x) { return x.trad; })), why: note, _ex: TRAD };
     }
-    return out;
+    var d2 = similar(r, pool, 2, disp); // dal portoghese all'italiano
+    return { t: 'Come si dice in italiano?', w: r.trad, answer: disp(r), ch: [disp(r)].concat(d2.map(disp)), why: note, _ex: TRAD };
   }
   function prossima() {
-    if (M.coda.length < 3) {
-      var ult = M.coda.length ? M.coda[M.coda.length - 1]._ex : M.ultimoTipo;
-      var nuove = rifornisci();
-      if (nuove.length > 1 && nuove[0]._ex === ult) nuove.push(nuove.shift());
-      M.coda = M.coda.concat(nuove);
+    var pool = paroleCorsa(), x = Math.random(), q = null;
+    if (x < 0.15 && poolVF().length >= 4) {
+      if (!M.vf || !M.vf.length) { try { M.vf = shuffle(EX.filter(function (e) { return e.n === 4; })[0].gen() || []); } catch (e) { M.vf = []; } }
+      q = M.vf.shift();
+      if (q) { delete q._k; delete q._wrap; q._ex = EX.filter(function (e) { return e.n === 4; })[0]; return q; }
     }
-    return M.coda.shift();
+    return domandaTrad(pool, x < 0.57 ? 'it' : 'pt');
   }
 
   /* ---------- barra superiore: tempo e punteggio ---------- */
@@ -130,6 +136,11 @@
   function preparaSchermo() {
     if (!M.on) {
       M.on = true; M.ctxLose = ctx.lose; ctx.lose = function () {};
+      M.ctxReady = ctx.ready;
+      ctx.ready = function (fn) { // un tocco sulla risposta e si controlla subito
+        M.ctxReady.call(ctx, fn);
+        if (M.on && !M.chiusa && cur.n === 999 && fn) setTimeout(function () { if (M.on && !M.chiusa && !done && checkFn) ctx.check(); }, 80);
+      };
       document.body.classList.add('sfida');
     }
     cur = { n: 999, name: 'Maratona', title: '', items: [], pool: function () { return []; }, needs: '' };
@@ -145,7 +156,7 @@
     schermata('Maratona', [
       el('div', 'sf-eroe', el('span', '', '')),
       h('h2', {}, 'Maratona'),
-      h('p', {}, 'Rispondi più in fretta che puoi. Gli esercizi li scegliamo noi.'),
+      h('p', {}, 'Traduci più in fretta che puoi, dal portoghese all\'italiano e dall\'italiano al portoghese. Le parole le scegliamo noi.'),
       el('ul', 'sf-regole', [
         el('li', '', ['Parti con ', el('b', '', TEMPO0 + ' secondi'), '.']),
         el('li', '', [el('b', 'su', '+' + BONUS + ' s'), ' per ogni risposta giusta.']),
@@ -203,7 +214,7 @@
   /* ---------- la corsa ---------- */
   function parti() {
     M.tempo = TEMPO0; M.punti = 0; M.giuste = 0; M.errate = 0; M.combo = 0; M.comboMax = 0; M.durata = 0;
-    M.coda = []; M.ultimoTipo = null; M.chiusa = false;
+    M.viste = {}; M.vf = []; M.chiusa = false;
     montaBarra(); mostraTempo();
     domanda();
     M.t0 = performance.now();
@@ -220,8 +231,6 @@
   }
   function domanda() {
     var q = prossima();
-    if (!q) { termina('fine'); return; }
-    M.ultimoTipo = q._ex;
     cur.items = [q]; cur.title = q._ex.title; cur.render = q._ex.render; cur.auto = q._ex.auto; cur.n = 999;
     qi = 0; showQ();
     $('footer').querySelector('.btn-main') && ($('footer').querySelector('.btn-main').textContent = 'Controlla');
@@ -243,7 +252,7 @@
     fermaTimer();
     if (M.orologio) M.orologio.remove();
     if (M.hud) M.hud.remove();
-    if (M.on && M.ctxLose) ctx.lose = M.ctxLose;
+    if (M.on && M.ctxLose) { ctx.lose = M.ctxLose; ctx.ready = M.ctxReady; }
     document.body.classList.remove('sfida', 'sfida-poco');
     M = { on: false };
   }
