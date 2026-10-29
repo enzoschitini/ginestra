@@ -50,6 +50,9 @@
     });
     return out;
   }
+  /* voto salvato: nel vecchio formato era `best` */
+  function votoDi(r) { return r ? (r.voto != null ? r.voto : r.best) : null; }
+  function dataIt(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; }
   function vociDi(p) { return ROWS.filter(function (r) { return r.pers === p && !r.uncertain; }); }
   function leggi() { try { return JSON.parse(localStorage.getItem(CHIAVE) || '{}') || {}; } catch (e) { return {}; } }
   function scrivi(o) { try { localStorage.setItem(CHIAVE, JSON.stringify(o)); } catch (e) {} }
@@ -122,6 +125,8 @@
   phone.appendChild(radice);
 
   var St = null;            // esame in corso
+  var Ris = null;           // risultato mostrato: { p, e (dati salvati), ris (risposte), premi }
+  var soloErrori = true;    // filtro della correzione
   var scelto = '';          // personaggio selezionato nell'hub
   var anteprime = {};
   var timer = 0;
@@ -169,7 +174,7 @@
       var b = h('button', { class: 'es-p', type: 'button', 'aria-pressed': 'false', style: '--c:' + c[0] + ';--co:' + c[1] },
         h('span', { class: 'es-p-av' }, emojiDi(p)),
         h('span', { class: 'es-p-n' }, p),
-        r && r.best != null ? h('span', { class: 'es-p-v' }, r.lode ? '30L' : String(r.best)) : null);
+        votoDi(r) != null ? h('span', { class: 'es-p-v' }, r.lode ? '30L' : String(votoDi(r))) : null);
       b.addEventListener('click', function () { suona('click'); scegli(p, true); });
       bottoni[p] = b; riga.append(b);
     });
@@ -183,7 +188,10 @@
       if (anima) { try { bottoni[p].scrollIntoView({ inline: 'center', block: 'nearest', behavior: ridotto() ? 'auto' : 'smooth' }); } catch (e) {} }
       var an = anteprime[p] || (anteprime[p] = costruisci(p));
       scheda.replaceChildren(copertina(p, an, anima));
-      piede.replaceChildren(pulsante('Inizia l\'esame', 'g-btn-verde', function () { avvia(p); }, !an.qs.length));
+      var fatto = leggi()[p], riv = fatto && fatto.ris && fatto.ris.length;
+      piede.replaceChildren(
+        riv ? pulsante('Rivedi le risposte', 'g-btn-blu', function () { rivedi(p); }) : null,
+        pulsante(fatto ? 'Rifai l\'esame' : 'Inizia l\'esame', 'g-btn-verde', function () { avvia(p); }, !an.qs.length));
     }
     area.replaceChildren(
       h('p', { class: 'es-intro' }, 'Dopo lo studio arriva il momento di dimostrare cosa hai imparato. Scegli il foglio.'),
@@ -204,8 +212,8 @@
     var spirali = h('div', { class: 'es-spirale', 'aria-hidden': 'true' });
     for (var i = 0; i < 7; i++) spirali.append(h('i'));
     var vuoto = !an.qs.length;
-    var record = reg && reg.best != null
-      ? h('div', { class: 'es-record ' + (reg.best >= PROMOSSO ? 'ok' : 'no') }, h('b', {}, reg.lode ? '30 e lode' : reg.best + '/30'), h('span', {}, 'record'))
+    var record = votoDi(reg) != null
+      ? h('div', { class: 'es-record ' + (votoDi(reg) >= PROMOSSO ? 'ok' : 'no') }, h('b', {}, reg.lode ? '30 e lode' : votoDi(reg) + '/30'), h('span', {}, 'ultimo voto'))
       : null;
     var cop = h('div', { class: 'es-cop' + (anima && !ridotto() ? ' anima' : ''), style: '--c:' + c[0] + ';--co:' + c[1] },
       spirali,
@@ -222,8 +230,8 @@
     var parti = h('div', { class: 'es-parti' }, an.parti.map(function (x, k) {
       return h('span', { class: 'es-parte-chip' }, (k + 1) + '. ' + x.nome, h('i', {}, String(x.n)));
     }));
-    var storia = h('p', { class: 'es-nota' }, reg && reg.n
-      ? 'Hai fatto questo esame ' + reg.n + (reg.n === 1 ? ' volta' : ' volte') + '. Ultimo voto: ' + (reg.ultimoLode ? '30 e lode' : reg.ultimo + '/30') + '.'
+    var storia = h('p', { class: 'es-nota' }, votoDi(reg) != null
+      ? 'Hai fatto questo esame' + (reg.data ? ' il ' + dataIt(reg.data) : '') + ': ' + (reg.lode ? '30 e lode' : votoDi(reg) + '/30') + '. Se lo rifai, questo voto viene sostituito dal nuovo.'
       : 'Non hai ancora fatto questo esame.');
     return h('div', {}, cop, info, parti, storia);
   }
@@ -306,8 +314,8 @@
     var credito = r.skipped ? 0 : q.n === 1 ? (r.ok ? Math.max(0, 1 - St.errs / Math.max(1, q.item.pairs.length)) : 0) : (r.ok ? 1 : 0);
     var ok = !!r.ok && credito > 0.999;
     St.ris.push({
-      q: q, ok: ok, credito: credito, punti: credito * q.pt,
-      solution: ok ? '' : (r.solution || soluzione(q)), note: r.note || '', mia: mia, skipped: !!r.skipped, errs: St.errs,
+      i: q.i, n: q.n, pt: q.pt, ok: ok, punti: credito * q.pt,
+      solution: r.solution || soluzione(q), note: r.note || '', mia: mia, skipped: !!r.skipped, errs: St.errs,
       testo: testoDomanda(q),
       istr: (document.getElementById('es-istr') || {}).textContent || ''
     });
@@ -365,10 +373,9 @@
     var lode = giuste === St.qs.length, voto = lode ? 30 : Math.min(29, Math.round(pct * 30));
     var passato = voto >= PROMOSSO;
 
-    var reg = leggi(), r0 = reg[St.p] || {};
-    var record = r0.best == null || voto > r0.best || (lode && !r0.lode);
-    reg[St.p] = { best: record ? voto : r0.best, lode: record ? lode : r0.lode, n: (r0.n || 0) + 1, ultimo: voto, ultimoLode: lode, data: new Date().toISOString().slice(0, 10) };
-    scrivi(reg);
+    /* l'ultimo esame di ogni personaggio sostituisce il precedente, risposte comprese */
+    var dati = { voto: voto, lode: lode, passato: passato, giuste: giuste, tot: tot, preso: preso, sec: sec, data: new Date().toISOString().slice(0, 10), ris: St.ris };
+    var reg = leggi(); reg[St.p] = dati; scrivi(reg);
 
     /* ricompense: l'esame vale come una lezione (serie, XP, gemme) e, se superato, ha un bonus */
     var xp = 0, gemme = 0, serie = 0;
@@ -383,7 +390,8 @@
         }
       }
     } catch (e) {}
-    St.esito = { voto: voto, lode: lode, passato: passato, nuovoRecord: record && !!r0.n, giuste: giuste, tot: tot, preso: preso, sec: sec, xp: xp, gemme: gemme, serie: serie };
+    Ris = { p: St.p, e: dati, ris: St.ris, premi: { xp: xp, gemme: gemme, serie: serie } };
+    soloErrori = true;
     suona(passato ? 'congratulazioni' : 'riprova');
     paginaVoto(true);
   }
@@ -392,33 +400,33 @@
     var el = h('span', { class: 'es-premio' }); el.innerHTML = ico + ' <b>' + testo + '</b>'; return el;
   }
   function paginaVoto(prima) {
-    var e = St.esito, anima = prima && !ridotto();
+    var e = Ris.e, anima = prima && !ridotto(), risposte = Ris.ris || [], nq = risposte.length;
     vista('es-ris');
-    aggiornaCima([xBtn(hub, 'Chiudi'), h('div', { class: 'es-tit' }, 'Esame consegnato')]);
+    aggiornaCima([xBtn(hub, 'Chiudi'), h('div', { class: 'es-tit' }, prima ? 'Esame consegnato' : 'Il tuo esame')]);
     var votoEl = h('span', { class: 'es-voto-n' }, anima ? '0' : String(e.voto));
     var cerchio = html('<svg class="es-giro' + (anima ? '' : ' fatto') + '" viewBox="0 0 200 120" aria-hidden="true"><path d="M30 62C28 28 80 8 126 14C176 20 192 52 176 82C160 112 96 116 56 102C26 92 22 76 34 58" fill="none" stroke="#ff4b4b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>').firstChild;
-    var premi = prima ? h('div', { class: 'es-premi' },
-      e.serie ? premio(gi('fiamma', 22, '🔥'), 'Serie ' + e.serie) : null,
-      premio('✨', '+' + e.xp + ' XP'),
-      premio(gi('gemma', 22, '💎'), '+' + e.gemme)) : null;
+    var p = prima && Ris.premi;
+    var premi = p ? h('div', { class: 'es-premi' },
+      p.serie ? premio(gi('fiamma', 22, '🔥'), 'Serie ' + p.serie) : null,
+      premio('✨', '+' + p.xp + ' XP'),
+      premio(gi('gemma', 22, '💎'), '+' + p.gemme)) : null;
     area.replaceChildren(h('div', { class: 'es-carta es-carta-ris' + (anima ? ' entra' : '') },
-      h('div', { class: 'es-testa' }, h('span', { class: 'es-parte' }, 'Esame di ' + St.p), h('span', { class: 'es-num' }, new Date().toLocaleDateString('it-IT'))),
+      h('div', { class: 'es-testa' }, h('span', { class: 'es-parte' }, 'Esame di ' + Ris.p), h('span', { class: 'es-num' }, dataIt(e.data) || new Date().toLocaleDateString('it-IT'))),
       h('div', { class: 'es-voto' }, cerchio, votoEl, h('span', { class: 'es-su' }, '/30'), e.lode ? h('span', { class: 'es-lode' }, 'e lode') : null),
       h('div', { class: 'es-giud' }, giudizio(e.voto, e.lode)),
       h('div', { class: 'es-timbro ' + (e.passato ? 'ok' : 'no') + (anima ? ' batte' : '') }, e.passato ? 'Promosso' : 'Rimandato'),
-      e.nuovoRecord ? h('div', { class: 'es-nuovo' }, '★ Nuovo record') : null,
       h('div', { class: 'es-stat' },
-        stat('Risposte giuste', e.giuste + '/' + St.qs.length),
+        stat('Risposte giuste', e.giuste + '/' + nq),
         stat('Punti', (Math.round(e.preso * 10) / 10) + '/' + e.tot),
         stat('Tempo', mmss(e.sec))),
       premi,
-      !e.passato ? h('p', { class: 'es-nota' }, 'Per superare servono ' + PROMOSSO + '/30. Ripassa le voci sbagliate e riprova: l\'esame cambia ogni volta.') : null));
+      !e.passato ? h('p', { class: 'es-nota' }, 'Per superare servono ' + PROMOSSO + '/30. Rivedi le risposte, ripassa le voci sbagliate e riprova: l\'esame cambia ogni volta.') : null));
     area.scrollTop = 0;
-    var errori = St.ris.filter(function (x) { return !x.ok; }).length;
+    var errori = risposte.filter(function (x) { return !x.ok; }).length;
     piede.replaceChildren(
-      pulsante(errori ? 'Vedi la correzione (' + errori + ')' : 'Vedi la correzione', 'g-btn-blu', correzione),
+      pulsante(errori ? 'Rivedi le risposte (' + errori + ' errori)' : 'Rivedi le risposte', 'g-btn-blu', correzione),
       h('div', { class: 'es-duo' },
-        pulsante('Rifai', 'g-btn-grigio', function () { avvia(St.p); }),
+        pulsante('Rifai', 'g-btn-grigio', function () { avvia(Ris.p); }),
         pulsante('Esami', 'g-btn-grigio', hub)));
     if (anima) {
       var n = 0, passo = Math.max(1, Math.ceil(e.voto / 24)), iv = setInterval(function () {
@@ -428,23 +436,41 @@
     }
   }
 
-  /* ---------- correzione ---------- */
+  /* dalla pagina degli esami: riapre l'ultimo esame salvato di quel personaggio */
+  function rivedi(p) {
+    var r = leggi()[p];
+    if (!r || !r.ris || !r.ris.length) return;
+    Ris = { p: p, e: r, ris: r.ris, premi: null };
+    soloErrori = r.ris.some(function (x) { return !x.ok; });
+    paginaVoto(false);
+  }
+
+  /* ---------- correzione: tutte le risposte, con filtro sugli errori ---------- */
   function correzione() {
     vista('es-cor');
-    var sbagliate = St.ris.filter(function (x) { return !x.ok; });
-    aggiornaCima([xBtn(function () { paginaVoto(false); }, 'Indietro'), h('div', { class: 'es-tit' }, 'Correzione')]);
+    var tutte = Ris.ris, sbagliate = tutte.filter(function (x) { return !x.ok; });
+    if (!sbagliate.length) soloErrori = false;
+    aggiornaCima([xBtn(function () { paginaVoto(false); }, 'Indietro'), h('div', { class: 'es-tit' }, 'Risposte')]);
+    function filtro(testo, on, valore) {
+      return h('button', { class: 'es-filtro' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), onclick: function () { suona('click'); soloErrori = valore; correzione(); } }, testo);
+    }
+    var mostrate = soloErrori ? sbagliate : tutte;
     var carta = h('div', { class: 'es-carta' + (ridotto() ? '' : ' entra') },
       h('div', { class: 'es-testa' }, h('span', { class: 'es-parte' }, 'Correzione'),
-        h('span', { class: 'es-num' }, sbagliate.length + (sbagliate.length === 1 ? ' errore' : ' errori'))));
+        h('span', { class: 'es-num' }, (tutte.length - sbagliate.length) + ' giuste · ' + sbagliate.length + (sbagliate.length === 1 ? ' errore' : ' errori'))),
+      sbagliate.length ? h('div', { class: 'es-filtri' }, filtro('Solo errori (' + sbagliate.length + ')', soloErrori, true), filtro('Tutte (' + tutte.length + ')', !soloErrori, false)) : null);
     if (!sbagliate.length) carta.append(h('div', { class: 'es-zero' }, mascotte(false), h('p', {}, 'Nessun errore! Il professore non ha niente da correggere.')));
-    sbagliate.forEach(function (x) {
-      carta.append(h('div', { class: 'es-err' },
-        h('div', { class: 'es-err-t' }, h('span', { class: 'es-err-n' }, 'N. ' + (x.q.i + 1)), x.istr),
+    mostrate.forEach(function (x) {
+      carta.append(h('div', { class: 'es-err ' + (x.ok ? 'giusta' : 'sbagliata') },
+        h('div', { class: 'es-err-t' }, h('span', { class: 'es-err-n' }, 'N. ' + (x.i + 1)), x.istr,
+          h('span', { class: 'es-segno', 'aria-label': x.ok ? 'Giusta' : 'Sbagliata' }, x.ok ? '✓' : '✗')),
         x.testo ? h('div', { class: 'es-err-p' }, x.testo) : null,
-        x.skipped ? h('div', { class: 'es-err-m' }, 'Non hai risposto') : (x.mia ? h('div', { class: 'es-err-m' }, 'Tu: ', h('s', {}, x.mia)) : null),
-        x.solution ? h('div', { class: 'es-err-g' }, 'Giusto: ', h('b', {}, x.solution)) : null,
-        x.note ? h('div', { class: 'es-err-note' }, x.note)
-          : (!x.solution && x.errs ? h('div', { class: 'es-err-note' }, x.errs + (x.errs === 1 ? ' coppia sbagliata' : ' coppie sbagliate')) : null)));
+        x.ok
+          ? (x.mia ? h('div', { class: 'es-err-g' }, 'Tu: ', h('b', {}, x.mia)) : (x.solution ? h('div', { class: 'es-err-g' }, 'Giusto: ', h('b', {}, x.solution)) : null))
+          : [x.skipped ? h('div', { class: 'es-err-m' }, 'Non hai risposto') : (x.mia ? h('div', { class: 'es-err-m' }, 'Tu: ', h('s', {}, x.mia)) : null),
+            x.solution ? h('div', { class: 'es-err-g' }, 'Giusto: ', h('b', {}, x.solution)) : null],
+        !x.ok && x.note ? h('div', { class: 'es-err-note' }, x.note)
+          : (!x.ok && !x.solution && x.errs ? h('div', { class: 'es-err-note' }, x.errs + (x.errs === 1 ? ' coppia sbagliata' : ' coppie sbagliate')) : null)));
     });
     area.replaceChildren(carta); area.scrollTop = 0;
     piede.replaceChildren(pulsante('Fatto', 'g-btn-verde', function () { paginaVoto(false); }));
@@ -467,5 +493,5 @@
     if (radice.classList.contains('es-quiz')) esci(); else if (radice.classList.contains('es-hub')) chiudi(); else hub();
   });
 
-  window.Esame = { apri: apri, costruisci: costruisci, PIANO: PIANO, stato: function () { return St; } };
+  window.Esame = { apri: apri, costruisci: costruisci, PIANO: PIANO, stato: function () { return St; }, risultato: function () { return Ris; } };
 })();
