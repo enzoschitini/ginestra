@@ -153,7 +153,7 @@
         riquadro(['medaglia', COL_LEGA[l.indice] || 'oro'], l.nome, 'Lega'),
         riquadro(['trofeo'], String(medaglie), 'Medaglie')
       ]),
-      calendario(S), obiettivo(S), traguardi(S, false), reset());
+      calendario(S), obiettivo(S), window.sfideSezione ? window.sfideSezione() : '', traguardi(S, false), reset());
     fine(b, wrap);
   };
 
