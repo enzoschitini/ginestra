@@ -1,15 +1,26 @@
 /* Ginestra gioco - Sfide (Maratona). Usa le variabili --g-* di gioco.css. Tema scuro: html.dark */
 
 /* ---------- scheda in Obiettivi ---------- */
-.sf-card { display: flex; align-items: center; gap: 14px; padding: 14px; border: 2px solid var(--g-arancio, #ff9600); border-radius: 18px; box-shadow: 0 4px 0 var(--g-arancio-ombra, #d97f00); background: var(--g-card, #fff); }
-.sf-ico { flex: none; width: 64px; height: 64px; border-radius: 50%; background: #fff1d6; display: flex; align-items: center; justify-content: center; }
-html.dark .sf-ico { background: #3b2e14; }
+.sf-card { display: flex; flex-direction: column; gap: 14px; padding: 16px; border-radius: 18px; background: #fff6e5; }
+html.dark .sf-card { background: #2b2415; }
+.sf-testa { display: flex; align-items: center; gap: 14px; }
+.sf-ico { flex: none; width: 64px; height: 64px; border-radius: 50%; background: #ffe7bd; display: flex; align-items: center; justify-content: center; }
+html.dark .sf-ico { background: #43351a; }
 .sf-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.sf-t b { font: 900 19px/1.2 var(--g-font); color: var(--g-testo, #3c3c3c); }
-.sf-t span { font: 700 14px/1.35 var(--g-font); color: var(--g-testo-2, #777); }
-.sf-t .sf-rec { font-weight: 900; color: var(--g-arancio, #ff9600); }
-.sf-card .g-btn { flex: none; }
-@media (max-width: 480px) { .sf-card { flex-wrap: wrap; } .sf-card .g-btn { width: 100%; } }
+.sf-t b { font: 900 20px/1.2 var(--g-font); color: var(--g-testo, #3c3c3c); }
+.sf-t span { font: 700 14px/1.4 var(--g-font); color: var(--g-testo-2, #777); }
+.sf-liv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sf-opt { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px; cursor: pointer; font-family: var(--g-font); background: var(--g-card, #fff); border: 2px solid var(--g-bordo, #e5e5e5); border-bottom-width: 4px; border-radius: 14px; color: var(--g-testo-2, #777); }
+.sf-opt b { font: 900 15px/1.2 var(--g-font); }
+.sf-opt span { font: 700 11.5px/1.2 var(--g-font); opacity: .85; }
+.sf-opt:hover { border-color: #ffc27a; }
+.sf-opt.on { background: var(--g-arancio, #ff9600); border-color: var(--g-arancio-ombra, #d97f00); color: #fff; }
+.sf-opt:active { transform: translateY(2px); border-bottom-width: 2px; }
+.sf-opt:focus-visible { outline: 3px solid var(--g-blu, #1cb0f6); outline-offset: 2px; }
+.sf-rec { font: 700 14px/1.3 var(--g-font); color: var(--g-testo-2, #777); text-align: center; }
+.sf-rec b { font-weight: 900; color: var(--g-arancio, #ff9600); }
+.sf-livello { font: 900 13px/1 var(--g-font, inherit); color: var(--g-arancio, #ff9600); background: #fff1d6; padding: 6px 14px; border-radius: 99px; }
+html.dark .sf-livello { background: #3b2e14; }
 
 /* ---------- durante la corsa ---------- */
 body.sfida .heart-stat { display: none; }

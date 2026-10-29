@@ -7,7 +7,14 @@
   if (!window.GS || typeof EX === 'undefined') return;
 
   /* regole della Maratona */
-  var TEMPO0 = 90, TEMPO_MAX = 120, BONUS = 5, PENALITA = 8, PUNTI = 10, COMBO_MAX = 5;
+  var TEMPO0 = 90, TEMPO_MAX = 120, BONUS = 5, PENALITA = 8, COMBO_MAX = 5;
+  /* livelli: vel = quanto in fretta scorre il tempo (1 = un secondo al secondo), punti = valore base di una risposta giusta */
+  var LIVELLI = {
+    facile: { nome: 'Facile', vel: 1, punti: 10, sotto: 'Tempo normale' },
+    medio: { nome: 'Medio', vel: 1.5, punti: 15, sotto: 'Tempo x1,5' },
+    difficile: { nome: 'Difficile', vel: 2, punti: 20, sotto: 'Tempo x2' }
+  };
+  var ORDINE = ['facile', 'medio', 'difficile'];
   var M = { on: false };
 
   function suona(n) { try { if (window.SND) SND.play(n); } catch (e) {} }
@@ -21,7 +28,10 @@
   }
   function dati() {
     var S = GS.state; S.sfide = S.sfide || {};
-    return S.sfide.maratona = S.sfide.maratona || { record: 0, giuste: 0, combo: 0, partite: 0 };
+    var d = S.sfide.maratona = S.sfide.maratona || { record: 0, giuste: 0, combo: 0, partite: 0 };
+    if (!d.rec) d.rec = { facile: d.record || 0, medio: 0, difficile: 0 }; // il vecchio record era a ritmo normale
+    if (!LIVELLI[d.livello]) d.livello = 'facile';
+    return d;
   }
   /* solo traduzioni a risposta multipla (un tocco): si misura la memoria, non la velocita' di scrittura */
   function paroleCorsa() {
@@ -34,16 +44,25 @@
 
   /* ---------- scheda nella schermata Obiettivi ---------- */
   window.sfideSezione = function () {
-    var d = dati(), box = el('section', 'g-card pf-sez sf-sez'), pronto = tipiPronti().length > 0, b;
-    b = el('button', 'g-btn g-btn-verde', pronto ? 'Parti' : 'Non disponibile');
+    var d = dati(), box = el('section', 'g-card pf-sez sf-sez'), pronto = tipiPronti().length > 0, L = LIVELLI[d.livello], rec = d.rec[d.livello], b, sel;
+    b = el('button', 'g-btn g-btn-verde g-btn-blocco', pronto ? 'Parti' : 'Non disponibile');
     b.type = 'button'; b.disabled = !pronto;
     b.addEventListener('click', function () { introMaratona(); });
+    sel = el('div', 'sf-liv'); sel.setAttribute('role', 'radiogroup'); sel.setAttribute('aria-label', 'Difficoltà');
+    ORDINE.forEach(function (k) {
+      var o = el('button', 'sf-opt' + (k === d.livello ? ' on' : ''), [el('b', '', LIVELLI[k].nome), el('span', '', LIVELLI[k].sotto)]);
+      o.type = 'button'; o.setAttribute('role', 'radio'); o.setAttribute('aria-checked', k === d.livello ? 'true' : 'false');
+      o.addEventListener('click', function () { d.livello = k; GS.save(); box.replaceWith(window.sfideSezione()); });
+      sel.append(o);
+    });
     box.append(el('h3', 'pf-h', 'Sfide'),
       el('div', 'sf-card', [
-        el('div', 'sf-ico', el('span', '', '')),
-        el('div', 'sf-t', [el('b', '', 'Maratona'),
-          el('span', '', 'Traduci più in fretta che puoi, dal portoghese all\'italiano e viceversa. Ogni risposta giusta ti regala ' + BONUS + ' secondi.'),
-          el('span', 'sf-rec', d.record ? 'Record: ' + d.record + ' punti' : 'Nessun record: stabiliscilo!')]),
+        el('div', 'sf-testa', [
+          el('div', 'sf-ico', el('span', '', '')),
+          el('div', 'sf-t', [el('b', '', 'Maratona'),
+            el('span', '', 'Traduci più in fretta che puoi, dal portoghese all\'italiano e viceversa. Ogni risposta giusta ti regala ' + BONUS + ' secondi.')])]),
+        sel,
+        el('div', 'sf-rec', rec ? ['Record ' + L.nome.toLowerCase() + ': ', el('b', '', rec + ' punti')] : 'Nessun record a questo livello: stabiliscilo!'),
         b]),
       el('p', 'g-sotto pf-nota', 'Altre sfide arriveranno presto.'));
     box.querySelector('.sf-ico span').innerHTML = gi('timer', 44);
@@ -158,11 +177,12 @@
       h('h2', {}, 'Maratona'),
       h('p', {}, 'Traduci più in fretta che puoi, dal portoghese all\'italiano e dall\'italiano al portoghese. Le parole le scegliamo noi.'),
       el('ul', 'sf-regole', [
+        el('li', '', ['Livello ', el('b', '', LIVELLI[d.livello].nome), LIVELLI[d.livello].vel > 1 ? ': il tempo scorre ' + String(LIVELLI[d.livello].vel).replace('.', ',') + ' volte più veloce.' : ': il tempo scorre normalmente.']),
         el('li', '', ['Parti con ', el('b', '', TEMPO0 + ' secondi'), '.']),
         el('li', '', [el('b', 'su', '+' + BONUS + ' s'), ' per ogni risposta giusta.']),
         el('li', '', [el('b', 'giu', '−' + PENALITA + ' s'), ' per ogni errore.']),
         el('li', '', ['Più risposte giuste di fila, più punti: fino a ', el('b', '', 'x' + COMBO_MAX), '.'])]),
-      el('div', 'sf-rec-riga', d.record ? ['Il tuo record: ', el('b', '', d.record + ' punti')] : ['Ancora nessun record.'])
+      el('div', 'sf-rec-riga', d.rec[d.livello] ? ['Il tuo record: ', el('b', '', d.rec[d.livello] + ' punti')] : ['Ancora nessun record a questo livello.'])
     ], [btnMain('Via!', contoAllaRovescia), btnLink('Non adesso', torna)]);
     $('body').querySelector('.sf-eroe span').innerHTML = gi('timer', 96);
   }
@@ -180,24 +200,25 @@
     }, 800);
   }
   function risultato(motivo) {
-    var d = dati(), nuovo = M.punti > d.record, totali = M.giuste + M.errate, res = null, xpExtra = Math.min(40, M.giuste);
+    var d = dati(), liv = d.livello, nuovo = M.punti > d.rec[liv], totali = M.giuste + M.errate, res = null, xpExtra = Math.min(40, M.giuste);
     d.partite++; d.giuste = Math.max(d.giuste, M.giuste); d.combo = Math.max(d.combo, M.comboMax);
-    if (nuovo) d.record = M.punti;
+    if (nuovo) { d.rec[liv] = M.punti; d.record = Math.max(d.record || 0, M.punti); }
     if (M.giuste > 0) {
       res = GS.registraLezione({ ex: 'maratona', giuste: M.giuste, totali: Math.max(totali, 1), combo: M.comboMax });
       delete GS.state.corone.maratona; // la corona e' dei livelli della Home
       GS.addXP(xpExtra, 'maratona');
-      if (nuovo && d.partite > 1) GS.addGemme(10);
+      if (nuovo && d.partite > 1) GS.addGemme(10 * (ORDINE.indexOf(liv) + 1));
     }
     GS.save();
-    var xp = res ? res.xpBase + res.xpCombo + res.xpPerfetta + xpExtra : 0, gem = res ? res.gemme + (nuovo && d.partite > 1 ? 10 : 0) : 0;
+    var xp = res ? res.xpBase + res.xpCombo + res.xpPerfetta + xpExtra : 0, gem = res ? res.gemme + (nuovo && d.partite > 1 ? 10 * (ORDINE.indexOf(liv) + 1) : 0) : 0;
     suona(M.giuste > 0 ? 'congratulazioni' : 'riprova');
     var cella = function (cl, tit, val) { return el('div', 'sf-cella ' + cl, [el('b', '', tit), el('span', '', String(val))]); };
     schermata('Maratona', [
       el('div', 'sf-eroe', el('span', '', '')),
       h('h2', {}, motivo === 'tempo' ? 'Tempo scaduto!' : 'Corsa finita'),
+      el('div', 'sf-livello', 'Livello ' + LIVELLI[liv].nome),
       el('div', 'sf-grande', [el('b', '', String(M.punti)), el('span', '', 'punti')]),
-      nuovo && M.punti > 0 ? el('div', 'sf-nuovo', 'Nuovo record!') : el('div', 'sf-rec-riga', ['Record: ', el('b', '', d.record + ' punti')]),
+      nuovo && M.punti > 0 ? el('div', 'sf-nuovo', 'Nuovo record!') : el('div', 'sf-rec-riga', ['Record ' + LIVELLI[liv].nome.toLowerCase() + ': ', el('b', '', d.rec[liv] + ' punti')]),
       el('div', 'sf-griglia', [cella('v', 'Giuste', M.giuste), cella('r', 'Errori', M.errate), cella('a', 'Combo', 'x' + moltiplicatoreDi(M.comboMax)), cella('b', 'Tempo', mmss(M.durata))]),
       xp || gem ? el('div', 'sf-premi', [xp ? el('span', '', ['+' + xp + ' XP']) : null, gem ? el('span', '', ['+' + gem + ' gemme']) : null]) : el('p', '', 'Rispondi bene a qualche domanda per guadagnare XP e gemme.')
     ], [btnMain('Riprova', function () { introRipartenza(); }), btnLink('Torna agli obiettivi', torna)]);
@@ -214,7 +235,7 @@
   /* ---------- la corsa ---------- */
   function parti() {
     M.tempo = TEMPO0; M.punti = 0; M.giuste = 0; M.errate = 0; M.combo = 0; M.comboMax = 0; M.durata = 0;
-    M.viste = {}; M.vf = []; M.chiusa = false;
+    M.viste = {}; M.vf = []; M.vel = LIVELLI[dati().livello].vel; M.chiusa = false;
     montaBarra(); mostraTempo();
     domanda();
     M.t0 = performance.now();
@@ -225,7 +246,7 @@
     var ora = performance.now(), dt = (ora - M.t0) / 1000; M.t0 = ora;
     if (!M.on || M.chiusa) return;
     if (done) return; // il tempo si ferma mentre leggi la correzione
-    M.tempo -= dt; M.durata += dt;
+    M.tempo -= dt * M.vel; M.durata += dt;
     if (M.tempo <= 0) { M.tempo = 0; mostraTempo(); termina('tempo'); return; }
     mostraTempo();
   }
@@ -265,7 +286,7 @@
     var btn = $('footer').querySelector('.btn-main');
     if (ok) {
       M.combo++; M.giuste++; if (M.combo > M.comboMax) M.comboMax = M.combo;
-      M.punti += PUNTI * moltiplicatore();
+      M.punti += LIVELLI[dati().livello].punti * moltiplicatore();
       M.tempo = Math.min(TEMPO_MAX, M.tempo + BONUS); delta(BONUS);
       aggiornaHud('.sf-punti'); mostraTempo();
       if (btn) btn.textContent = 'Continua';
