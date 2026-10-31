@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ginestra - Impara l'italiano giocando</title>
+<meta name="description" content="Ginestra trasforma le parole e le espressioni dei grandi personaggi italiani in lezioni brevi a gioco: serie, gemme, corone, lega ed esame.">
+<link rel="icon" type="image/png" sizes="32x32" href="../layout/assets/favicon-32.png">
+<meta name="theme-color" content="#ffffff">
+<script>
+  /* stessa chiave dell'app: se hai scelto il tema scuro in Ginestra, lo trovi anche qui */
+  try {
+    var t = localStorage.getItem('ginestra-tema');
+    if (t === 'scuro' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+  } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #58cc02; --verde-o: #46a302; --verde-chiaro: #d7ffb8; --verde-testo: #3d8c00;
+    --blu: #1cb0f6; --blu-o: #1899d6;
+    --arancio: #ff9600; --giallo: #ffc800; --rosso: #ff4b4b; --rosso-o: #d93a3a; --viola: #ce82ff;
+    --bg: #ffffff; --bg2: #f7f7f7; --card: #ffffff; --bordo: #e5e5e5;
+    --testo: #3c3c3c; --testo2: #6b6b6b; --testo3: #afafaf;
+    --ok-bg: #d7ffb8; --ok-t: #3d8c00; --no-bg: #ffdfe0; --no-t: #d33a3a;
+    --carta: #fffdf6; --riga: #cfe3f5; --margine: #f3a6a6;
+    --raggio: 16px; --raggio-g: 22px;
+    --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  html.dark {
+    --bg: #131f24; --bg2: #1a2a31; --card: #1f2f36; --bordo: #37464f;
+    --testo: #f1f7fb; --testo2: #a9b8c0; --testo3: #6b7b84;
+    --ok-bg: #1f3a16; --ok-t: #89e219; --no-bg: #3d1c20; --no-t: #ff7b7b;
+    --verde-testo: #89e219;
+    --carta: #22333b; --riga: #33505e; --margine: #8a4a50;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body { font-family: var(--font); background: var(--bg); color: var(--testo); font-weight: 700; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+  :focus-visible { outline: 3px solid var(--blu); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+  h1, h2, h3 { font-weight: 900; line-height: 1.12; letter-spacing: -.01em; }
+  h2 { font-size: clamp(28px, 4.2vw, 44px); max-width: 20ch; }
+  p { max-width: 62ch; }
+  .lead { font-size: clamp(17px, 2vw, 20px); color: var(--testo2); }
+  section { padding: clamp(56px, 9vw, 104px) 0; }
+  .alt { background: var(--bg2); }
+  .sec-head { margin-bottom: clamp(28px, 5vw, 48px); display: grid; gap: 14px; }
+
+  /* ---------- pulsanti (stessi dell'app: bordo basso) ---------- */
+  .btn {
+    --b: var(--verde); --bo: var(--verde-o); --bt: #fff;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 50px; padding: 13px 24px; font: 900 15px/1 var(--font); letter-spacing: .8px; text-transform: uppercase; text-decoration: none;
+    color: var(--bt); background: var(--b); border: 0; border-radius: var(--raggio); box-shadow: 0 4px 0 var(--bo);
+    cursor: pointer; user-select: none; transition: transform .08s, box-shadow .08s, filter .15s;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--bo); }
+  .btn.blu { --b: var(--blu); --bo: var(--blu-o); }
+  .btn.rosso { --b: var(--rosso); --bo: var(--rosso-o); }
+  .btn.chiaro { --b: var(--card); --bo: var(--bordo); --bt: var(--blu); border: 2px solid var(--bordo); box-shadow: 0 4px 0 var(--bordo); }
+  .btn.chiaro:active { box-shadow: 0 0 0 var(--bordo); }
+  .btn[disabled] { --b: var(--bordo); --bo: var(--bordo); --bt: var(--testo3); cursor: not-allowed; filter: none; box-shadow: none; transform: none; }
+  .btn.grande { min-height: 58px; padding: 16px 32px; font-size: 17px; }
+
+  /* ---------- header ---------- */
+  header.top { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 2px solid var(--bordo); }
+  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo { width: 38px; height: 38px; border-radius: 10px; background: var(--verde); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 24px; box-shadow: 0 3px 0 var(--verde-o); }
+  .logo-img { width: 44px; height: 44px; object-fit: contain; }
+  .mascotte { width: 120px; height: 120px; object-fit: contain; }
+  .brand b { font-size: 22px; font-weight: 900; }
+  nav.links { display: flex; gap: 6px; }
+  nav.links a { text-decoration: none; font-weight: 800; font-size: 15px; color: var(--testo2); padding: 8px 12px; border-radius: 12px; }
+  nav.links a:hover { background: var(--bg2); color: var(--testo); }
+  .top-az { display: flex; align-items: center; gap: 10px; }
+  .tema {
+    width: 46px; height: 46px; border-radius: 14px; border: 2px solid var(--bordo); background: var(--card); color: var(--testo2);
+    box-shadow: 0 3px 0 var(--bordo); cursor: pointer; display: grid; place-items: center; transition: transform .08s, box-shadow .08s;
+  }
+  .tema:active { transform: translateY(3px); box-shadow: 0 0 0 var(--bordo); }
+  .tema svg { width: 22px; height: 22px; }
+  .tema .luna { display: none; }
+  html.dark .tema .luna { display: block; }
+  html.dark .tema .sole { display: none; }
+  .top-az .btn { min-height: 46px; padding: 10px 18px; font-size: 14px; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: clamp(40px, 7vw, 88px) 0 clamp(56px, 8vw, 96px); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 6vw, 72px); align-items: center; }
+  .hero h1 { font-size: clamp(38px, 6.4vw, 72px); max-width: 12ch; }
+  .hero .lead { margin: 22px 0 30px; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+  .hero-nota { margin-top: 20px; font-size: 14px; color: var(--testo2); font-weight: 700; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 8px; border-radius: 999px; background: var(--bg2); border: 2px solid var(--bordo); font-size: 14px; font-weight: 900; }
+  .pill svg { width: 20px; height: 20px; }
+
+  /* telefono con esercizio vivo */
+  .phone-wrap { display: grid; justify-items: center; gap: 14px; }
+  .phone { width: min(360px, 100%); background: var(--bg); border: 2px solid var(--bordo); border-radius: 34px; box-shadow: 0 8px 0 var(--bordo); overflow: hidden; display: flex; flex-direction: column; min-height: 560px; position: relative; }
+  .ph-top { display: flex; align-items: center; gap: 12px; padding: 18px 18px 8px; }
+  .ph-bar { flex: 1; height: 16px; border-radius: 99px; background: var(--bordo); overflow: hidden; }
+  .ph-bar i { display: block; height: 100%; width: 0; background: var(--verde); border-radius: 99px; transition: width .4s; box-shadow: inset 0 5px 0 rgba(255,255,255,.28); }
+  .ph-cuori { display: flex; align-items: center; gap: 4px; font-weight: 900; color: var(--rosso); font-size: 18px; }
+  .ph-cuori svg { width: 24px; height: 24px; }
+  .ph-body { padding: 14px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .ph-body h3 { font-size: 22px; }
+  .ph-dom { display: flex; align-items: flex-end; gap: 12px; }
+  .bolla { position: relative; border: 2px solid var(--bordo); border-radius: 16px; padding: 12px 16px; font-size: 20px; font-weight: 900; background: var(--card); box-shadow: 0 3px 0 var(--bordo); }
+  .audio { width: 44px; height: 44px; flex: none; border-radius: 14px; border: 2px solid var(--blu); background: var(--card); color: var(--blu); box-shadow: 0 3px 0 var(--blu-o); cursor: pointer; display: grid; place-items: center; }
+  .audio:active { transform: translateY(3px); box-shadow: none; }
+  .audio svg { width: 22px; height: 22px; }
+  .scelte { display: grid; gap: 10px; }
+  .scelta {
+    text-align: left; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--bordo); background: var(--card); color: var(--testo);
+    font: 800 17px/1.2 var(--font); box-shadow: 0 3px 0 var(--bordo); cursor: pointer; transition: transform .08s, box-shadow .08s, background .15s;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .scelta:hover { background: var(--bg2); }
+  .scelta:active { transform: translateY(3px); box-shadow: 0 0 0 var(--bordo); }
+  .scelta kbd { font: 900 13px/1 var(--font); width: 28px; height: 28px; border: 2px solid var(--bordo); border-radius: 8px; display: grid; place-items: center; color: var(--testo2); flex: none; }
+  .scelta.sel { border-color: var(--blu); background: #ddf4ff; color: #1899d6; box-shadow: 0 3px 0 var(--blu-o); }
+  html.dark .scelta.sel { background: #17394b; color: #53c4f5; border-color: #1f6c93; box-shadow: 0 3px 0 #1f6c93; }
+  .scelta.sel kbd { border-color: currentColor; color: inherit; }
+  .scelta.giusta { border-color: #7fcf3a; background: var(--ok-bg); color: var(--ok-t); box-shadow: 0 3px 0 #7fcf3a; }
+  .scelta.sbagliata { border-color: #ff9b9b; background: var(--no-bg); color: var(--no-t); box-shadow: 0 3px 0 #ff9b9b; }
+  .scelte.chiuso .scelta { pointer-events: none; }
+  .ph-foot { border-top: 2px solid var(--bordo); padding: 16px 20px 20px; background: var(--bg); transition: background .2s; }
+  .ph-foot.ok { background: var(--ok-bg); border-color: #b5ec82; }
+  .ph-foot.no { background: var(--no-bg); border-color: #ffb8b8; }
+  html.dark .ph-foot.ok { border-color: #3f7a1f; } html.dark .ph-foot.no { border-color: #7a2f35; }
+  .esito { display: none; margin-bottom: 12px; }
+  .ph-foot.ok .esito, .ph-foot.no .esito { display: block; }
+  .esito b { display: block; font-size: 20px; font-weight: 900; }
+  .ph-foot.ok .esito { color: var(--ok-t); } .ph-foot.no .esito { color: var(--no-t); }
+  .esito span { display: block; font-size: 15px; font-weight: 700; line-height: 1.4; margin-top: 2px; }
+  .ph-foot.no .btn { --b: var(--rosso); --bo: var(--rosso-o); }
+  .phone-nota { font-size: 14px; color: var(--testo2); text-align: center; max-width: 34ch; }
+  .fine { display: none; position: absolute; inset: 0; background: var(--bg); padding: 28px 24px; text-align: center; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .fine.on { display: flex; }
+  .fine h3 { font-size: 28px; }
+  .fine .stat { display: flex; gap: 10px; }
+  .fine .stat div { border: 2px solid; border-radius: 16px; padding: 8px 14px; min-width: 96px; font-weight: 900; }
+  .fine .stat small { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: #fff; padding: 2px 0 4px; margin: -8px -14px 6px; border-radius: 12px 12px 0 0; }
+  .st-xp { border-color: var(--giallo); } .st-xp small { background: var(--giallo); color: #6a5200 !important; }
+  .st-pr { border-color: var(--verde); } .st-pr small { background: var(--verde); }
+  .fine .btn { width: 100%; margin-top: 8px; }
+
+  /* ---------- problema: prima/dopo ---------- */
+  .pd { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 48px); align-items: stretch; }
+  .pd-col { display: grid; gap: 18px; align-content: start; }
+  .pd-col h3 { font-size: clamp(22px, 2.6vw, 28px); }
+  .quaderno {
+    position: relative; background: var(--carta); border: 2px solid var(--bordo); border-radius: 6px 18px 18px 6px; padding: 18px 20px 18px 64px;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 35px, var(--riga) 35px 36px);
+    background-position: 0 14px; box-shadow: 0 5px 0 var(--bordo); transform: rotate(-1.2deg);
+  }
+  .quaderno::before { content: ""; position: absolute; left: 46px; top: 0; bottom: 0; width: 2px; background: var(--margine); }
+  .quaderno ul { list-style: none; font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive; font-weight: 700; }
+  .quaderno li { line-height: 36px; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .quaderno li s { text-decoration: none; color: var(--testo2); }
+  .quaderno .tit { font-weight: 900; font-size: 19px; text-decoration: underline wavy var(--blu) 1px; text-underline-offset: 5px; }
+  .quaderno .polvere { color: var(--testo3); font-style: italic; }
+  .pd-col p { color: var(--testo2); }
+  .pd-col.dopo p { color: var(--testo); }
+  .strada { position: relative; background: var(--card); border: 2px solid var(--bordo); border-radius: var(--raggio-g); box-shadow: 0 5px 0 var(--bordo); padding: 24px 20px 28px; display: grid; gap: 4px; justify-items: center; }
+  .strada .unita { width: 100%; background: var(--verde); color: #fff; border-radius: 16px; box-shadow: 0 4px 0 var(--verde-o); padding: 12px 16px; margin-bottom: 14px; }
+  .strada .unita small { display: block; font-size: 13px; font-weight: 800; opacity: .9; }
+  .strada .unita b { font-size: 19px; font-weight: 900; }
+  .nodo { width: 68px; height: 62px; border-radius: 50%; position: relative; display: grid; place-items: center; font-weight: 900; color: #fff; font-size: 22px; }
+  .nodo.fatto { background: var(--giallo); box-shadow: 0 6px 0 #d9a900; }
+  .nodo.ora { background: var(--verde); box-shadow: 0 6px 0 var(--verde-o); }
+  .nodo.bloc { background: var(--bordo); color: var(--testo3); box-shadow: 0 6px 0 var(--bordo); filter: brightness(.96); }
+  .nodo svg { width: 32px; height: 32px; }
+  .nodo .tag { position: absolute; top: -34px; left: 50%; transform: translateX(-50%); background: var(--card); color: var(--verde-testo); border: 2px solid var(--bordo); border-radius: 12px; padding: 3px 12px; font-size: 14px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; }
+  .nodo.n1 { margin-right: 90px; } .nodo.n2 { margin-left: 30px; margin-top: 18px; } .nodo.n3 { margin-left: 100px; margin-top: 18px; } .nodo.n4 { margin-top: 18px; margin-right: 30px; }
+  .nodo.ora { margin-top: 44px; }
+
+  /* ---------- come funziona ---------- */
+  .passi { display: grid; gap: 22px; counter-reset: p; }
+  .passo { display: grid; grid-template-columns: 76px 1fr; gap: 20px; align-items: start; padding: 22px; border: 2px solid var(--bordo); border-radius: var(--raggio-g); background: var(--card); box-shadow: 0 4px 0 var(--bordo); }
+  .passo:nth-child(2) { margin-left: clamp(0px, 5vw, 64px); }
+  .passo:nth-child(3) { margin-left: clamp(0px, 10vw, 128px); }
+  .passo-n { width: 76px; height: 76px; border-radius: 22px; display: grid; place-items: center; font-size: 36px; font-weight: 900; color: #fff; }
+  .passo:nth-child(1) .passo-n { background: var(--verde); box-shadow: 0 5px 0 var(--verde-o); }
+  .passo:nth-child(2) .passo-n { background: var(--blu); box-shadow: 0 5px 0 var(--blu-o); }
+  .passo:nth-child(3) .passo-n { background: var(--arancio); box-shadow: 0 5px 0 #d97f00; }
+  .passo h3 { font-size: 24px; margin-bottom: 6px; }
+  .passo p { color: var(--testo2); }
+  .passo .esempi { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { display: inline-block; padding: 6px 14px; border-radius: 12px; border: 2px solid var(--bordo); background: var(--bg2); font-weight: 800; font-size: 15px; }
+
+  /* ---------- esercizi ---------- */
+  .tipi { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .tipo { grid-column: span 2; border: 2px solid var(--bordo); border-radius: var(--raggio-g); background: var(--card); box-shadow: 0 4px 0 var(--bordo); padding: 20px; display: grid; gap: 12px; align-content: start; }
+  .tipo:nth-child(4), .tipo:nth-child(5) { grid-column: span 3; }
+  .tipo h3 { font-size: 20px; }
+  .tipo p { font-size: 15px; color: var(--testo2); }
+  .mini { min-height: 78px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; align-content: center; }
+  .mini .t { padding: 8px 14px; border-radius: 12px; border: 2px solid var(--bordo); box-shadow: 0 3px 0 var(--bordo); background: var(--card); font-weight: 800; font-size: 15px; }
+  .mini .t.v { border-color: #7fcf3a; background: var(--ok-bg); color: var(--ok-t); box-shadow: 0 3px 0 #7fcf3a; }
+  .mini .t.b { border-color: var(--blu); color: var(--blu); box-shadow: 0 3px 0 var(--blu-o); }
+  .mini .vuoto { display: inline-block; min-width: 74px; border-bottom: 3px solid var(--blu); margin: 0 4px; height: 1.2em; vertical-align: bottom; }
+  .mini .lett { width: 34px; height: 40px; border-bottom: 3px solid var(--testo2); display: grid; place-items: end center; font-size: 22px; font-weight: 900; padding-bottom: 2px; }
+  .mini .lett.u { color: var(--verde-testo); }
+  .onde { display: flex; align-items: center; gap: 4px; height: 44px; }
+  .onde i { display: block; width: 6px; border-radius: 4px; background: var(--blu); }
+
+  /* ---------- anteprima ---------- */
+  .ant { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(28px, 6vw, 80px); align-items: center; }
+  .ant-tabs { display: grid; gap: 10px; }
+  .ant-tab { text-align: left; width: 100%; padding: 14px 18px; border-radius: 18px; border: 2px solid transparent; background: transparent; color: var(--testo); cursor: pointer; display: grid; gap: 2px; transition: background .15s, border-color .15s; }
+  .ant-tab b { font-size: 19px; font-weight: 900; }
+  .ant-tab span { font-size: 15px; color: var(--testo2); font-weight: 700; }
+  .ant-tab:hover { background: var(--bg2); }
+  .ant-tab[aria-selected="true"] { background: #ddf4ff; border-color: var(--blu); box-shadow: 0 4px 0 var(--blu-o); }
+  html.dark .ant-tab[aria-selected="true"] { background: #17394b; border-color: #1f6c93; box-shadow: 0 4px 0 #1f6c93; }
+  .ant-tab[aria-selected="true"] b { color: var(--blu-o); }
+  html.dark .ant-tab[aria-selected="true"] b { color: #53c4f5; }
+  .tel { width: min(320px, 78vw); border-radius: 44px; padding: 10px; background: #2b2f33; box-shadow: 0 10px 0 #1b1e21, 0 30px 60px rgba(0,0,0,.18); position: relative; justify-self: center; }
+  html.dark .tel { background: #3a4750; box-shadow: 0 10px 0 #27323a, 0 30px 60px rgba(0,0,0,.4); }
+  .tel::before { content: ""; position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 84px; height: 22px; border-radius: 99px; background: #111; z-index: 2; opacity: .85; }
+  .tel-sch { border-radius: 34px; overflow: hidden; background: var(--bg); aspect-ratio: 390 / 844; }
+  .tel-sch img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .assente { display: none; }
+  .desk { margin-top: clamp(40px, 7vw, 72px); border-radius: 18px; border: 2px solid var(--bordo); box-shadow: 0 6px 0 var(--bordo); overflow: hidden; background: var(--card); }
+  .desk-bar { display: flex; gap: 7px; padding: 12px 16px; border-bottom: 2px solid var(--bordo); background: var(--bg2); }
+  .desk-bar i { width: 12px; height: 12px; border-radius: 50%; background: var(--bordo); }
+  .desk img { width: 100%; height: auto; }
+  .desk-cap { text-align: center; margin-top: 18px; color: var(--testo2); }
+
+  /* ---------- gioco ---------- */
+  .gioco { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  .g-c { grid-column: span 2; border: 2px solid var(--bordo); border-radius: var(--raggio-g); background: var(--card); box-shadow: 0 4px 0 var(--bordo); padding: 20px; display: grid; gap: 8px; align-content: start; }
+  .g-c .ic { width: 48px; height: 48px; }
+  .g-c h3 { font-size: 20px; }
+  .g-c p { font-size: 15px; color: var(--testo2); }
+  .g-c.largo { grid-column: span 3; }
+  .g-c.arancio { border-color: var(--arancio); box-shadow: 0 4px 0 #d97f00; }
+  .g-c.blu { border-color: var(--blu); box-shadow: 0 4px 0 var(--blu-o); }
+  .g-c.verde { border-color: var(--verde); box-shadow: 0 4px 0 var(--verde-o); }
+  .giorni { display: flex; gap: 6px; margin-top: 6px; }
+  .giorni span { flex: 1; max-width: 40px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--bordo); color: var(--testo3); font-size: 13px; font-weight: 900; }
+  .giorni span.on { background: var(--arancio); color: #fff; }
+  .giorni span.on svg { width: 60%; height: 60%; }
+  .barra { height: 16px; border-radius: 99px; background: var(--bordo); overflow: hidden; margin-top: 8px; }
+  .barra i { display: block; height: 100%; width: 70%; background: var(--giallo); border-radius: 99px; box-shadow: inset 0 5px 0 rgba(255,255,255,.3); }
+  .corone { display: flex; gap: 4px; margin-top: 4px; }
+  .corone svg { width: 28px; height: 28px; }
+  .corone .spenta { filter: grayscale(1); opacity: .35; }
+
+  /* ---------- esame ---------- */
+  .esame { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 6vw, 72px); align-items: center; }
+  .esame-txt { display: grid; gap: 18px; }
+  .parti { display: grid; gap: 8px; margin-top: 4px; }
+  .parti li { list-style: none; display: flex; gap: 12px; align-items: baseline; }
+  .parti li b { font-weight: 900; min-width: 150px; }
+  .parti li span { color: var(--testo2); font-size: 15px; }
+  .foglio {
+    position: relative; background: var(--carta); border: 2px solid var(--bordo); border-radius: 8px 20px 20px 8px; padding: 26px 26px 26px 72px; box-shadow: 0 6px 0 var(--bordo);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 35px, var(--riga) 35px 36px); background-position: 0 20px; transform: rotate(1.2deg);
+    font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+  }
+  .foglio::before { content: ""; position: absolute; left: 52px; top: 0; bottom: 0; width: 2px; background: var(--margine); }
+  .foglio .nome { font-weight: 900; font-size: 20px; line-height: 36px; }
+  .foglio .dom { line-height: 36px; font-size: 17px; }
+  .foglio .risp { color: #2a6fdb; font-weight: 700; }
+  html.dark .foglio .risp { color: #7ab3ff; }
+  .foglio .sbag { color: var(--rosso); text-decoration: line-through; }
+  .voto { position: absolute; right: 22px; bottom: 18px; color: #d33a3a; font-weight: 900; font-size: 52px; line-height: 1; transform: rotate(-8deg); }
+  html.dark .voto { color: #ff7b7b; }
+  .voto small { font-size: 22px; }
+  .timbro { position: absolute; right: 26px; top: 20px; border: 4px solid var(--verde); color: var(--verde-testo); border-radius: 12px; padding: 4px 14px; font: 900 22px/1.2 var(--font); text-transform: uppercase; letter-spacing: 2px; transform: rotate(10deg); opacity: .85; }
+
+  /* ---------- personaggi ---------- */
+  .pers { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pers .chip { font-size: 16px; padding: 8px 16px; }
+  .num-riga { display: flex; flex-wrap: wrap; gap: clamp(24px, 6vw, 64px); margin-top: 40px; }
+  .num-riga div { display: grid; }
+  .num-riga b { font-size: clamp(36px, 5vw, 52px); font-weight: 900; line-height: 1; color: var(--verde-testo); }
+  .num-riga span { font-size: 15px; color: var(--testo2); }
+
+  /* ---------- faq + cta ---------- */
+  .faq { display: grid; gap: 12px; max-width: 760px; }
+  details { border: 2px solid var(--bordo); border-radius: 18px; background: var(--card); box-shadow: 0 3px 0 var(--bordo); }
+  summary { cursor: pointer; padding: 16px 20px; font-weight: 900; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 26px; color: var(--blu); line-height: 1; transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { padding: 0 20px 18px; color: var(--testo2); }
+  .cta { background: var(--verde); color: #fff; text-align: center; padding: clamp(56px, 9vw, 96px) 0; }
+  .cta .wrap { display: grid; gap: 20px; justify-items: center; }
+  .cta h2 { max-width: 18ch; }
+  .cta p { color: rgba(255,255,255,.92); font-size: 19px; }
+  .cta .btn { --b: #fff; --bo: #d7ffb8; --bt: var(--verde-o); }
+  footer { padding: 28px 0 40px; color: var(--testo2); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 900px) {
+    nav.links { display: none; }
+    .hero-grid, .pd, .esame, .ant { grid-template-columns: 1fr; }
+    .hero h1 { max-width: 14ch; }
+    .ant-tabs { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 8px; scroll-snap-type: x proximity; margin-inline: -16px; padding-inline: 16px; }
+    .ant-tab { width: auto; flex: none; scroll-snap-align: start; white-space: nowrap; }
+    .ant-tab span { display: none; }
+    .ant-tab[aria-selected="true"] span { display: none; }
+    .tipi, .gioco { grid-template-columns: 1fr 1fr; }
+    .tipo, .tipo:nth-child(4), .tipo:nth-child(5), .g-c, .g-c.largo { grid-column: span 1; }
+    .esame .foglio { order: -1; }
+  }
+  @media (max-width: 560px) {
+    .tipi, .gioco { grid-template-columns: 1fr; }
+    .passo { grid-template-columns: 56px 1fr; padding: 16px; gap: 14px; }
+    .passo-n { width: 56px; height: 56px; font-size: 28px; border-radius: 16px; }
+    .passo:nth-child(2), .passo:nth-child(3) { margin-left: 0; }
+    .top-az .btn { padding: 10px 14px; }
+    .parti li { flex-direction: column; gap: 0; }
+    .foglio { padding-right: 18px; }
+    .timbro { font-size: 17px; }
+    .voto { font-size: 40px; }
+    .btn.grande { width: 100%; }
+    .hero-cta .btn { flex: 1 1 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+  /* unico momento animato: le onde dell'audio e l'entrata dell'esercizio */
+  @keyframes onda { 0%,100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+  .onde i { animation: onda 1s ease-in-out infinite; transform-origin: center; }
+  .onde i:nth-child(2n) { animation-delay: .15s; } .onde i:nth-child(3n) { animation-delay: .3s; } .onde i:nth-child(5n) { animation-delay: .45s; }
+  @keyframes entra { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .phone { animation: entra .6s ease-out both; }
+</style>
+</head>
+<body>
+
+<!-- icone proprie, riusate con <use> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-cuore" viewBox="0 0 24 24"><path d="M12 21.2 4 13.4C1.2 10.7 1.5 6.6 4.4 4.9 6.7 3.5 9.7 4.1 12 6.6c2.3-2.5 5.3-3.1 7.6-1.7 2.9 1.7 3.2 5.8.4 8.5z" fill="#ff4b4b"/><path d="M6.2 7.2c.8-.9 2-1.2 3-.7" stroke="#fff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-fiamma" viewBox="0 0 24 24"><path d="M12.4 1.8c.5 3.2-1.6 4.6-3.3 6.7C7.5 10.5 6 12.6 6 15.3 6 19 8.7 22 12 22s6-3 6-6.7c0-2.2-1-3.9-2.3-5.4-.3 1.3-1 2.2-1.9 2.6.5-3.8-.1-7.8-1.4-10.7z" fill="#ff9600"/><path d="M12 22c-2 0-3.5-1.7-3.5-3.8 0-2 1.5-3 2.4-4.4.6-.9.9-1.8.9-2.8 1.5 1.3 3.7 3.4 3.7 7 0 2.2-1.5 4-3.5 4z" fill="#ffc800"/></symbol>
+    <symbol id="i-gemma" viewBox="0 0 24 24"><path d="M7 3h10l5 6-10 12L2 9z" fill="#1cb0f6"/><path d="M7 3 9.6 9H2zM17 3l-2.6 6H22z" fill="#53c4f5"/><path d="M9.6 9h4.8L12 21z" fill="#1899d6"/><path d="M7 3h10l-2.6 6H9.6z" fill="#9be0ff"/></symbol>
+    <symbol id="i-corona" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 4l4.5 8L21 8l-2 11H5z" fill="#ffc800"/><path d="M5 19h14l.4-2H4.6z" fill="#d9a900"/><circle cx="3" cy="8" r="1.6" fill="#ffc800"/><circle cx="21" cy="8" r="1.6" fill="#ffc800"/><circle cx="12" cy="4" r="1.6" fill="#ffc800"/></symbol>
+    <symbol id="i-fulmine" viewBox="0 0 24 24"><path d="M13.5 1 4 13.5h6L9 23l11-13.5h-6.5z" fill="#ffc800"/><path d="M13.5 1 9.5 11h4z" fill="#fff" fill-opacity=".35"/></symbol>
+    <symbol id="i-bersaglio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ff4b4b"/><circle cx="12" cy="12" r="7" fill="#fff"/><circle cx="12" cy="12" r="4.2" fill="#ff4b4b"/><circle cx="12" cy="12" r="1.6" fill="#fff"/></symbol>
+    <symbol id="i-coppa" viewBox="0 0 24 24"><path d="M6 3h12v6a6 6 0 0 1-12 0z" fill="#ffc800"/><path d="M6 5H2.5c0 3 1.5 5 4 5.4M18 5h3.5c0 3-1.5 5-4 5.4" stroke="#ffc800" stroke-width="1.8" fill="none"/><path d="M10.5 15h3v3h-3z" fill="#d9a900"/><rect x="7" y="18" width="10" height="3" rx="1" fill="#ffc800"/></symbol>
+    <symbol id="i-cronometro" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="8.5" fill="#ce82ff"/><circle cx="12" cy="13.5" r="6.2" fill="#fff"/><path d="M12 9.5v4.4l3 1.8" stroke="#ce82ff" stroke-width="2" stroke-linecap="round" fill="none"/><rect x="9.5" y="1.5" width="5" height="3" rx="1" fill="#ce82ff"/></symbol>
+    <symbol id="i-scrigno" viewBox="0 0 24 24"><path d="M3 10a9 7 0 0 1 18 0z" fill="#ffc800"/><rect x="3" y="10" width="18" height="10" rx="2" fill="#e8a800"/><path d="M3 10h18" stroke="#b78600" stroke-width="1.5"/><rect x="10" y="9" width="4" height="5" rx="1" fill="#fff3b0" stroke="#b78600"/></symbol>
+    <symbol id="i-quaderno" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2.5" fill="#1cb0f6"/><rect x="7" y="2.5" width="2" height="19" fill="#1899d6"/><path d="M11.5 8h5M11.5 12h5M11.5 16h3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-spunta" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="i-lucchetto" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10.5" rx="2.5" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" stroke-width="2.6" fill="none"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#top" aria-label="Ginestra, torna in cima"><img class="logo-img" src="../layout/assets/logo%202.png" alt="" width="44" height="44"><b>Ginestra</b></a>
+    <nav class="links" aria-label="Sezioni">
+      <a href="#perche">Perché</a>
+      <a href="#come">Come funziona</a>
+      <a href="#anteprima">Anteprima</a>
+      <a href="#gioco">Il gioco</a>
+      <a href="#domande">Domande</a>
+    </nav>
+    <div class="top-az">
+      <button class="tema" id="tema" type="button" aria-label="Cambia tema, chiaro o scuro" title="Tema chiaro / scuro">
+        <svg class="sole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></svg>
+        <svg class="luna" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+      </button>
+      <a class="btn" href="../">Apri l'app</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Il quaderno di italiano che ti interroga</h1>
+      <p class="lead">Ginestra prende le parole e le espressioni che raccogli dai grandi personaggi italiani e le trasforma in lezioni brevi, a gioco. Tocchi, abbini, ascolti, scrivi: le parole restano.</p>
+      <div class="hero-cta">
+        <a class="btn grande" href="../">Prova Ginestra</a>
+        <a class="btn grande chiaro" href="#come">Come funziona</a>
+      </div>
+      <p class="hero-nota">Si prova subito, senza account. I progressi restano sul tuo dispositivo.</p>
+      <div class="pills" aria-label="Cosa c'è dentro">
+        <span class="pill"><svg><use href="#i-fiamma"/></svg>Serie giornaliera</span>
+        <span class="pill"><svg><use href="#i-corona"/></svg>Corone</span>
+        <span class="pill"><svg><use href="#i-gemma"/></svg>Gemme</span>
+        <span class="pill"><svg><use href="#i-coppa"/></svg>Lega</span>
+      </div>
+    </div>
+
+    <!-- esercizio vivo: si può giocare già qui -->
+    <div class="phone-wrap">
+      <div class="phone" id="demo" aria-label="Esercizio di prova">
+        <div class="ph-top">
+          <div class="ph-bar" role="progressbar" aria-label="Avanzamento" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><i id="d-barra"></i></div>
+          <div class="ph-cuori" aria-label="Cuori"><svg><use href="#i-cuore"/></svg><span id="d-cuori">5</span></div>
+        </div>
+        <div class="ph-body">
+          <h3>Come si dice in italiano?</h3>
+          <div class="ph-dom">
+            <button class="audio" id="d-audio" type="button" aria-label="Ascolta la parola"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9.5v5h4l5 4v-13l-5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+            <div class="bolla" id="d-dom">O herói</div>
+          </div>
+          <div class="scelte" id="d-scelte" role="group" aria-label="Risposte"></div>
+        </div>
+        <div class="ph-foot" id="d-foot" aria-live="polite">
+          <div class="esito"><b id="d-tit"></b><span id="d-sub"></span></div>
+          <button class="btn" id="d-btn" type="button" style="width:100%" disabled>Controlla</button>
+        </div>
+        <div class="fine" id="d-fine">
+          <img class="mascotte" src="../layout/assets/logo%202.png" alt="">
+          <h3>Lezione finita!</h3>
+          <div class="stat">
+            <div class="st-xp"><small>XP</small><span id="d-xp">+30</span></div>
+            <div class="st-pr"><small>Precisione</small><span id="d-prec">100%</span></div>
+          </div>
+          <a class="btn" href="../">Continua nell'app</a>
+          <button class="btn chiaro" id="d-ripeti" type="button">Rifai la prova</button>
+        </div>
+      </div>
+      <p class="phone-nota">Questo esercizio è vero: scegli una risposta e premi Controlla. Le parole sono quelle di Garibaldi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERCHE ================= -->
+<section class="alt" id="perche">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Le parole le scrivi. Poi le dimentichi.</h2>
+      <p class="lead">Ascolti un documentario, leggi un'intervista, segni le parole nuove. Il quaderno si riempie, ma nessuno ti chiede mai se le ricordi davvero.</p>
+    </div>
+    <div class="pd">
+      <div class="pd-col">
+        <h3>Una lista non ti interroga</h3>
+        <div class="quaderno" aria-label="Pagina di quaderno con una lista di parole">
+          <ul>
+            <li class="tit">Garibaldi</li>
+            <li>un eroe - O herói</li>
+            <li>un avventuriero - O aventureiro</li>
+            <li>l'unificazione - A unificação</li>
+            <li>l'unità d'Italia - A unidade...</li>
+            <li class="polvere">(ultima volta aperto: boh)</li>
+          </ul>
+        </div>
+        <p>Non sai quali parole ricordi e quali no. Non sai quando ripassare. Dopo due settimane il quaderno resta chiuso.</p>
+      </div>
+      <div class="pd-col dopo">
+        <h3>In Ginestra le stesse righe diventano una strada</h3>
+        <div class="strada" aria-label="Percorso a nodi di una unità">
+          <div class="unita"><small>Unità 1</small><br><b>Garibaldi</b></div>
+          <div class="nodo fatto n1"><svg><use href="#i-spunta"/></svg></div>
+          <div class="nodo fatto n2"><svg><use href="#i-spunta"/></svg></div>
+          <div class="nodo ora n3"><span class="tag">Inizia</span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#fff"/></svg></div>
+          <div class="nodo bloc n4"><svg><use href="#i-lucchetto"/></svg></div>
+        </div>
+        <p>Ogni parola torna sotto forma di esercizio. Sbagli? Lo vedi subito, con la spiegazione e una frase d'esempio. Ogni esercizio ha le sue corone: quante più ne hai, tanto più la parola è tua.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COME FUNZIONA ================= -->
+<section id="come">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Tre mosse, e sei dentro</h2>
+    </div>
+    <div class="passi">
+      <article class="passo">
+        <div class="passo-n" aria-hidden="true">1</div>
+        <div>
+          <h3>Scegli un personaggio</h3>
+          <p>Ogni personaggio è un quaderno di parole ed espressioni vere, ognuna con la traduzione, la spiegazione e una frase d'esempio.</p>
+          <div class="esempi"><span class="chip">Garibaldi</span><span class="chip">Totò</span><span class="chip">Gianni Rodari</span><span class="chip">Maria Montessori</span></div>
+        </div>
+      </article>
+      <article class="passo">
+        <div class="passo-n" aria-hidden="true">2</div>
+        <div>
+          <h3>Fai una lezione</h3>
+          <p>Pochi minuti per volta. Gli esercizi cambiano di continuo, quindi non fai mai dieci volte la stessa cosa. Una serie di risposte giuste fa partire la combo e regala XP in più.</p>
+        </div>
+      </article>
+      <article class="passo">
+        <div class="passo-n" aria-hidden="true">3</div>
+        <div>
+          <h3>Torna domani</h3>
+          <p>La serie, l'obiettivo giornaliero e la lega ti tengono in carreggiata senza stressarti: se un giorno salti, non perdi quello che hai imparato.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ESERCIZI ================= -->
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Si impara in molti modi, quindi non ci si annoia</h2>
+      <p class="lead">Una parola la incontri più volte e in forme diverse: prima la riconosci, poi la ricordi, poi la usi in una frase.</p>
+    </div>
+    <div class="tipi">
+      <article class="tipo">
+        <div class="mini"><span class="t">un eroe</span><span class="t b">tavolo</span><span class="t">cucchiaio</span></div>
+        <h3>Scegli la traduzione</h3>
+        <p>Una parola e quattro possibilità. Le alternative sbagliate sono scelte apposta per confondere.</p>
+      </article>
+      <article class="tipo">
+        <div class="mini"><span class="t v">eroe = herói</span><span class="t b">unità</span><span class="t">unidade</span></div>
+        <h3>Abbina le coppie</h3>
+        <p>Tocca la parola e la sua traduzione. Quando la coppia è giusta, sparisce.</p>
+      </article>
+      <article class="tipo">
+        <div class="mini"><span>Il pompiere è stato <span class="vuoto"></span> per la città.</span></div>
+        <h3>Completa la frase</h3>
+        <p>Una frase vera, con uno spazio da riempire: capisci come si usa la parola, non solo cosa significa.</p>
+      </article>
+      <article class="tipo">
+        <div class="mini"><div class="onde" aria-hidden="true"><i style="height:14px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:38px"></i><i style="height:24px"></i><i style="height:34px"></i><i style="height:16px"></i><i style="height:26px"></i><i style="height:12px"></i></div></div>
+        <h3>Ascolta e rispondi</h3>
+        <p>Senti la parola, anche in versione lenta, e scrivi o scegli quello che hai capito.</p>
+      </article>
+      <article class="tipo">
+        <div class="mini"><span class="lett u">a</span><span class="lett u">v</span><span class="lett"></span><span class="lett u">e</span><span class="lett"></span><span class="lett u">t</span><span class="lett"></span><span class="lett u">r</span><span class="lett"></span><span class="lett"></span><span class="lett u">e</span></div>
+        <h3>Scrivila tu</h3>
+        <p>Ricostruisci la parola lettera per lettera, con la tastiera dell'app.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANTEPRIMA ================= -->
+<section id="anteprima">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Ecco com'è fatta davvero</h2>
+      <p class="lead">Sono schermate vere dell'app. Cambia il tema in alto a destra e cambiano anche loro.</p>
+    </div>
+    <div class="ant">
+      <div class="ant-tabs" role="tablist" aria-label="Schermate dell'app" id="ant-tabs">
+        <button class="ant-tab" role="tab" aria-selected="true" data-shot="home"><b>La strada</b><span>La Home: un'unità per personaggio, nodi che si sbloccano, scrigni lungo il percorso.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="lezione"><b>La lezione</b><span>Un esercizio alla volta, con la barra di avanzamento e i cuori.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="festa"><b>Fine lezione</b><span>XP, combo, serie e obiettivo del giorno: una piccola festa a ogni lezione.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="profilo"><b>Obiettivi</b><span>Statistiche, calendario con le fiammelle e i traguardi a livelli.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="lega"><b>La lega</b><span>Una sfida con te stesso: raggiungi l'obiettivo della settimana e sali.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="sfide"><b>La maratona</b><span>Una corsa contro il tempo, con tre livelli di difficoltà.</span></button>
+        <button class="ant-tab" role="tab" aria-selected="false" data-shot="esame"><b>L'esame</b><span>Una pagina di quaderno, un voto in trentesimi.</span></button>
+      </div>
+      <div class="tel" aria-live="polite">
+        <div class="tel-sch"><img id="ant-img" alt="Schermata della Home di Ginestra" width="390" height="844" loading="lazy"></div>
+      </div>
+    </div>
+
+    <figure class="desk" id="desk" style="margin-top:clamp(40px,7vw,72px)">
+      <div class="desk-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+      <img id="desk-img" alt="Ginestra sul computer, con il pannello laterale di statistiche, lega e progresso" loading="lazy">
+    </figure>
+    <p class="desk-cap" id="desk-cap">Sul computer, un pannello laterale ti tiene sott'occhio statistiche, lega e progresso.</p>
+  </div>
+</section>
+
+<!-- ================= GIOCO ================= -->
+<section class="alt" id="gioco">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Un gioco, non un compito</h2>
+      <p class="lead">Quello che ti fa tornare è la voglia di non rompere la serie, di prendere un'altra corona, di salire di lega. Il resto lo fa la memoria.</p>
+    </div>
+    <div class="gioco">
+      <article class="g-c largo arancio">
+        <svg class="ic"><use href="#i-fiamma"/></svg>
+        <h3>La serie</h3>
+        <p>Ogni giorno in cui studi accende una fiammella. Più giorni di fila, più la serie vale.</p>
+        <div class="giorni" aria-hidden="true">
+          <span class="on"><svg><use href="#i-fiamma"/></svg></span><span class="on"><svg><use href="#i-fiamma"/></svg></span><span class="on"><svg><use href="#i-fiamma"/></svg></span><span class="on"><svg><use href="#i-fiamma"/></svg></span><span class="on"><svg><use href="#i-fiamma"/></svg></span><span>S</span><span>D</span>
+        </div>
+      </article>
+      <article class="g-c largo">
+        <svg class="ic"><use href="#i-bersaglio"/></svg>
+        <h3>L'obiettivo giornaliero</h3>
+        <p>Decidi tu quanto: 10, 20, 30 o 50 XP al giorno. Una lezione perfetta vale di più.</p>
+        <div class="barra" aria-hidden="true"><i></i></div>
+      </article>
+      <article class="g-c">
+        <svg class="ic"><use href="#i-cuore"/></svg>
+        <h3>Cinque cuori</h3>
+        <p>Sbagliare costa un cuore, e uno si ricarica ogni 30 minuti. Se finiscono puoi allenarti gratis.</p>
+      </article>
+      <article class="g-c">
+        <svg class="ic"><use href="#i-gemma"/></svg>
+        <h3>Le gemme</h3>
+        <p>Le guadagni studiando. Le spendi per ricaricare i cuori, se hai fretta.</p>
+      </article>
+      <article class="g-c">
+        <svg class="ic"><use href="#i-corona"/></svg>
+        <h3>Le corone</h3>
+        <p>Da 0 a 5 per ogni esercizio: ti dicono quali parole sono già solide e quali vanno riviste.</p>
+        <div class="corone" aria-hidden="true"><svg><use href="#i-corona"/></svg><svg><use href="#i-corona"/></svg><svg><use href="#i-corona"/></svg><svg class="spenta"><use href="#i-corona"/></svg><svg class="spenta"><use href="#i-corona"/></svg></div>
+      </article>
+      <article class="g-c blu largo">
+        <svg class="ic"><use href="#i-coppa"/></svg>
+        <h3>La lega: una sfida solo tua</h3>
+        <p>Niente classifiche con sconosciuti. Ogni lega ha un obiettivo settimanale di XP: lo raggiungi e sali, vai sotto il 35% e scendi. Se non studi, non succede nulla.</p>
+      </article>
+      <article class="g-c verde largo">
+        <svg class="ic"><use href="#i-cronometro"/></svg>
+        <h3>La maratona</h3>
+        <p>Rispondi in fretta: ogni risposta giusta regala tempo e fa salire la combo, ogni errore ne toglie. Tre livelli, dal tempo normale al doppio della velocità.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ESAME ================= -->
+<section id="esame">
+  <div class="wrap esame">
+    <div class="esame-txt">
+      <h2>Quando vuoi sapere a che punto sei, c'è l'esame</h2>
+      <p class="lead">Una pagina di quaderno a righe, nessun cuore, nessun indizio. Rispondi, consegni e solo allora vedi la correzione.</p>
+      <ul class="parti">
+        <li><b>Riconoscere</b><span>capire cosa vuol dire una parola</span></li>
+        <li><b>Ricordare</b><span>trovare la parola giusta</span></li>
+        <li><b>Capire le frasi</b><span>usare le parole nel contesto</span></li>
+        <li><b>Ascoltare</b><span>capire quello che senti</span></li>
+      </ul>
+      <p>Il voto è in trentesimi: 18 per passare, 30 e lode se non sbagli niente. Ti ricordi il tuo record per ogni personaggio, così sai se stai migliorando.</p>
+    </div>
+    <div class="foglio" aria-label="Esempio di pagina d'esame corretta">
+      <div class="nome">Esame - Garibaldi</div>
+      <div class="dom">1. <span class="risp">Un eroe = O herói</span></div>
+      <div class="dom">2. <span class="risp">Un avventuriero = O aventureiro</span></div>
+      <div class="dom">3. L'unificazione = <span class="sbag">A unidade</span></div>
+      <div class="dom">&nbsp;&nbsp;&nbsp;<span class="risp">A unificação</span></div>
+      <div class="dom">4. <span class="risp">Il pompiere è stato un eroe.</span></div>
+      <div class="dom">&nbsp;</div>
+      <span class="timbro">Promosso</span>
+      <div class="voto">27<small>/30</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERSONAGGI ================= -->
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Da Virgilio a Paola Cortellesi</h2>
+      <p class="lead">Il vocabolario arriva dalle voci e dalle storie di diciotto personaggi italiani. Impari le parole nel mondo in cui sono state usate.</p>
+    </div>
+    <div class="pers" aria-label="Personaggi">
+      <span class="chip">Adriano Olivetti</span><span class="chip">Emilio Salgari</span><span class="chip">Ennio Morricone</span><span class="chip">Filippo Brunelleschi</span><span class="chip">Garibaldi</span><span class="chip">Gianni Rodari</span><span class="chip">Giuseppe Ungaretti</span><span class="chip">Guglielmo Marconi</span><span class="chip">Guglielmo Petroni</span><span class="chip">Lorenzo de' Medici</span><span class="chip">Maria Montessori</span><span class="chip">Paola Cortellesi</span><span class="chip">Piero Angela</span><span class="chip">Publio Virgilio Marone</span><span class="chip">Raffaele Esposito</span><span class="chip">Rita Levi-Montalcini</span><span class="chip">Roberto Benigni</span><span class="chip">Totò</span>
+    </div>
+    <div class="num-riga">
+      <div><b>916</b><span>parole, espressioni e frasi</span></div>
+      <div><b>18</b><span>personaggi</span></div>
+      <div><b>5</b><span>tipi di esercizio</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="domande">
+  <div class="wrap">
+    <div class="sec-head"><h2>Domande che ci fanno</h2></div>
+    <div class="faq">
+      <details>
+        <summary>Devo registrarmi?</summary>
+        <p>No. Apri l'app e inizi. I tuoi progressi (XP, serie, corone) restano salvati sul tuo dispositivo.</p>
+      </details>
+      <details>
+        <summary>Per chi è?</summary>
+        <p>Per chi parla portoghese e impara l'italiano: le traduzioni e le frasi d'esempio sono in portoghese.</p>
+      </details>
+      <details>
+        <summary>Funziona sul telefono?</summary>
+        <p>Sì, è pensata per il telefono. Sul computer trovi anche un pannello laterale con statistiche, lega e progresso.</p>
+      </details>
+      <details>
+        <summary>Cosa succede se salto un giorno?</summary>
+        <p>La serie riparte da capo, ma le corone e le parole che hai imparato restano. Nella lega, se non studi, non cambia nulla.</p>
+      </details>
+      <details>
+        <summary>È una versione definitiva?</summary>
+        <p>No, è una versione di prova e continua a crescere. Se la usi, il tuo parere conta.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <div class="wrap">
+    <img class="mascotte" src="../layout/assets/logo%202.png" alt="">
+    <h2>La prima lezione dura pochi minuti</h2>
+    <p>Apri Ginestra, scegli un personaggio e fai il primo passo sulla strada.</p>
+    <a class="btn grande" href="../">Apri Ginestra</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Ginestra - versione di prova</span>
+    <span>Fatto con cura per chi ama le parole.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  /* ---------- tema ---------- */
+  function scuro() { return root.classList.contains('dark'); }
+  document.getElementById('tema').addEventListener('click', function () {
+    root.classList.toggle('dark');
+    try { localStorage.setItem('ginestra-tema', scuro() ? 'scuro' : 'chiaro'); } catch (e) {}
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = scuro() ? '#131f24' : '#ffffff';
+    aggiornaShot();
+  });
+  var mt = document.querySelector('meta[name="theme-color"]'); if (mt && scuro()) mt.content = '#131f24';
+
+  /* ---------- anteprima: screenshot per tema ---------- */
+  var DIR = '../landpage-img/', EXT = '.webp';
+  var DESCR = {
+    home: 'La strada di Ginestra con le unità e i nodi', lezione: 'Un esercizio di traduzione in Ginestra',
+    festa: 'La schermata di fine lezione con XP e serie', profilo: 'Obiettivi, statistiche e calendario',
+    lega: 'La pagina della lega settimanale', sfide: 'La maratona, la corsa contro il tempo', esame: 'La pagina d\'esame'
+  };
+  var corrente = 'home', img = document.getElementById('ant-img'), desk = document.getElementById('desk-img');
+  function src(nome) { return DIR + nome + '-' + (scuro() ? 'dark' : 'light') + EXT; }
+  function aggiornaShot() {
+    img.alt = 'Schermata: ' + DESCR[corrente];
+    img.src = src(corrente);
+    desk.src = src('desktop');
+  }
+  img.addEventListener('error', function () { /* schermata assente: torna alla Home */
+    if (corrente !== 'home') { var t = document.querySelector('.ant-tab[data-shot="' + corrente + '"]'); if (t) t.hidden = true; corrente = 'home'; select('home'); }
+  });
+  desk.addEventListener('error', function () { document.getElementById('desk').style.display = 'none'; document.getElementById('desk-cap').style.display = 'none'; });
+  function select(nome) {
+    corrente = nome;
+    [].forEach.call(document.querySelectorAll('.ant-tab'), function (b) { b.setAttribute('aria-selected', b.dataset.shot === nome ? 'true' : 'false'); });
+    aggiornaShot();
+  }
+  [].forEach.call(document.querySelectorAll('.ant-tab'), function (b) { b.addEventListener('click', function () { select(b.dataset.shot); }); });
+  aggiornaShot();
+
+  /* ---------- esercizio dimostrativo (parole vere dal glossario di Garibaldi) ---------- */
+  var DOMANDE = [
+    { q: 'O herói', it: 'un eroe', ok: 'Un eroe', alt: ['Un tavolo', 'Un cucchiaio', 'Un lampione'], sp: 'Persona di grande coraggio che compie imprese straordinarie.' },
+    { q: 'O aventureiro', it: 'un avventuriero', ok: 'Un avventuriero', alt: ['Un frigorifero', 'Un cacciavite', 'Un armadio'], sp: 'Chi ama il rischio e cerca esperienze nuove in luoghi lontani.' },
+    { q: 'A unificação', it: "l'unificazione", ok: "L'unificazione", alt: ["L'alimentazione", "L'informazione", "L'inaugurazione"], sp: 'Il processo con cui stati diversi diventano un unico paese.' }
+  ];
+  var i = 0, cuori = 5, errori = 0, scelta = null, risolta = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var elScelte = $('d-scelte'), foot = $('d-foot'), btn = $('d-btn'), fine = $('d-fine');
+
+  function mescola(a) { a = a.slice(); for (var k = a.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[j]; a[j] = t; } return a; }
+  function mostra() {
+    var d = DOMANDE[i]; scelta = null; risolta = false;
+    $('d-dom').textContent = d.q;
+    elScelte.className = 'scelte'; elScelte.innerHTML = '';
+    mescola([d.ok].concat(d.alt)).forEach(function (testo, n) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'scelta'; b.dataset.v = testo;
+      b.innerHTML = '<kbd>' + (n + 1) + '</kbd><span></span>'; b.lastChild.textContent = testo;
+      b.addEventListener('click', function () { if (risolta) return; scelta = testo; [].forEach.call(elScelte.children, function (x) { x.classList.toggle('sel', x === b); }); btn.disabled = false; });
+      elScelte.appendChild(b);
+    });
+    foot.className = 'ph-foot'; btn.textContent = 'Controlla'; btn.disabled = true;
+    var bar = $('d-barra'); bar.style.width = (i / DOMANDE.length * 100) + '%';
+    bar.parentNode.setAttribute('aria-valuenow', i);
+  }
+  btn.addEventListener('click', function () {
+    var d = DOMANDE[i];
+    if (!risolta) {
+      var giusta = scelta === d.ok; risolta = true; elScelte.classList.add('chiuso');
+      [].forEach.call(elScelte.children, function (x) {
+        x.classList.remove('sel');
+        if (x.dataset.v === d.ok) x.classList.add('giusta');
+        else if (x.dataset.v === scelta) x.classList.add('sbagliata');
+      });
+      if (giusta) { foot.className = 'ph-foot ok'; $('d-tit').textContent = 'Ottimo!'; $('d-sub').textContent = d.ok + ': ' + d.sp; }
+      else { errori++; cuori = Math.max(0, cuori - 1); $('d-cuori').textContent = cuori; foot.className = 'ph-foot no'; $('d-tit').textContent = 'Risposta giusta: ' + d.ok; $('d-sub').textContent = d.sp; }
+      btn.textContent = 'Continua';
+    } else {
+      i++;
+      if (i >= DOMANDE.length) {
+        $('d-barra').style.width = '100%';
+        var prec = Math.round((DOMANDE.length - errori) / DOMANDE.length * 100);
+        $('d-prec').textContent = prec + '%'; $('d-xp').textContent = '+' + (errori === 0 ? 30 : 10 * (DOMANDE.length - errori));
+        fine.classList.add('on');
+      } else mostra();
+    }
+  });
+  $('d-ripeti').addEventListener('click', function () { i = 0; cuori = 5; errori = 0; $('d-cuori').textContent = 5; fine.classList.remove('on'); mostra(); });
+  $('d-audio').addEventListener('click', function () {
+    try { var u = new SpeechSynthesisUtterance(DOMANDE[i].it); u.lang = 'it-IT'; u.rate = .85; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  });
+  mostra();
+})();
+</script>
+</body>
+</html>
