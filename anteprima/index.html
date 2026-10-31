@@ -8,11 +8,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../layout/assets/favicon-32.png">
 <meta name="theme-color" content="#ffffff">
 <script>
-  /* stessa chiave dell'app: se hai scelto il tema scuro in Ginestra, lo trovi anche qui */
-  try {
-    var t = localStorage.getItem('ginestra-tema');
-    if (t === 'scuro' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
-  } catch (e) {}
+  /* parte sempre chiara; se l'utente sceglie il tema scuro, lo ricordiamo solo per questa pagina */
+  try { if (localStorage.getItem('ginestra-anteprima-tema') === 'scuro') document.documentElement.classList.add('dark'); } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -791,7 +788,7 @@
   function scuro() { return root.classList.contains('dark'); }
   document.getElementById('tema').addEventListener('click', function () {
     root.classList.toggle('dark');
-    try { localStorage.setItem('ginestra-tema', scuro() ? 'scuro' : 'chiaro'); } catch (e) {}
+    try { localStorage.setItem('ginestra-anteprima-tema', scuro() ? 'scuro' : 'chiaro'); } catch (e) {}
     var m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = scuro() ? '#131f24' : '#ffffff';
     aggiornaShot();
   });
