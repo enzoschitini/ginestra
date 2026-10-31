@@ -288,14 +288,20 @@
   .num-riga b { font-size: clamp(36px, 5vw, 52px); font-weight: 900; line-height: 1; color: var(--verde-testo); }
   .num-riga span { font-size: 15px; color: var(--testo2); }
 
-  /* ---------- lingue disponibili ---------- */
-  .lingue { padding: 0 0 clamp(40px, 6vw, 64px); }
-  .lingue-box { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; padding: 14px 20px; border: 2px solid var(--bordo); border-radius: 18px; background: var(--card); box-shadow: 0 3px 0 var(--bordo); max-width: 760px; margin-inline: auto; }
-  .bandiere { display: flex; align-items: center; gap: 10px; flex: none; }
-  .bandiere svg { width: 44px; height: 30px; border-radius: 6px; box-shadow: 0 0 0 2px var(--bordo); }
-  .bandiere .freccia { width: 26px; height: 26px; box-shadow: none; border-radius: 0; color: var(--blu); }
-  .lingue-box p { font-size: 15px; color: var(--testo2); max-width: 52ch; }
-  .lingue-box p b { color: var(--testo); font-weight: 900; }
+  /* ---------- premesse ---------- */
+  .premesse { padding: 0 0 clamp(48px, 7vw, 80px); }
+  .prem-box { max-width: 860px; margin-inline: auto; border: 2px solid var(--bordo); border-radius: var(--raggio-g); background: var(--card); box-shadow: 0 4px 0 var(--bordo); padding: clamp(18px, 3vw, 28px); display: grid; gap: 4px; }
+  .prem-box h2 { font-size: clamp(22px, 3vw, 28px); margin-bottom: 8px; max-width: none; }
+  .prem { display: grid; grid-template-columns: 112px 1fr; gap: 18px; align-items: center; padding: 16px 0; border-top: 2px solid var(--bordo); }
+  .prem:first-of-type { border-top: 0; }
+  .prem-ic { display: grid; place-items: center; }
+  .prem p { font-size: 16px; color: var(--testo2); max-width: 60ch; }
+  .prem p b { color: var(--testo); font-weight: 900; }
+  .bandiere { display: flex; align-items: center; gap: 6px; }
+  .bandiere svg { width: 36px; height: 24px; border-radius: 5px; box-shadow: 0 0 0 2px var(--bordo); }
+  .bandiere .freccia { width: 20px; height: 20px; box-shadow: none; border-radius: 0; color: var(--blu); }
+  .prem-ic .ic { width: 48px; height: 48px; }
+  @media (max-width: 560px) { .prem { grid-template-columns: 1fr; gap: 8px; } .prem-ic { justify-items: start; } }
 
   /* ---------- chi l'ha creata ---------- */
   .autore { display: grid; grid-template-columns: auto 1fr; gap: clamp(24px, 5vw, 56px); align-items: center; }
@@ -457,16 +463,27 @@
   </div>
 </section>
 
-<!-- ================= LINGUE ================= -->
-<div class="lingue">
+<!-- ================= PREMESSE ================= -->
+<div class="premesse">
   <div class="wrap">
-    <div class="lingue-box">
-      <div class="bandiere" role="img" aria-label="Italia e Brasile">
-        <svg viewBox="0 0 44 30"><rect width="15" height="30" fill="#009246"/><rect x="15" width="14" height="30" fill="#fff"/><rect x="29" width="15" height="30" fill="#ce2b37"/></svg>
-        <svg class="freccia" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg>
-        <svg viewBox="0 0 44 30"><rect width="44" height="30" fill="#009c3b"/><path d="M22 3.5 40 15 22 26.5 4 15z" fill="#ffdf00"/><circle cx="22" cy="15" r="6.5" fill="#002776"/></svg>
+    <div class="prem-box">
+      <h2>Prima di provare, tre premesse</h2>
+      <div class="prem">
+        <div class="prem-ic bandiere" role="img" aria-label="Italia e Brasile">
+          <svg viewBox="0 0 44 30"><rect width="15" height="30" fill="#009246"/><rect x="15" width="14" height="30" fill="#fff"/><rect x="29" width="15" height="30" fill="#ce2b37"/></svg>
+          <svg class="freccia" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg>
+          <svg viewBox="0 0 44 30"><rect width="44" height="30" fill="#009c3b"/><path d="M22 3.5 40 15 22 26.5 4 15z" fill="#ffdf00"/><circle cx="22" cy="15" r="6.5" fill="#002776"/></svg>
+        </div>
+        <p><b>Per ora solo italiano e portoghese.</b> È una versione di prova: le parole si traducono dall'italiano al portoghese e viceversa, e le altre lingue non sono ancora supportate.</p>
       </div>
-      <p><b>Per ora solo italiano e portoghese.</b> È una versione di prova: le parole si traducono dall'italiano al portoghese e viceversa. Altre lingue arriveranno.</p>
+      <div class="prem">
+        <div class="prem-ic"><svg class="ic"><use href="#i-quaderno"/></svg></div>
+        <p><b>Assomiglia molto a Duolingo, e non è un caso.</b> Ginestra è nata ispirandosi a Duolingo: la strada a nodi, le corone, la serie, i cuori. Per questo l'aspetto è così simile.</p>
+      </div>
+      <div class="prem">
+        <div class="prem-ic"><svg class="ic"><use href="#i-cuore"/></svg></div>
+        <p><b>È un progetto di volontariato per chi insegna italiano.</b> È pensata per le istituzioni che insegnano la lingua e verrà offerta gratuitamente. Se un'istituzione la sceglie, l'aspetto cambierà e verrà personalizzato per lei.</p>
+      </div>
     </div>
   </div>
 </div>
