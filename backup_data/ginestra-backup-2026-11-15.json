@@ -1,0 +1,12 @@
+{
+  "app": "ginestra",
+  "formato": 1,
+  "creato": "2026-11-15T09:14:55.207Z",
+  "origine": "http://127.0.0.1:8765",
+  "dati": {
+    "ginestra-sblocca-tutto": "1",
+    "ginestra-tema": "scuro",
+    "ginestra-gioco": "{\"xp\":0,\"xpOggi\":0,\"giorno\":\"2026-11-15\",\"gemme\":0,\"cuori\":5,\"cuoriTs\":0,\"streak\":0,\"streakMax\":0,\"giorni\":{},\"obiettivoXp\":20,\"corone\":{},\"lezioni\":{},\"traguardi\":{},\"lega\":0,\"xpSettimana\":0,\"settimana\":\"2026-11-09\",\"congelamenti\":0,\"ultimoGiorno\":\"\",\"scrigni\":{},\"perfette\":0,\"gemmeTotali\":0,\"xpLega\":0,\"legaEsito\":null,\"storia\":[],\"record\":0}",
+    "ginestra-filtri": "{\"pers\":[\"Maria Montessori\"],\"per\":[],\"cat\":[],\"gruppo\":\"\",\"scelte\":[\"Maria Montessori|La messa in cena\",\"Maria Montessori|Un mucchio (di)\",\"Maria Montessori|Un sacco di\"]}"
+  }
+}

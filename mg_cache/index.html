@@ -128,6 +128,12 @@
   [hidden] { display: none !important; }
 
 
+
+  .cartella { display: grid; gap: 8px; }
+  .cartella label { font-weight: 900; }
+  select { flex: 1 1 240px; min-height: 50px; padding: 0 14px; font: 800 16px/1 var(--font); color: var(--testo); background: var(--card); border: 2px solid var(--bordo); border-radius: var(--raggio); box-shadow: 0 3px 0 var(--bordo); }
+  select:disabled { color: var(--testo3); }
+  code { font: 800 .9em ui-monospace, Consolas, monospace; background: var(--bg2); padding: 1px 6px; border-radius: 6px; }
   dialog { margin: auto; border: 2px solid var(--bordo); border-radius: var(--raggio-g); box-shadow: 0 6px 0 var(--bordo); background: var(--card); color: var(--testo); padding: clamp(20px, 4vw, 28px); width: min(420px, 100% - 32px); }
   dialog::backdrop { background: rgba(0,0,0,.55); }
   dialog[open] { display: grid; gap: 14px; }
@@ -175,7 +181,16 @@
   <!-- 3. carica -->
   <section class="card" aria-labelledby="t-carica">
     <h2 id="t-carica"><span class="num">2</span> Carica un backup</h2>
-    <p class="sotto">Scegli il file scaricato da un altro dispositivo. Prima di applicarlo vedi cosa cambierebbe.</p>
+    <p class="sotto">Scegli un backup dalla cartella <code>backup_data</code> oppure carica un file scaricato da un altro dispositivo. Prima di applicarlo vedi cosa cambierebbe.</p>
+    <div class="cartella">
+      <label for="sel-cartella">Backup nella cartella</label>
+      <div class="az">
+        <select id="sel-cartella" disabled><option>Cerco i backup…</option></select>
+        <button class="btn blu" id="usa-cartella" type="button" disabled>Usa questo backup</button>
+      </div>
+      <p class="sotto" id="nota-cartella"></p>
+    </div>
+    <p class="sotto" style="text-align:center">oppure</p>
     <label class="drop" id="drop">
       <input type="file" id="file" accept="application/json,.json">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
@@ -348,19 +363,66 @@
     if (pendente.scartate) st.appendChild(pill(pendente.scartate + ' ignorate'));
   }
 
+  function proponi(testo) {
+    var v = validazione(testo);
+    if (v.errore) { mostra('msg-carica', 'no', v.errore); return; }
+    pendente = v; disegnaAnteprima(); $('anteprima').hidden = false;
+    $('anteprima').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
   function leggiFile(f) {
     nascondi('msg-carica'); $('anteprima').hidden = true; pendente = null;
     if (!f) return;
     if (f.size > MAX_FILE) { mostra('msg-carica', 'no', 'Il file è troppo grande per essere un backup di Ginestra.'); return; }
     var r = new FileReader();
-    r.onload = function () {
-      var v = validazione(String(r.result));
-      if (v.errore) { mostra('msg-carica', 'no', v.errore); return; }
-      pendente = v; disegnaAnteprima(); $('anteprima').hidden = false;
-    };
+    r.onload = function () { proponi(String(r.result)); };
     r.onerror = function () { mostra('msg-carica', 'no', 'Non riesco a leggere il file.'); };
     r.readAsText(f);
   }
+
+  /* ---------- backup nella cartella backup_data ----------
+     Un sito statico non può elencare una cartella: uso backup_data/elenco.json (aggiornato da
+     sync-backup.js). Se manca, provo a leggere l'indice della cartella (funziona col server locale). */
+  var CARTELLA = '../backup_data/';
+  function nomiDaElenco() {
+    return fetch(CARTELLA + 'elenco.json', { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('no elenco');
+      return r.json();
+    }).then(function (a) { if (!Array.isArray(a)) throw new Error('formato'); return a; });
+  }
+  function nomiDaIndice() {
+    return fetch(CARTELLA, { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('no indice');
+      return r.text();
+    }).then(function (h) {
+      var out = [], re = /href="([^"?#]+\.json)"/gi, m;
+      while ((m = re.exec(h))) { var n = decodeURIComponent(m[1]).split('/').pop(); if (n !== 'elenco.json') out.push(n); }
+      return out;
+    });
+  }
+  function caricaCartella() {
+    var sel = $('sel-cartella'), btn = $('usa-cartella'), nota = $('nota-cartella');
+    nomiDaElenco().catch(nomiDaIndice).then(function (nomi) {
+      nomi = nomi.filter(function (n) { return typeof n === 'string' && /^[^\/\\]+\.json$/i.test(n) && n !== 'elenco.json'; }).sort().reverse();
+      sel.textContent = '';
+      if (!nomi.length) { sel.appendChild(new Option('Nessun backup nella cartella', '')); nota.textContent = 'Metti i file .json in backup_data e aggiorna l’elenco con node sync-backup.js.'; return; }
+      nomi.forEach(function (n) { sel.appendChild(new Option(n, n)); });
+      sel.disabled = false; btn.disabled = false; nota.textContent = nomi.length + (nomi.length === 1 ? ' backup trovato.' : ' backup trovati.') + ' I più recenti sono in alto.';
+    }).catch(function () {
+      sel.textContent = ''; sel.appendChild(new Option('Cartella non raggiungibile', ''));
+      nota.textContent = 'Non riesco a leggere backup_data (aprendo la pagina come file locale il browser lo impedisce). Puoi comunque caricare un file qui sotto.';
+    });
+  }
+  $('usa-cartella').addEventListener('click', function () {
+    var nome = $('sel-cartella').value; if (!nome) return;
+    nascondi('msg-carica'); $('anteprima').hidden = true; pendente = null;
+    fetch(CARTELLA + encodeURIComponent(nome), { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.text();
+    }).then(function (txt) {
+      if (txt.length > MAX_FILE) { mostra('msg-carica', 'no', 'Il file è troppo grande per essere un backup di Ginestra.'); return; }
+      proponi(txt);
+    }).catch(function () { mostra('msg-carica', 'no', 'Non riesco a leggere ' + nome + '.'); });
+  });
   $('file').addEventListener('change', function () { leggiFile(this.files[0]); this.value = ''; });
   var drop = $('drop');
   ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('sopra'); }); });
@@ -418,6 +480,7 @@
   aggiornaMeta();
 
   aggiornaLocale();
+  caricaCartella();
 })();
 </script>
 </body>

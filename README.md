@@ -6,6 +6,8 @@ https://enzoschitini.github.io/ginestra/anteprima
 https://enzoschitini.github.io/ginestra/mg_cache
 https://enzoschitini.github.io/ginestra/
 
+Backup dei dati: i file `.json` scaricati da `mg_cache` si possono mettere in `backup_data/`; dopo averne aggiunto uno, `node sync-backup.js` aggiorna l'elenco che alimenta il selettore.
+
 ## Gioco
 
 Ginestra ha una parte "a gioco" in stile Duolingo, tutta dentro la cartella `gioco/` e caricata in fondo a `index.html` (ogni file con `onerror="void 0"`: se un modulo manca l'app funziona comunque).
