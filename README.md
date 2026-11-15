@@ -1,5 +1,9 @@
 # Ginestra
 
+python -m http.server 8765 --bind 127.0.0.1
+
+https://enzoschitini.github.io/ginestra/anteprima
+https://enzoschitini.github.io/ginestra/mg_cache
 https://enzoschitini.github.io/ginestra/
 
 ## Gioco
