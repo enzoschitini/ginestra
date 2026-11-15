@@ -1,6 +1,12 @@
 # Ginestra
 
+python -m http.server 8765 --bind 127.0.0.1
+
+https://enzoschitini.github.io/ginestra/anteprima
+https://enzoschitini.github.io/ginestra/mg_cache
 https://enzoschitini.github.io/ginestra/
+
+Backup dei dati: i file `.json` scaricati da `mg_cache` si possono mettere in `backup_data/`; dopo averne aggiunto uno, `node sync-backup.js` aggiorna l'elenco che alimenta il selettore.
 
 ## Gioco
 

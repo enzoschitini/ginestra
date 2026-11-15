@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ginestra - Gestione dati</title>
+<meta name="description" content="Scarica un backup dei tuoi progressi di Ginestra e ricaricalo su un altro dispositivo.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="../layout/assets/favicon-32.png">
+<meta name="theme-color" content="#ffffff">
+<script>
+  /* stesso tema dell'app */
+  try { if (localStorage.getItem('ginestra-tema') === 'scuro') document.documentElement.classList.add('dark'); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #58cc02; --verde-o: #46a302; --verde-testo: #3d8c00;
+    --blu: #1cb0f6; --blu-o: #1899d6;
+    --arancio: #ff9600; --giallo: #ffc800; --rosso: #ff4b4b; --rosso-o: #d93a3a;
+    --bg: #ffffff; --bg2: #f7f7f7; --card: #ffffff; --bordo: #e5e5e5;
+    --testo: #3c3c3c; --testo2: #6b6b6b; --testo3: #afafaf;
+    --ok-bg: #d7ffb8; --ok-t: #3d8c00; --no-bg: #ffdfe0; --no-t: #d33a3a;
+    --av-bg: #fff4d6; --av-t: #8a5a00; --av-b: #ffd77a;
+    --raggio: 16px; --raggio-g: 22px;
+    --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  html.dark {
+    --bg: #131f24; --bg2: #1a2a31; --card: #1f2f36; --bordo: #37464f;
+    --testo: #f1f7fb; --testo2: #a9b8c0; --testo3: #6b7b84;
+    --ok-bg: #1f3a16; --ok-t: #89e219; --no-bg: #3d1c20; --no-t: #ff7b7b;
+    --av-bg: #3a2f12; --av-t: #ffcf5a; --av-b: #6b5520;
+    --verde-testo: #89e219;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--font); background: var(--bg); color: var(--testo); font-weight: 700; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; min-height: 100vh; }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  button, input { font-family: inherit; }
+  :focus-visible { outline: 3px solid var(--blu); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: min(860px, 100% - 32px); margin-inline: auto; }
+  h1, h2, h3 { font-weight: 900; line-height: 1.12; letter-spacing: -.01em; }
+  p { max-width: 62ch; }
+
+  /* pulsanti, gli stessi dell'app */
+  .btn {
+    --b: var(--verde); --bo: var(--verde-o); --bt: #fff;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 50px; padding: 13px 24px; font: 900 15px/1 var(--font); letter-spacing: .8px; text-transform: uppercase; text-decoration: none;
+    color: var(--bt); background: var(--b); border: 0; border-radius: var(--raggio); box-shadow: 0 4px 0 var(--bo);
+    cursor: pointer; user-select: none; transition: transform .08s, box-shadow .08s, filter .15s;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--bo); }
+  .btn.blu { --b: var(--blu); --bo: var(--blu-o); }
+  .btn.rosso { --b: var(--rosso); --bo: var(--rosso-o); }
+  .btn.chiaro { --b: var(--card); --bo: var(--bordo); --bt: var(--blu); border: 2px solid var(--bordo); box-shadow: 0 4px 0 var(--bordo); }
+  .btn.chiaro:active { box-shadow: 0 0 0 var(--bordo); }
+  .btn[disabled] { --b: var(--bordo); --bo: var(--bordo); --bt: var(--testo3); cursor: not-allowed; filter: none; box-shadow: none; transform: none; }
+
+  /* header */
+  header.top { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 2px solid var(--bordo); }
+  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-img { width: 44px; height: 44px; object-fit: contain; }
+  .brand b { font-size: 22px; font-weight: 900; }
+  .top-az { display: flex; align-items: center; gap: 10px; }
+  .tema {
+    width: 46px; height: 46px; border-radius: 14px; border: 2px solid var(--bordo); background: var(--card); color: var(--testo2);
+    box-shadow: 0 3px 0 var(--bordo); cursor: pointer; display: grid; place-items: center; transition: transform .08s, box-shadow .08s;
+  }
+  .tema:active { transform: translateY(3px); box-shadow: 0 0 0 var(--bordo); }
+  .tema svg { width: 22px; height: 22px; }
+  .tema .luna { display: none; }
+  html.dark .tema .luna { display: block; }
+  html.dark .tema .sole { display: none; }
+  .top-az .btn { min-height: 46px; padding: 10px 18px; font-size: 14px; }
+
+  /* pagina */
+  main { padding: clamp(28px, 6vw, 56px) 0 80px; display: grid; gap: 22px; }
+  .intro { display: grid; gap: 12px; margin-bottom: 6px; }
+  .intro h1 { font-size: clamp(32px, 5.5vw, 52px); }
+  .lead { font-size: clamp(16px, 2vw, 19px); color: var(--testo2); }
+
+  .card { background: var(--card); border: 2px solid var(--bordo); border-radius: var(--raggio-g); box-shadow: 0 4px 0 var(--bordo); padding: clamp(18px, 3vw, 28px); display: grid; gap: 16px; }
+  .card h2 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
+  .num { width: 32px; height: 32px; flex: none; border-radius: 10px; background: var(--blu); color: #fff; display: grid; place-items: center; font-size: 17px; box-shadow: 0 3px 0 var(--blu-o); }
+  .card p.sotto { color: var(--testo2); font-size: 15px; }
+  .az { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  .avviso { background: var(--av-bg); color: var(--av-t); border: 2px solid var(--av-b); border-radius: var(--raggio); padding: 14px 16px; font-size: 15px; }
+  .avviso b { font-weight: 900; }
+
+  /* riepilogo */
+  .stat { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; background: var(--bg2); border: 2px solid var(--bordo); font-size: 14px; font-weight: 900; }
+  .lista { list-style: none; display: grid; border: 2px solid var(--bordo); border-radius: var(--raggio); overflow: hidden; }
+  .lista li { display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; padding: 12px 16px; background: var(--card); align-items: center; }
+  .lista li + li { border-top: 2px solid var(--bordo); }
+  .lista .nome { font-weight: 900; }
+  .lista .chiave { display: block; font: 700 12.5px/1.3 ui-monospace, Consolas, monospace; color: var(--testo3); word-break: break-all; }
+  .lista .peso { font-size: 14px; color: var(--testo2); white-space: nowrap; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; margin-left: 8px; vertical-align: middle; }
+  .tag.nuovo { background: var(--ok-bg); color: var(--ok-t); }
+  .tag.cambia { background: var(--av-bg); color: var(--av-t); }
+  .tag.uguale { background: var(--bg2); color: var(--testo2); }
+  .tag.via { background: var(--no-bg); color: var(--no-t); }
+  .vuoto { color: var(--testo2); padding: 6px 2px; }
+
+  /* caricamento */
+  .drop { border: 3px dashed var(--bordo); border-radius: var(--raggio-g); padding: 28px 18px; text-align: center; display: grid; gap: 10px; justify-items: center; color: var(--testo2); cursor: pointer; transition: background .15s, border-color .15s; }
+  .drop:hover, .drop.sopra { background: var(--bg2); border-color: var(--blu); }
+  .drop b { color: var(--testo); font-size: 18px; }
+  .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .modi { display: grid; gap: 10px; }
+  .modo { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 2px solid var(--bordo); border-radius: var(--raggio); background: var(--card); cursor: pointer; box-shadow: 0 3px 0 var(--bordo); }
+  .modo input { margin-top: 5px; accent-color: var(--blu); width: 18px; height: 18px; flex: none; }
+  .modo:has(input:checked) { border-color: var(--blu); box-shadow: 0 3px 0 var(--blu-o); }
+  .modo b { display: block; font-weight: 900; }
+  .modo span { color: var(--testo2); font-size: 14.5px; }
+
+  .msg { border-radius: var(--raggio); padding: 14px 16px; font-weight: 800; display: none; }
+  .msg.mostra { display: block; }
+  .msg.ok { background: var(--ok-bg); color: var(--ok-t); }
+  .msg.no { background: var(--no-bg); color: var(--no-t); }
+  [hidden] { display: none !important; }
+
+
+
+  .cartella { display: grid; gap: 8px; }
+  .cartella label { font-weight: 900; }
+  select { flex: 1 1 240px; min-height: 50px; padding: 0 14px; font: 800 16px/1 var(--font); color: var(--testo); background: var(--card); border: 2px solid var(--bordo); border-radius: var(--raggio); box-shadow: 0 3px 0 var(--bordo); }
+  select:disabled { color: var(--testo3); }
+  code { font: 800 .9em ui-monospace, Consolas, monospace; background: var(--bg2); padding: 1px 6px; border-radius: 6px; }
+  dialog { margin: auto; border: 2px solid var(--bordo); border-radius: var(--raggio-g); box-shadow: 0 6px 0 var(--bordo); background: var(--card); color: var(--testo); padding: clamp(20px, 4vw, 28px); width: min(420px, 100% - 32px); }
+  dialog::backdrop { background: rgba(0,0,0,.55); }
+  dialog[open] { display: grid; gap: 14px; }
+  dialog h3 { font-size: 22px; }
+  dialog p { color: var(--testo2); font-size: 15.5px; }
+  footer { text-align: center; color: var(--testo3); font-size: 14px; padding-bottom: 40px; }
+  @media (max-width: 520px) { .top-az .btn { display: none; } .lista li { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in" style="width:min(860px,100% - 32px)">
+    <a class="brand" href="../" aria-label="Ginestra, apri l'app"><img class="logo-img" src="../layout/assets/logo%202.png" alt="" width="44" height="44"><b>Ginestra</b></a>
+    <div class="top-az">
+      <button class="tema" id="tema" type="button" aria-label="Cambia tema, chiaro o scuro" title="Tema chiaro / scuro">
+        <svg class="sole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></svg>
+        <svg class="luna" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+      </button>
+      <a class="btn" href="../">Apri l'app</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>I tuoi dati</h1>
+    <p class="lead">Ginestra non ha un login: i progressi stanno nel browser di questo dispositivo. Qui puoi scaricarli in un file e caricarli altrove, per ritrovare serie, gemme, corone ed esami.</p>
+  </div>
+
+  <div class="avviso" role="note">
+    <b>Scheda in incognito?</b> Quando la chiudi i dati spariscono. Scarica il backup prima di chiuderla.
+  </div>
+
+  <!-- 2. scarica -->
+  <section class="card" aria-labelledby="t-scarica">
+    <h2 id="t-scarica"><span class="num">1</span> Scarica il backup</h2>
+    <p class="sotto">Un unico file JSON con tutti i dati di Ginestra di questo dispositivo. Conservalo dove vuoi: cloud, email, chiavetta.</p>
+    <div class="az">
+      <button class="btn" id="scarica" type="button">Scarica backup</button>
+    </div>
+    <div class="msg" id="msg-scarica" role="status"></div>
+  </section>
+
+  <!-- 3. carica -->
+  <section class="card" aria-labelledby="t-carica">
+    <h2 id="t-carica"><span class="num">2</span> Carica un backup</h2>
+    <p class="sotto">Scegli un backup dalla cartella <code>backup_data</code> oppure carica un file scaricato da un altro dispositivo. Prima di applicarlo vedi cosa cambierebbe.</p>
+    <div class="cartella">
+      <label for="sel-cartella">Backup nella cartella</label>
+      <div class="az">
+        <select id="sel-cartella" disabled><option>Cerco i backup…</option></select>
+        <button class="btn blu" id="usa-cartella" type="button" disabled>Usa questo backup</button>
+      </div>
+      <p class="sotto" id="nota-cartella"></p>
+    </div>
+    <p class="sotto" style="text-align:center">oppure</p>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept="application/json,.json">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      <b>Scegli il file di backup</b>
+      <span>oppure trascinalo qui</span>
+    </label>
+    <div class="msg" id="msg-carica" role="status"></div>
+
+    <div id="anteprima" hidden style="display:grid;gap:16px">
+      <div class="stat" id="stat-file"></div>
+      <ul class="lista" id="lista-file"></ul>
+      <div class="modi" role="radiogroup" aria-label="Come applicare il backup">
+        <label class="modo"><input type="radio" name="modo" value="sostituisci" checked>
+          <div><b>Sostituisci tutto</b><span>I dati di questo dispositivo diventano uguali al file. Quello che non è nel file viene tolto.</span></div></label>
+        <label class="modo"><input type="radio" name="modo" value="aggiungi">
+          <div><b>Aggiungi solo le voci mancanti</b><span>Non tocca quello che esiste già qui, aggiunge solo ciò che manca.</span></div></label>
+      </div>
+      <div class="az">
+        <button class="btn blu" id="applica" type="button">Applica backup</button>
+        <button class="btn chiaro" id="annulla" type="button">Annulla</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. cosa c'è salvato (in fondo) -->
+  <section class="card" aria-labelledby="t-salvato">
+    <h2 id="t-salvato"><span class="num">3</span> Cosa c'è salvato qui</h2>
+    <div class="stat" id="stat"></div>
+    <ul class="lista" id="locale"></ul>
+    <div class="az">
+      <button class="btn rosso" id="azzera" type="button">Azzera i dati</button>
+    </div>
+    <div class="msg" id="msg-azzera" role="status"></div>
+  </section>
+
+  <dialog id="conferma" aria-labelledby="c-titolo" aria-describedby="c-testo">
+    <h3 id="c-titolo">Azzerare tutti i dati?</h3>
+    <p id="c-testo"></p>
+    <div class="az">
+      <button class="btn rosso" id="c-si" type="button">Sì, cancella</button>
+      <button class="btn chiaro" id="c-no" type="button">Annulla</button>
+    </div>
+  </dialog>
+
+  <footer>I dati restano sul tuo dispositivo: questa pagina non invia nulla a nessun server.</footer>
+</main>
+
+<script>
+(function () {
+  var PREFISSO = 'ginestra-';
+  var MAX_FILE = 5 * 1024 * 1024;
+  var NOMI = {
+    'ginestra-gioco': 'Progressi di gioco (XP, serie, gemme, cuori, corone)',
+    'ginestra-esami': 'Record degli esami',
+    'ginestra-esame-ultimo': 'Ultimo esame svolto',
+    'ginestra-sblocca-tutto': 'Sblocco di tutti i nodi',
+    'ginestra-filtri': 'Filtri scelti',
+    'ginestra-tema': 'Tema chiaro / scuro',
+    'ginestra-suoni': 'Suoni attivi',
+    'ginestra-anteprima-tema': 'Tema della pagina di anteprima'
+  };
+  var root = document.documentElement;
+  var $ = function (id) { return document.getElementById(id); };
+  var pendente = null; /* dati del file in attesa di essere applicati */
+
+  /* ---------- localStorage sicuro ---------- */
+  function leggiTutto() {
+    var out = {};
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(PREFISSO) === 0) out[k] = localStorage.getItem(k);
+      }
+    } catch (e) {}
+    return out;
+  }
+  function nomeDi(k) {
+    if (NOMI[k]) return NOMI[k];
+    if (k.indexOf('ginestra-giri-') === 0) return 'Giri di domande (per foglio)';
+    return 'Altro dato di Ginestra';
+  }
+  function peso(s) {
+    var n = new Blob([s]).size;
+    return n < 1024 ? n + ' B' : (n / 1024).toFixed(1).replace('.', ',') + ' KB';
+  }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function pill(txt) { return el('span', 'pill', txt); }
+  function mostra(id, tipo, testo) { var m = $(id); m.className = 'msg mostra ' + tipo; m.textContent = testo; }
+  function nascondi(id) { var m = $(id); m.className = 'msg'; m.textContent = ''; }
+
+  function riga(k, valore, tag) {
+    var li = el('li');
+    var sx = el('div');
+    var n = el('span', 'nome', nomeDi(k));
+    if (tag) n.appendChild(el('span', 'tag ' + tag[0], tag[1]));
+    sx.appendChild(n);
+    sx.appendChild(el('span', 'chiave', k));
+    li.appendChild(sx);
+    li.appendChild(el('span', 'peso', valore == null ? '' : peso(valore)));
+    return li;
+  }
+
+  /* ---------- 1. riepilogo locale ---------- */
+  function aggiornaLocale() {
+    var d = leggiTutto(), chiavi = Object.keys(d).sort(), tot = 0;
+    chiavi.forEach(function (k) { tot += new Blob([d[k]]).size; });
+    var stat = $('stat'); stat.textContent = '';
+    stat.appendChild(pill(chiavi.length + (chiavi.length === 1 ? ' voce' : ' voci')));
+    stat.appendChild(pill((tot / 1024).toFixed(1).replace('.', ',') + ' KB'));
+    var ul = $('locale'); ul.textContent = '';
+    if (!chiavi.length) { var li = el('li', 'vuoto', 'Nessun dato salvato su questo dispositivo.'); ul.appendChild(li); }
+    chiavi.forEach(function (k) { ul.appendChild(riga(k, d[k])); });
+    $('scarica').disabled = !chiavi.length;
+  }
+
+  /* ---------- 2. scarica ---------- */
+  function dataOggi() { var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  $('scarica').addEventListener('click', function () {
+    var d = leggiTutto(), n = Object.keys(d).length;
+    if (!n) return;
+    var pacchetto = { app: 'ginestra', formato: 1, creato: new Date().toISOString(), origine: location.origin, dati: d };
+    var blob = new Blob([JSON.stringify(pacchetto, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'ginestra-backup-' + dataOggi() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    mostra('msg-scarica', 'ok', 'Backup scaricato (' + n + (n === 1 ? ' voce' : ' voci') + ').');
+  });
+
+  /* ---------- 3. carica ---------- */
+  function validazione(testo) {
+    var o;
+    try { o = JSON.parse(testo); } catch (e) { return { errore: 'Il file non è un JSON valido.' }; }
+    if (!o || typeof o !== 'object' || o.app !== 'ginestra' || !o.dati || typeof o.dati !== 'object' || Array.isArray(o.dati))
+      return { errore: 'Questo non sembra un backup di Ginestra.' };
+    if (typeof o.formato === 'number' && o.formato > 1) return { errore: 'Il backup è di una versione più recente di questa pagina.' };
+    var dati = {}, scartate = 0;
+    Object.keys(o.dati).forEach(function (k) {
+      if (k.indexOf(PREFISSO) === 0 && typeof o.dati[k] === 'string') dati[k] = o.dati[k]; else scartate++;
+    });
+    if (!Object.keys(dati).length) return { errore: 'Il backup non contiene dati di Ginestra.' };
+    return { dati: dati, scartate: scartate, creato: o.creato };
+  }
+  function modo() { return document.querySelector('input[name="modo"]:checked').value; }
+
+  function disegnaAnteprima() {
+    if (!pendente) return;
+    var loc = leggiTutto(), fd = pendente.dati, m = modo();
+    var ul = $('lista-file'); ul.textContent = '';
+    var nuovi = 0, cambiano = 0, uguali = 0, via = 0;
+    Object.keys(fd).sort().forEach(function (k) {
+      var t;
+      if (!(k in loc)) { t = ['nuovo', 'nuovo']; nuovi++; }
+      else if (loc[k] === fd[k]) { t = ['uguale', 'uguale']; uguali++; }
+      else if (m === 'aggiungi') { t = ['uguale', 'resta com’è']; uguali++; }
+      else { t = ['cambia', 'sostituito']; cambiano++; }
+      ul.appendChild(riga(k, fd[k], t));
+    });
+    if (m === 'sostituisci') {
+      Object.keys(loc).sort().forEach(function (k) {
+        if (!(k in fd)) { ul.appendChild(riga(k, loc[k], ['via', 'tolto'])); via++; }
+      });
+    }
+    var st = $('stat-file'); st.textContent = '';
+    if (pendente.creato) { var dt = new Date(pendente.creato); if (!isNaN(dt)) st.appendChild(pill('Creato il ' + dt.toLocaleDateString('it-IT') + ' alle ' + dt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }))); }
+    st.appendChild(pill(nuovi + ' nuove'));
+    st.appendChild(pill(cambiano + ' sostituite'));
+    st.appendChild(pill(uguali + ' invariate'));
+    if (via) st.appendChild(pill(via + ' tolte'));
+    if (pendente.scartate) st.appendChild(pill(pendente.scartate + ' ignorate'));
+  }
+
+  function proponi(testo) {
+    var v = validazione(testo);
+    if (v.errore) { mostra('msg-carica', 'no', v.errore); return; }
+    pendente = v; disegnaAnteprima(); $('anteprima').hidden = false;
+    $('anteprima').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  function leggiFile(f) {
+    nascondi('msg-carica'); $('anteprima').hidden = true; pendente = null;
+    if (!f) return;
+    if (f.size > MAX_FILE) { mostra('msg-carica', 'no', 'Il file è troppo grande per essere un backup di Ginestra.'); return; }
+    var r = new FileReader();
+    r.onload = function () { proponi(String(r.result)); };
+    r.onerror = function () { mostra('msg-carica', 'no', 'Non riesco a leggere il file.'); };
+    r.readAsText(f);
+  }
+
+  /* ---------- backup nella cartella backup_data ----------
+     Un sito statico non può elencare una cartella: uso backup_data/elenco.json (aggiornato da
+     sync-backup.js). Se manca, provo a leggere l'indice della cartella (funziona col server locale). */
+  var CARTELLA = '../backup_data/';
+  function nomiDaElenco() {
+    return fetch(CARTELLA + 'elenco.json', { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('no elenco');
+      return r.json();
+    }).then(function (a) { if (!Array.isArray(a)) throw new Error('formato'); return a; });
+  }
+  function nomiDaIndice() {
+    return fetch(CARTELLA, { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('no indice');
+      return r.text();
+    }).then(function (h) {
+      var out = [], re = /href="([^"?#]+\.json)"/gi, m;
+      while ((m = re.exec(h))) { var n = decodeURIComponent(m[1]).split('/').pop(); if (n !== 'elenco.json') out.push(n); }
+      return out;
+    });
+  }
+  function caricaCartella() {
+    var sel = $('sel-cartella'), btn = $('usa-cartella'), nota = $('nota-cartella');
+    nomiDaElenco().catch(nomiDaIndice).then(function (nomi) {
+      nomi = nomi.filter(function (n) { return typeof n === 'string' && /^[^\/\\]+\.json$/i.test(n) && n !== 'elenco.json'; }).sort().reverse();
+      sel.textContent = '';
+      if (!nomi.length) { sel.appendChild(new Option('Nessun backup nella cartella', '')); nota.textContent = 'Metti i file .json in backup_data e aggiorna l’elenco con node sync-backup.js.'; return; }
+      nomi.forEach(function (n) { sel.appendChild(new Option(n, n)); });
+      sel.disabled = false; btn.disabled = false; nota.textContent = nomi.length + (nomi.length === 1 ? ' backup trovato.' : ' backup trovati.') + ' I più recenti sono in alto.';
+    }).catch(function () {
+      sel.textContent = ''; sel.appendChild(new Option('Cartella non raggiungibile', ''));
+      nota.textContent = 'Non riesco a leggere backup_data (aprendo la pagina come file locale il browser lo impedisce). Puoi comunque caricare un file qui sotto.';
+    });
+  }
+  $('usa-cartella').addEventListener('click', function () {
+    var nome = $('sel-cartella').value; if (!nome) return;
+    nascondi('msg-carica'); $('anteprima').hidden = true; pendente = null;
+    fetch(CARTELLA + encodeURIComponent(nome), { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.text();
+    }).then(function (txt) {
+      if (txt.length > MAX_FILE) { mostra('msg-carica', 'no', 'Il file è troppo grande per essere un backup di Ginestra.'); return; }
+      proponi(txt);
+    }).catch(function () { mostra('msg-carica', 'no', 'Non riesco a leggere ' + nome + '.'); });
+  });
+  $('file').addEventListener('change', function () { leggiFile(this.files[0]); this.value = ''; });
+  var drop = $('drop');
+  ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('sopra'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('sopra'); }); });
+  drop.addEventListener('drop', function (e) { leggiFile(e.dataTransfer && e.dataTransfer.files[0]); });
+  [].forEach.call(document.querySelectorAll('input[name="modo"]'), function (r) { r.addEventListener('change', disegnaAnteprima); });
+
+  $('annulla').addEventListener('click', function () { pendente = null; $('anteprima').hidden = true; nascondi('msg-carica'); });
+  $('applica').addEventListener('click', function () {
+    if (!pendente) return;
+    var fd = pendente.dati, loc = leggiTutto(), m = modo(), scritte = 0, tolte = 0;
+    try {
+      if (m === 'sostituisci') Object.keys(loc).forEach(function (k) { if (!(k in fd)) { localStorage.removeItem(k); tolte++; } });
+      Object.keys(fd).forEach(function (k) {
+        if (m === 'aggiungi' && k in loc) return;
+        localStorage.setItem(k, fd[k]); scritte++;
+      });
+    } catch (e) {
+      mostra('msg-carica', 'no', 'Non sono riuscito a salvare tutto (spazio pieno o archivio bloccato dal browser). Alcuni dati potrebbero non essere stati applicati.');
+      aggiornaLocale(); return;
+    }
+    pendente = null; $('anteprima').hidden = true;
+    mostra('msg-carica', 'ok', 'Fatto: ' + scritte + (scritte === 1 ? ' voce scritta' : ' voci scritte') + (tolte ? ', ' + tolte + ' tolte' : '') + '. Apri l’app per ritrovare i tuoi progressi.');
+    aggiornaLocale(); applicaTema();
+  });
+
+  /* ---------- azzera, con popup di conferma ---------- */
+  var dlg = $('conferma');
+  function chiudi() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+  $('azzera').addEventListener('click', function () {
+    var n = Object.keys(leggiTutto()).length;
+    if (!n) { mostra('msg-azzera', 'no', 'Non c’è niente da azzerare.'); return; }
+    nascondi('msg-azzera');
+    $('c-testo').textContent = 'Stai per cancellare ' + n + (n === 1 ? ' voce' : ' voci') + ' di Ginestra da questo dispositivo. Non si può annullare: se non l’hai già fatto, scarica prima un backup.';
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    $('c-no').focus();
+  });
+  $('c-no').addEventListener('click', chiudi);
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) chiudi(); });
+  $('c-si').addEventListener('click', function () {
+    Object.keys(leggiTutto()).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    chiudi(); aggiornaLocale(); applicaTema();
+    mostra('msg-azzera', 'ok', 'Dati cancellati da questo dispositivo.');
+  });
+
+  /* ---------- tema ---------- */
+  function scuro() { return root.classList.contains('dark'); }
+  function aggiornaMeta() { var m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = scuro() ? '#131f24' : '#ffffff'; }
+  function applicaTema() { var s = false; try { s = localStorage.getItem('ginestra-tema') === 'scuro'; } catch (e) {} root.classList.toggle('dark', s); aggiornaMeta(); }
+  $('tema').addEventListener('click', function () {
+    root.classList.toggle('dark');
+    try { localStorage.setItem('ginestra-tema', scuro() ? 'scuro' : 'chiaro'); } catch (e) {}
+    aggiornaMeta(); aggiornaLocale();
+  });
+  aggiornaMeta();
+
+  aggiornaLocale();
+  caricaCartella();
+})();
+</script>
+</body>
+</html>
