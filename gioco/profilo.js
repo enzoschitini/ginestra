@@ -5,7 +5,7 @@
   var GIORNI = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
   var COL_LEGA = ['bronzo', 'argento', 'oro', 'blu', 'rosso', 'viola'];
   var ICONA_ALT = { xp: 'fulmine', libro: 'spunta', lega: 'trofeo', calendario: 'timer' };
-  var COL_AV = ['#1cb0f6', '#58cc02', '#ff9600', '#ce82ff', '#ff4b4b', '#00cd9c', '#ffc800', '#ff86d0'];
+  var COL_AV = ['#3a5a8c', '#2d6a4f', '#d9692b', '#8a63b8', '#c8442f', '#00cd9c', '#f5b800', '#ff86d0'];
   var meseVisto = null; // {a, m}
 
   function gi(nome, size, arg) {

@@ -20,20 +20,20 @@
     'body:not(.mode-ex) .g-hud{display:flex}' +
     '.g-hud .g-pill{padding:4px 6px;min-width:0}' +
     '.g-hud .g-pill b{font-weight:900}' +
-    '.g-hud-t{font-size:12px;font-weight:800;color:var(--g-testo-2,#777);margin-left:2px}' +
-    '.g-hud .g-pill.g-spenta{color:var(--g-testo-3,#afafaf)}' +
+    '.g-hud-t{font-size:12px;font-weight:800;color:var(--g-testo-2,#5a6558);margin-left:2px}' +
+    '.g-hud .g-pill.g-spenta{color:var(--g-testo-3,#9a9c8c)}' +
     '.g-tabs{display:flex;gap:4px}' +
     '.tabbar .tabb.g-tab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit}' +
     '.tabbar .tabb.g-tab span{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}' +
     '.tabbar .tabb.g-tab svg{display:block;width:28px;height:28px}' +
     '.tabbar .tabb.g-tab[disabled]{opacity:.4;cursor:not-allowed}' +
     '.g-modale-ov{position:absolute;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6)}' +
-    '.g-modale{width:100%;box-sizing:border-box;background:var(--g-bg,#fff);color:var(--g-testo,#3c3c3c);border-radius:26px 26px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;font-family:var(--g-font,inherit);animation:g-pop .4s both}' +
+    '.g-modale{width:100%;box-sizing:border-box;background:var(--g-bg,#fff);color:var(--g-testo,#1d2b24);border-radius:26px 26px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;font-family:var(--g-font,inherit);animation:g-pop .4s both}' +
     '.g-modale h2{margin:0;font:900 22px/1.2 var(--g-font,inherit)}' +
-    '.g-modale p{margin:0;font:800 15px/1.35 var(--g-font,inherit);color:var(--g-testo-2,#777)}' +
+    '.g-modale p{margin:0;font:800 15px/1.35 var(--g-font,inherit);color:var(--g-testo-2,#5a6558)}' +
     '.g-modale .g-btn{width:100%}' +
-    '.g-hud-gem{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:#fff;color:#1899d6}' +
-    '.g-modale-x{background:none;border:0;cursor:pointer;font:900 14px var(--g-font,inherit);letter-spacing:.8px;text-transform:uppercase;color:var(--g-blu-ombra,#1899d6);padding:10px}' +
+    '.g-hud-gem{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:#fffcf4;color:#2b4570}' +
+    '.g-modale-x{background:none;border:0;cursor:pointer;font:900 14px var(--g-font,inherit);letter-spacing:.8px;text-transform:uppercase;color:var(--g-blu-ombra,#2b4570);padding:10px}' +
     '.tabbar .tabb.g-tab{padding-left:2px;padding-right:2px;letter-spacing:.2px}' +
     '@media (max-width:420px){.tabbar{gap:2px;padding-left:8px;padding-right:8px}.tabbar .tabb.g-tab span{font-size:11px;letter-spacing:0;text-transform:none}}' +
     '@media (max-width:380px){.g-hud{margin:4px 8px 8px;padding:6px 6px}.g-hud .g-pill{font-size:14px;gap:4px}}' +

@@ -67,7 +67,7 @@
   function coriandoli(n) {
     if (ridotto()) return;
     if (confettiEl && confettiEl.parentNode) confettiEl.parentNode.removeChild(confettiEl);
-    var col = ['#58cc02', '#1cb0f6', '#ff9600', '#ffc800', '#ff4b4b', '#ce82ff'], c = document.createElement('div'), i, p;
+    var col = ['#2d6a4f', '#3a5a8c', '#d9692b', '#f5b800', '#c8442f', '#8a63b8'], c = document.createElement('div'), i, p;
     c.className = 'f-confetti'; c.setAttribute('aria-hidden', 'true');
     for (i = 0; i < (n || 36); i++) {
       p = document.createElement('i');

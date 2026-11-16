@@ -1,12 +1,12 @@
 # Ginestra "gioco" — contratto condiviso
 
-Obiettivo: far somigliare Ginestra a Duolingo / a un videogioco. Riferimenti: le foto in `new_release/` e i mockup in `layout/html/` (04-quest-completion, 05-streak-progress, 06-path-story, 08-lesson-complete, 12-unit-guidebook) con le icone in `layout/assets/`.
+Obiettivo: un videogioco di studio con identita propria ("erbario": carta, inchiostro, giallo ginestra), che non assomigli ad altre app. Riferimenti: le foto in `new_release/` e i mockup in `layout/html/` (04-quest-completion, 05-streak-progress, 06-path-story, 08-lesson-complete, 12-unit-guidebook) con le icone in `layout/assets/`.
 
 ## Regole generali
 - `index.html` contiene il motore (esercizi `EX`, `load`, `showQ`, `finish`, `showResult`, `showHome`, `renderTabs`, `ICON`, `h()`, `$()`, `ico()`, `mascot()`, `sfx()`, `speak()`, `hearts`). **Non modificarlo** salvo che tu sia l'agente `gioco-integratore`.
 - Ogni agente scrive SOLO i propri file dentro `gioco/`. Gli script si caricano dopo lo script inline di `index.html` (fondo del body) e ridefiniscono le funzioni globali con il pattern già usato nell'app: `var showResult_engine = showResult; showResult = function () {...}`.
 - Vanilla JS (ES5 stile `var`, come il resto dell'app), nessuna dipendenza, nessun build. Si apre con doppio click e funziona su GitHub Pages.
-- UI in italiano. Stile Duolingo: verde `#58cc02` (ombra `#46a302`), blu `#1cb0f6` (`#1899d6`), arancio `#ff9600`, giallo `#ffc800`, rosso `#ff4b4b`, font Nunito 800/900, pulsanti con "bordo basso" 4px, angoli grandi. Deve funzionare in tema chiaro e scuro (`html.dark`) e a 360px di larghezza.
+- UI in italiano. Stile erbario: usare le variabili `--g-*` di `gioco.css` (bosco `#2d6a4f`, indaco, ruggine, giallo ginestra `#f5b800`, terracotta, carta `#f7f1e3`), font Fraunces per i titoli e Hanken Grotesk per il testo, pulsanti piatti con contorno sottile (niente rilievo 3D), angoli piccoli. Deve funzionare in tema chiaro e scuro (`html.dark`) e a 360px di larghezza.
 - Non copiare gli asset di Duolingo (gufo, ecc.): usa la mascotte di Ginestra (`mascot()`), le icone in `ICON`/`layout/assets` e SVG propri.
 - Accessibilità: bottoni veri, `aria-label`, `prefers-reduced-motion` rispettato per le animazioni.
 - Salvataggio: solo `localStorage`, sempre in try/catch. Nessun backend.

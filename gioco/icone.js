@@ -1,89 +1,106 @@
 /* Ginestra gioco - icone. window.GI.<nome>(size) -> stringa HTML.
-   Le icone di base usano le immagini di layout/assets/ (<img>); quelle senza immagine (corona, medaglia, stella,
-   lucchetto, scrigno aperto) sono SVG propri. `size` e' l'altezza in px; la larghezza segue le proporzioni. */
+   Set proprio, tutto SVG: forme piatte, colore pieno e contorno d'inchiostro (variabile --g-contorno).
+   Tema botanico: la serie e' un fiore di ginestra, le gemme sono gemme di pianta, la "corona" e' una corolla.
+   I nomi (fiamma, gemma, cuore, ...) restano quelli di prima: cambia solo il disegno. `size` e' l'altezza in px. */
 (function () {
-  var uid = 0;
-  function gid() { uid++; return 'gi' + uid; }
-  function svg(size, vb, inner, defs, label) {
+  var C = 'var(--g-contorno,#1d2b24)';
+  var SPENTO = 'filter:grayscale(1);opacity:.45;';
+  function svg(size, inner, label, stile) {
     var s = size || 24;
-    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + s + '" height="' + s + '" viewBox="' + vb + '" role="img" aria-label="' + (label || '') + '" focusable="false">' +
-      (defs ? '<defs>' + defs + '</defs>' : '') + inner + '</svg>';
+    return '<svg class="g-ico" xmlns="http://www.w3.org/2000/svg" width="' + s + '" height="' + s + '" viewBox="0 0 32 32" role="img" aria-label="' + (label || '') + '" focusable="false" ' +
+      'style="vertical-align:middle;overflow:visible;' + (stile || '') + '" fill="none" stroke="' + C + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
   }
-  function grad(id, a, b) {
-    return '<linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient>';
+  var GI = {};
+
+  /* serie: fiore di ginestra (cinque petali attorno a un cuore arancio) */
+  function fiore(petali, centro) {
+    var p = '';
+    for (var i = 0; i < 5; i++) p += '<ellipse cx="16" cy="8.2" rx="4.6" ry="6.6" fill="' + petali + '" transform="rotate(' + (i * 72) + ' 16 16)"/>';
+    return p + '<circle cx="16" cy="16" r="3.6" fill="' + centro + '"/>';
   }
+  GI.fiamma = function (size) { return svg(size, fiore('#f5b800', '#d9692b'), 'Serie'); };
+  GI.fiammaSpenta = function (size) { return svg(size, fiore('#f5b800', '#d9692b'), 'Serie spenta', SPENTO); };
+
+  /* gemma: gemma di pianta (germoglio con due foglioline) */
+  GI.gemma = function (size) {
+    return svg(size, '<path d="M16 29V15" /><path d="M16 17C9 17 5 12 5 6c7 0 11 4 11 11z" fill="#5aa57a"/><path d="M16 14c0-6 4-10 11-10 0 6-4 10-11 10z" fill="#7fcf9f"/>', 'Gemma');
+  };
+
+  GI.cuore = function (size) {
+    return svg(size, '<path d="M16 27C6 20 3.5 15 3.5 10.5A6.5 6.5 0 0 1 16 8a6.5 6.5 0 0 1 12.5 2.5C28.5 15 26 20 16 27z" fill="#c8442f"/><path d="M8.5 10.5a3 3 0 0 1 3-3" stroke="#fffcf4" stroke-width="1.6"/>', 'Cuore');
+  };
+  GI.cuoreSpezzato = function (size) {
+    return svg(size, '<path d="M16 27C6 20 3.5 15 3.5 10.5A6.5 6.5 0 0 1 16 8a6.5 6.5 0 0 1 12.5 2.5C28.5 15 26 20 16 27z" fill="#9a9c8c"/><path d="M16 8l-3 6 4 3-3 6"/>', 'Cuore perso', 'opacity:.7;');
+  };
+
+  /* XP: scintilla a quattro punte */
+  GI.fulmine = function (size) {
+    return svg(size, '<path d="M16 3c1 7 3 10 13 13-10 3-12 6-13 13-1-7-3-10-13-13C13 13 15 10 16 3z" fill="#f5b800"/>', 'XP');
+  };
+
+  GI.scrigno = function (size) {
+    return svg(size, '<rect x="4" y="13" width="24" height="15" rx="2.5" fill="#b0501b"/><path d="M4 15V12a3 3 0 0 1 3-3h18a3 3 0 0 1 3 3v3z" fill="#d9692b"/><path d="M4 18h24"/><rect x="13" y="16" width="6" height="7" rx="1.5" fill="#f5b800"/>', 'Cassetta');
+  };
+  GI.scrignoAperto = function (size) {
+    return svg(size, '<rect x="4" y="15" width="24" height="13" rx="2.5" fill="#b0501b"/><path d="M5 15l2-9a2 2 0 0 1 2-1.5h14a2 2 0 0 1 2 1.5l2 9z" fill="#d9692b"/><circle cx="12" cy="12" r="2.2" fill="#f5b800"/><circle cx="19" cy="10.5" r="2.4" fill="#7fcf9f"/><circle cx="24" cy="13" r="1.8" fill="#f5b800"/><rect x="13" y="19" width="6" height="6" rx="1.5" fill="#f5b800"/>', 'Cassetta aperta');
+  };
+
+  /* lega: coppa a calice */
+  GI.trofeo = function (size) {
+    return svg(size, '<path d="M9 4h14v9a7 7 0 0 1-14 0z" fill="#f5b800"/><path d="M9 7H4c0 5 2 7 5 7M23 7h5c0 5-2 7-5 7"/><path d="M16 20v5"/><rect x="10" y="25" width="12" height="3.5" rx="1.5" fill="#c99400"/>', 'Coppa');
+  };
+  GI.bersaglio = function (size) {
+    return svg(size, '<circle cx="16" cy="16" r="12.5" fill="#fffcf4"/><circle cx="16" cy="16" r="8" fill="#c8442f"/><circle cx="16" cy="16" r="3.6" fill="#fffcf4"/><path d="M16 16L27 5"/>', 'Obiettivo');
+  };
+  GI.timer = function (size) {
+    return svg(size, '<circle cx="16" cy="17" r="11" fill="#fffcf4"/><path d="M16 10v7l4.5 3M12 3.5h8"/>', 'Timer');
+  };
+  GI.campana = function (size) {
+    return svg(size, '<path d="M7 23V15a9 9 0 0 1 18 0v8l2.5 2.5h-23z" fill="#f5b800"/><path d="M13 28.5a3 3 0 0 0 6 0"/>', 'Notifiche');
+  };
+  GI.spunta = function (size) {
+    return svg(size, '<circle cx="16" cy="16" r="12.5" fill="#7fcf9f"/><path d="M9.5 16.5l4.5 4.5 8.5-9.5" stroke-width="2.4"/>', 'Fatto');
+  };
+  GI.casa = function (size) {
+    return svg(size, '<path d="M4.5 15L16 4.5 27.5 15"/><path d="M7 13v14h18V13" fill="#fdf0c0"/><rect x="13" y="18" width="6" height="9" rx="1" fill="#d9692b"/>', 'Sentiero');
+  };
+  /* ripasso: libro aperto */
+  GI.pesi = function (size) {
+    return svg(size, '<path d="M16 8C12 5.5 7 5.5 3.5 6.5V25c3.5-1 8.5-1 12.5 1.5z" fill="#fdf0c0"/><path d="M16 8c4-2.5 9-2.5 12.5-1.5V25c-3.5-1-8.5-1-12.5 1.5z" fill="#fffcf4"/><path d="M16 8v18.5M7 11.5c2-.4 4-.2 6 .8M19 12.3c2-1 4-1.2 6-.8"/>', 'Ripasso');
+  };
+  GI.altro = function (size) {
+    return svg(size, '<circle cx="6" cy="16" r="2" fill="' + C + '"/><circle cx="16" cy="16" r="2" fill="' + C + '"/><circle cx="26" cy="16" r="2" fill="' + C + '"/>', 'Altro');
+  };
+
+  /* logo: resta quello di Ginestra */
   var BASE = (function () {
     try { var s = document.currentScript && document.currentScript.src; if (s) return s.replace(/[^\/]*$/, '') + '../layout/assets/'; } catch (e) {}
     return 'layout/assets/';
   })();
-  function img(file, size, label, stile) {
+  GI.logo = function (size) {
     var s = size || 24;
-    return '<img class="g-ico" src="' + BASE + encodeURIComponent(file).replace(/%2F/g, '/') + '" alt="' + (label || '') + '" height="' + s + '" draggable="false" ' +
-      'style="height:' + s + 'px;width:auto;vertical-align:middle;' + (stile || '') + '">';
-  }
-  var SPENTO = 'filter:grayscale(1) brightness(1.15);opacity:.55;';
-  var GI = {};
-
-  GI.fiamma = function (size) { return img('Icon=Streak, Size=Medium.png', size, 'Fiamma'); };
-  GI.fiammaSpenta = function (size) { return img('Icon=Streak, Size=Medium.png', size, 'Fiamma spenta', SPENTO); };
-  GI.gemma = function (size) { return img('Icon=Gem, Size=Small.png', size, 'Gemma'); };
-  GI.cuore = function (size) { return img('Icon=Heart, Size=Small.png', size, 'Cuore'); };
-  GI.cuoreSpezzato = function (size) { return img('Icon=Heart, Size=Small.png', size, 'Cuore perso', SPENTO); };
-  GI.fulmine = function (size) { return img('Icon=Lightning, Size=Small.png', size, 'XP'); };
-  GI.scrigno = function (size) { return img('Icon=Shiny Gold Chest, Size=Small.png', size, 'Scrigno'); };
-  GI.trofeo = function (size) { return img('Icon=Trophy, Size=Small.png', size, 'Trofeo'); };
-  GI.bersaglio = function (size) { return img('Icon=Target, Size=Medium.png', size, 'Obiettivo'); };
-  GI.timer = function (size) { return img('Icon=Timer, Size=Medium.png', size, 'Timer'); };
-  GI.campana = function (size) { return img('Icon=Bell, Size=Small.png', size, 'Notifiche'); };
-  GI.spunta = function (size) { return img('Icon=Check, Size=Small.png', size, 'Fatto'); };
-  GI.casa = function (size) { return img('Icon=House, Size=Small.png', size, 'Home'); };
-  GI.pesi = function (size) { return img('Icon=Weights, Size=Small.png', size, 'Ripasso'); };
-  GI.altro = function (size) { return img('Icon=More, Size=Small.png', size, 'Altro'); };
-  GI.logo = function (size) { return img('logo-g.png', size, 'Ginestra'); };
-  /* nodi del percorso (71x65): completato, oro (corrente, con stella), non disponibile */
-  GI.nodoCompleto = function (size) { return img('Property 1=Complete.png', size || 65, 'Completato'); };
-  GI.nodoOro = function (size) { return img('Property 1=Gold.png', size || 65, 'Disponibile'); };
-  GI.nodoBloccato = function (size) { return img('Property 1=Unavailable.png', size || 65, 'Bloccato'); };
-  /* percorsi dei file, per chi preferisce usarli in CSS o in un <img> proprio */
+    return '<img class="g-ico" src="' + BASE + 'logo-g.png" alt="Ginestra" height="' + s + '" draggable="false" style="height:' + s + 'px;width:auto;vertical-align:middle">';
+  };
   GI.url = function (file) { return BASE + encodeURIComponent(file); };
 
-  GI.scrignoAperto = function (size) {
-    var a = gid(), b = gid(), c = gid();
-    return svg(size, '0 0 64 64',
-      '<path d="M8 22L14 4h36l6 18z" fill="url(#' + a + ')"/>' +
-      '<rect x="6" y="26" width="52" height="30" rx="5" fill="url(#' + b + ')"/>' +
-      '<rect x="10" y="22" width="44" height="12" rx="3" fill="url(#' + c + ')"/>' +
-      '<circle cx="22" cy="24" r="4" fill="#fff3a0"/><circle cx="34" cy="21" r="4.5" fill="#ffc800"/><circle cx="45" cy="25" r="3.5" fill="#fff3a0"/>' +
-      '<path d="M32 4v-2M20 8l-3-3M44 8l3-3" stroke="#ffc800" stroke-width="3" stroke-linecap="round"/>' +
-      '<rect x="26" y="38" width="12" height="12" rx="3" fill="#ffc800" stroke="#c99400" stroke-width="2"/>',
-      grad(a, '#d98a3a', '#a85d16') + grad(b, '#b8691f', '#82430c') + grad(c, '#ffe45c', '#ff9600'), 'Scrigno aperto');
-  };
-  GI.corona = function (size) { return img('Icon=Crown.png', size, 'Corona'); };
+  /* nodi di un percorso (compat): cerchio con spunta, fiore, lucchetto */
+  GI.nodoCompleto = function (size) { return GI.spunta(size || 40); };
+  GI.nodoOro = function (size) { return GI.corona(size || 40); };
+  GI.nodoBloccato = function (size) { return GI.lucchetto(size || 40); };
+
+  /* corona = corolla: un fiore pieno a cinque petali */
+  GI.corona = function (size) { return svg(size, fiore('#f5b800', '#fffcf4'), 'Corolla'); };
   GI.lucchetto = function (size) {
-    var a = gid();
-    return svg(size, '0 0 64 64',
-      '<path d="M20 28V20a12 12 0 0 1 24 0v8" fill="none" stroke="#9aa5ac" stroke-width="7" stroke-linecap="round"/>' +
-      '<rect x="10" y="28" width="44" height="30" rx="7" fill="url(#' + a + ')"/>' +
-      '<circle cx="32" cy="40" r="4.5" fill="#6f7b83"/><rect x="30" y="42" width="4" height="9" rx="2" fill="#6f7b83"/>',
-      grad(a, '#c9d1d6', '#98a3aa'), 'Bloccato');
+    return svg(size, '<path d="M10 14V10a6 6 0 0 1 12 0v4"/><rect x="6.5" y="14" width="19" height="14" rx="3" fill="#cbbf9f"/><circle cx="16" cy="20.5" r="2" fill="' + C + '" stroke="none"/>', 'Bloccato');
   };
   GI.stella = function (size) {
-    var a = gid();
-    return svg(size, '0 0 64 64',
-      '<path d="M32 4l8.5 18.5 20 2.5-14.8 13.8L50 59 32 49 14 59l4.3-20.2L3.5 25l20-2.5z" fill="url(#' + a + ')" stroke="#e5a800" stroke-width="2" stroke-linejoin="round"/>' +
-      '<path d="M24 24l8-14" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>',
-      grad(a, '#ffe45c', '#ffb800'), 'Stella');
+    return svg(size, '<path d="M16 3.5l3.7 8 8.8 1-6.5 6 1.8 8.7L16 23l-7.8 4.2L10 18.5 3.5 12.5l8.8-1z" fill="#f5b800"/>', 'Stella');
   };
+  /* medaglia: rosetta (disco con petali di nastro) */
   GI.medaglia = function (size, colore) {
-    var cols = { bronzo: ['#e8a066', '#a8602a'], argento: ['#e4eaee', '#a3afb7'], oro: ['#ffe45c', '#ffa800'], blu: ['#7fe3ff', '#1478c4'], verde: ['#8be02a', '#3f9a00'], viola: ['#d79bff', '#8b3fd0'], rosso: ['#ff8a8a', '#d92e2e'] };
-    var c = cols[colore] || (/^#/.test(colore || '') ? [colore, colore] : cols.oro);
-    var a = gid();
-    return svg(size, '0 0 64 64',
-      '<path d="M18 2h12l6 22H24zM46 2H34l-6 22h12z" fill="#1cb0f6"/><path d="M24 2h6l4 14-3 8h-4z" fill="#1899d6"/>' +
-      '<circle cx="32" cy="40" r="20" fill="url(#' + a + ')" stroke="rgba(0,0,0,.18)" stroke-width="2"/>' +
-      '<circle cx="32" cy="40" r="13" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.5"/>' +
-      '<path d="M32 31l2.8 6 6.2.7-4.6 4.2 1.3 6.1L32 45l-5.7 3 1.3-6.1L23 37.7l6.2-.7z" fill="#fff" opacity=".85"/>',
-      grad(a, c[0], c[1]), 'Medaglia ' + (colore || 'oro'));
+    var cols = { bronzo: '#d9692b', argento: '#cbbf9f', oro: '#f5b800', blu: '#8fa9d6', verde: '#7fcf9f', viola: '#b99ad9', rosso: '#e08a78' };
+    var c = cols[colore] || (/^#/.test(colore || '') ? colore : cols.oro);
+    return svg(size, '<path d="M10 3h6l3 12h-6zM22 3h-6l-3 12h6z" fill="#3a5a8c"/><circle cx="16" cy="20" r="9" fill="' + c + '"/><circle cx="16" cy="20" r="5.2" stroke-width="1.4"/><path d="M16 16.4l1.2 2.5 2.7.3-2 1.8.6 2.7-2.5-1.4-2.5 1.4.6-2.7-2-1.8 2.7-.3z" fill="#fffcf4" stroke="none"/>', 'Medaglia ' + (colore || 'oro'));
   };
 
   window.GI = GI;

@@ -25,8 +25,8 @@
     ['cortellesi', '🎬'], ['toto', '🎩']
   ];
   var COPERTINE = [
-    ['#58cc02', '#46a302'], ['#1cb0f6', '#1899d6'], ['#ff9600', '#d97f00'], ['#ce82ff', '#a560d6'],
-    ['#ff4b4b', '#d93a3a'], ['#ffc800', '#d9a900'], ['#2bc4b0', '#1f9d8c'], ['#ff86d0', '#d965ae']
+    ['#2d6a4f', '#1f4d38'], ['#3a5a8c', '#2b4570'], ['#d9692b', '#b0501b'], ['#8a63b8', '#6b4a93'],
+    ['#c8442f', '#d93a3a'], ['#f5b800', '#c99400'], ['#2bc4b0', '#1f9d8c'], ['#ff86d0', '#d965ae']
   ];
 
   /* ---------- dati ---------- */
@@ -404,7 +404,7 @@
     vista('es-ris');
     aggiornaCima([xBtn(hub, 'Chiudi'), h('div', { class: 'es-tit' }, prima ? 'Esame consegnato' : 'Il tuo esame')]);
     var votoEl = h('span', { class: 'es-voto-n' }, anima ? '0' : String(e.voto));
-    var cerchio = html('<svg class="es-giro' + (anima ? '' : ' fatto') + '" viewBox="0 0 200 120" aria-hidden="true"><path d="M30 62C28 28 80 8 126 14C176 20 192 52 176 82C160 112 96 116 56 102C26 92 22 76 34 58" fill="none" stroke="#ff4b4b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>').firstChild;
+    var cerchio = html('<svg class="es-giro' + (anima ? '' : ' fatto') + '" viewBox="0 0 200 120" aria-hidden="true"><path d="M30 62C28 28 80 8 126 14C176 20 192 52 176 82C160 112 96 116 56 102C26 92 22 76 34 58" fill="none" stroke="#c8442f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>').firstChild;
     var p = prima && Ris.premi;
     var premi = p ? h('div', { class: 'es-premi' },
       p.serie ? premio(gi('fiamma', 22, '🔥'), 'Serie ' + p.serie) : null,

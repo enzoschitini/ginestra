@@ -48,8 +48,8 @@
 .pf-ob-t span { font: 800 13px/1.2 var(--g-font); color: var(--g-testo-2); }
 .pf-nota { margin: 12px 0 8px; }
 .pf-opz { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.pf-opt { min-height: 44px; padding: 8px 2px; border-radius: 14px; border: 2px solid var(--g-bordo); box-shadow: 0 3px 0 var(--g-bordo); background: var(--g-card); color: var(--g-testo-2); font: 900 14px/1 var(--g-font); cursor: pointer; }
-.pf-opt.on { border-color: var(--g-blu); box-shadow: 0 3px 0 var(--g-blu-ombra); background: rgba(28, 176, 246, .14); color: var(--g-blu); }
+.pf-opt { min-height: 44px; padding: 8px 2px; border-radius: 14px; border: 2px solid var(--g-bordo); box-shadow:none; background: var(--g-card); color: var(--g-testo-2); font: 900 14px/1 var(--g-font); cursor: pointer; }
+.pf-opt.on { border-color: var(--g-blu); box-shadow:none; background: rgba(28, 176, 246, .14); color: var(--g-blu); }
 
 /* traguardi */
 .pf-tr { display: flex; flex-direction: column; gap: 14px; }

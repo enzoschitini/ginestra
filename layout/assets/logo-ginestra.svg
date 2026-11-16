@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Ginestra">
+  <circle cx="64" cy="64" r="62" fill="#1f4d38"/>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#f5b800" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round" opacity=".7"/>
+  <path d="M64 118c0-22 0-34 0-48" stroke="#7fcf9f" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M64 98c-14 0-24-8-26-22 14-1 24 7 26 22z" fill="#5aa57a"/>
+  <path d="M64 88c12-1 22-8 25-21-13-2-23 6-25 21z" fill="#7fcf9f"/>
+  <g transform="translate(64 50)" stroke="#1f4d38" stroke-width="2.5" stroke-linejoin="round">
+    <ellipse cy="-17" rx="10.5" ry="15.5" fill="#f5b800"/>
+    <ellipse cy="-17" rx="10.5" ry="15.5" fill="#f5b800" transform="rotate(72)"/>
+    <ellipse cy="-17" rx="10.5" ry="15.5" fill="#f5b800" transform="rotate(144)"/>
+    <ellipse cy="-17" rx="10.5" ry="15.5" fill="#f5b800" transform="rotate(216)"/>
+    <ellipse cy="-17" rx="10.5" ry="15.5" fill="#f5b800" transform="rotate(288)"/>
+    <circle r="8.5" fill="#d9692b"/>
+  </g>
+</svg>

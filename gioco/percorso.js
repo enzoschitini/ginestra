@@ -1,12 +1,13 @@
-/* Ginestra gioco - Home a strada di nodi (stile Duolingo). Ridefinisce showHome().
-   Dipende da: index.html (EX, seenOf, load, mascot, h, $, setMode, setTop, renderTabs, cur, qi, ico), GS, GI. */
+/* Ginestra gioco - Home a "sentiero" (erbario). Ridefinisce showHome().
+   Ogni categoria e' una sezione con il suo stelo; ogni esercizio e' una scheda legata allo stelo da un marcatore
+   (spunta = fatto, fiore = da fare, lucchetto = bloccato). Toccando la scheda si apre il riquadro con "Inizia".
+   Dipende da: index.html (EX, seenOf, load, mascot, h, $, setMode, setTop, renderTabs, cur, qi), GS, GI. */
 (function () {
   var KEY_SBLOCCA = 'ginestra-sblocca-tutto';
-  var OGNI = 4;                       // uno scrigno ogni 4 nodi
-  var OFFS = [0, 46, 70, 46, 0, -46, -70, -46]; // zig-zag in px (onda)
-  var aperto = null;                  // popover aperto
+  var OGNI = 4;                       // una cassetta ogni 4 esercizi
+  var aperto = null;                  // riquadro aperto
   var tieniSheet = false;             // showHome richiamata dal foglio impostazioni: non chiuderlo
-  var ultimo = null;                 // ultimo esercizio avviato: la Home ci torna a scrollare
+  var ultimo = null;                  // ultimo esercizio avviato: la Home ci torna a scrollare
 
   function sbloccaTutto() { try { return localStorage.getItem(KEY_SBLOCCA) === '1'; } catch (e) { return false; } }
   function setSblocca(v) { try { localStorage.setItem(KEY_SBLOCCA, v ? '1' : '0'); } catch (e) {} }
@@ -14,29 +15,28 @@
   function stato() { var S = (window.GS && GS.state) || {}; return S; }
   function scrigni() { var S = stato(); if (!S.scrigni) S.scrigni = {}; return S.scrigni; }
   function salva() { try { GS.save(); } catch (e) {} }
+  /* ramo di ginestra disegnato a mano: decora l'intestazione del capitolo (colore dal capitolo) */
+  var RAMO = '<svg viewBox="0 0 150 90" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M2 80C40 74 78 52 146 8" stroke="var(--cap-ink)" stroke-width="2.4"/>' +
+    '<path d="M34 72c-2-12 4-21 14-25 3 10-3 20-14 25zM66 58c-1-12 5-20 15-23 2 10-4 19-15 23zM100 38c0-11 6-18 15-20 1 9-4 17-15 20z" fill="var(--cap)" stroke="var(--cap-ink)" stroke-width="1.6"/>' +
+    '<g stroke="var(--cap-ink)" stroke-width="1.4"><circle cx="52" cy="62" r="5" fill="#fffcf4"/><circle cx="86" cy="43" r="5.5" fill="#fffcf4"/><circle cx="122" cy="22" r="6" fill="#fffcf4"/><circle cx="140" cy="12" r="4" fill="#fffcf4"/></g></svg>';
   function chiudi() { if (aperto) { aperto.remove(); aperto = null; } }
 
-  function anello(pct, col) {
-    var r = 41, c = 2 * Math.PI * r;
-    return '<svg class="pc-anello" viewBox="0 0 92 92" aria-hidden="true"><circle cx="46" cy="46" r="' + r + '" class="pc-anello-bg"/>' +
-      '<circle cx="46" cy="46" r="' + r + '" class="pc-anello-fg" style="stroke:' + col + ';stroke-dasharray:' + (c * pct).toFixed(1) + ' ' + c.toFixed(1) + '" transform="rotate(-90 46 46)"/></svg>';
-  }
-
-  function corone(n) {
+  /* le corolle guadagnate (0-5) con le altre vuote, cosi' si vede quanto manca */
+  function corolle(n) {
     var S = stato(), k = (S.corone && S.corone[n]) || 0, s = '';
-    if (!k) return null;
-    for (var i = 0; i < k; i++) s += gi('corona', 12);
-    var d = h('div', { class: 'pc-corone', 'aria-label': k + (k === 1 ? ' corona' : ' corone') });
+    for (var i = 0; i < 5; i++) s += '<span class="pc-cor' + (i < k ? ' pc-cor-on' : '') + '">' + gi('corona', 14) + '</span>';
+    var d = h('span', { class: 'pc-corolle', 'aria-label': k + (k === 1 ? ' corolla' : ' corolle') + ' su 5' });
     d.innerHTML = s;
     return d;
   }
 
-  function popover(wrap, html, azione, tipo) {
+  function riquadro(wrap, html, azione, tipo) {
     chiudi();
     var p = h('div', { class: 'pc-pop pc-pop-' + tipo, role: 'dialog' });
     p.innerHTML = html;
     if (azione) {
-      var b = h('button', { class: 'g-btn g-btn-blocco ' + (tipo === 'ok' ? 'g-btn-verde' : 'g-btn-grigio'), type: 'button' }, azione.testo);
+      var b = h('button', { class: 'g-btn g-btn-blocco g-btn-verde', type: 'button' }, azione.testo);
       b.addEventListener('click', function (ev) { ev.stopPropagation(); chiudi(); azione.fn(); });
       p.appendChild(b);
     }
@@ -63,59 +63,76 @@
     setTimeout(function () { el.classList.remove('g-anim-shake'); }, 500);
   }
 
-  function nodo(e, info, off) {
-    var wrap = h('div', { class: 'pc-nodo-wrap', 'data-ex': String(e.n), style: 'transform:translateX(' + off + 'px);--off:' + off + 'px' });
-    var cls = 'pc-nodo pc-' + info.stato;
-    var btn = h('button', { class: cls, type: 'button', 'aria-label': e.name + ' - ' + info.etichetta });
-    var pct = info.cnt ? info.seen / info.cnt : 0;
-    var col = info.stato === 'corrente' ? 'var(--g-verde)' : 'var(--g-giallo)';
-    var icona = (info.stato === 'bloccato' || info.stato === 'spento') ? gi('nodoBloccato', 68) :
-      info.stato === 'completato' ? gi('nodoCompleto', 68) : gi('nodoOro', 68);
-    btn.innerHTML = ((info.stato === 'corrente' || info.stato === 'completato') ? anello(pct, col) : '') + '<span class="pc-ico">' + icona + '</span>';
-    wrap.appendChild(btn);
+  function marcatore(info, num) {
+    var m = h('span', { class: 'pc-marc', 'aria-hidden': 'true' });
+    if (info.stato === 'completato') m.innerHTML = gi('spunta', 22);
+    else if (info.stato === 'bloccato' || info.stato === 'spento') m.innerHTML = gi('lucchetto', 18);
+    else m.textContent = String(num);
+    return m;
+  }
 
-    var cor = corone(e.n);
-    if (cor && info.stato !== 'bloccato') wrap.appendChild(cor);
-    if (info.stato === 'corrente') {
-      wrap.appendChild(h('div', { class: 'pc-start g-anim-bounce', 'aria-hidden': 'true' }, 'START'));
-      var m = h('div', { class: 'pc-mascotte', 'aria-hidden': 'true' });
-      try { m.appendChild(mascot()); } catch (err) {}
-      wrap.appendChild(m);
+  function nodo(e, info, num) {
+    var wrap = h('div', { class: 'pc-nodo-wrap', 'data-ex': String(e.n) });
+    var btn = h('button', { class: 'pc-nodo pc-' + info.stato, type: 'button', 'aria-label': e.name + ' - ' + info.etichetta });
+    var pct = info.cnt ? Math.round(100 * info.seen / info.cnt) : 0;
+    btn.appendChild(marcatore(info, num));
+
+    var testo = h('span', { class: 'pc-testo' },
+      h('span', { class: 'pc-nome' }, e.name),
+      h('span', { class: 'pc-desc' }, info.stato === 'spento' ? 'Dati insufficienti' : (e.desc || '')));
+    if (info.stato !== 'spento') {
+      testo.appendChild(h('span', { class: 'pc-meta' },
+        h('span', { class: 'pc-voci' }, info.seen + '/' + info.cnt + ' voci'),
+        info.stato === 'bloccato' ? '' : corolle(e.n)));
+      testo.appendChild(h('span', { class: 'pc-filo', 'aria-hidden': 'true' }, h('i', { style: 'width:' + pct + '%' })));
     }
-    wrap.appendChild(h('div', { class: 'pc-nome' }, e.name));
+    btn.appendChild(testo);
+
+    if (info.stato === 'corrente') {
+      btn.appendChild(h('span', { class: 'pc-tag' }, 'Tocca a te'));
+      var m = h('span', { class: 'pc-mascotte', 'aria-hidden': 'true' });
+      try { m.appendChild(mascot()); } catch (err) {}
+      btn.appendChild(m);
+    }
+    wrap.appendChild(btn);
 
     btn.addEventListener('click', function (ev) {
       ev.stopPropagation();
       if (aperto && aperto.parentNode === wrap) { chiudi(); return; }
       if (info.stato === 'spento') {
         scuoti(btn);
-        popover(wrap, '<b>Non ancora disponibile</b><span>Servono ' + (e.needs || 'più voci') + '. Voci idonee adesso: ' + info.cnt + '.</span>', null, 'no');
+        riquadro(wrap, '<b>Non ancora disponibile</b><span>Servono ' + (e.needs || 'più voci') + '. Voci idonee adesso: ' + info.cnt + '.</span>', null, 'no');
       } else if (info.stato === 'bloccato') {
         scuoti(btn);
-        popover(wrap, '<b>Bloccato</b><span>Completa almeno una lezione dell\'esercizio precedente per sbloccarlo.</span>', null, 'no');
+        riquadro(wrap, '<b>Ancora chiuso</b><span>Completa almeno una lezione dell\'esercizio precedente per aprirlo.</span>', null, 'no');
       } else {
-        popover(wrap, '<b>' + e.name + '</b><span>' + (e.desc || '') + '</span><span class="pc-sub">' + info.seen + '/' + info.cnt + ' voci viste</span>',
-          { testo: 'Inizia lezione +10 XP', fn: function () { ultimo = e.n; load(e.n); } }, 'ok');
+        riquadro(wrap, '<b>' + e.name + '</b><span>' + (e.desc || '') + '</span><span class="pc-sub">' + info.seen + ' voci viste su ' + info.cnt + '</span>',
+          { testo: 'Inizia la lezione · +10 XP', fn: function () { ultimo = e.n; load(e.n); } }, 'ok');
       }
     });
     return wrap;
   }
 
   function scrigno(id, sbloccato) {
-    var wrap = h('div', { class: 'pc-nodo-wrap pc-scrigno-wrap', style: 'transform:translateX(0)' });
+    var wrap = h('div', { class: 'pc-nodo-wrap pc-scrigno-wrap' });
     var fatto = !!scrigni()[id];
     var btn = h('button', { class: 'pc-scrigno' + (fatto ? ' pc-aperto' : '') + (!sbloccato && !fatto ? ' pc-chiuso-bloccato' : ''), type: 'button',
-      'aria-label': fatto ? 'Scrigno già aperto' : 'Scrigno' });
-    btn.innerHTML = fatto ? gi('scrignoAperto', 54) : gi('scrigno', 54);
+      'aria-label': fatto ? 'Cassetta già aperta' : 'Cassetta dei semi' });
+    var ico = h('span', { class: 'pc-scrigno-ico' });
+    ico.innerHTML = fatto ? gi('scrignoAperto', 34) : gi('scrigno', 34);
+    btn.appendChild(ico);
+    btn.appendChild(h('span', { class: 'pc-testo' },
+      h('span', { class: 'pc-nome' }, fatto ? 'Cassetta aperta' : 'Cassetta dei semi'),
+      h('span', { class: 'pc-desc' }, fatto ? 'Hai già raccolto le gemme' : (sbloccato ? 'Tocca per aprirla: +10 gemme' : 'Si apre completando le lezioni sopra'))));
     btn.addEventListener('click', function (ev) {
       ev.stopPropagation();
-      if (scrigni()[id]) { popover(wrap, '<b>Scrigno già aperto</b><span>Lo hai già svuotato.</span>', null, 'no'); return; }
-      if (!sbloccato) { scuoti(btn); popover(wrap, '<b>Scrigno chiuso</b><span>Completa le lezioni precedenti per aprirlo.</span>', null, 'no'); return; }
+      if (scrigni()[id]) { riquadro(wrap, '<b>Cassetta già aperta</b><span>Hai già raccolto le gemme.</span>', null, 'no'); return; }
+      if (!sbloccato) { scuoti(btn); riquadro(wrap, '<b>Cassetta chiusa</b><span>Completa le lezioni precedenti per aprirla.</span>', null, 'no'); return; }
       scrigni()[id] = 1;
       try { GS.addGemme(10); } catch (e2) {}
       salva();
-      btn.innerHTML = gi('scrignoAperto', 54); btn.classList.add('pc-aperto', 'g-anim-pop');
-      popover(wrap, '<b>Scrigno aperto!</b><span class="pc-gemme">' + gi('gemma', 20) + ' +10 gemme</span>', null, 'ok');
+      ico.innerHTML = gi('scrignoAperto', 34); btn.classList.add('pc-aperto'); ico.classList.add('g-anim-pop');
+      riquadro(wrap, '<b>Cassetta aperta!</b><span class="pc-gemme">' + gi('gemma', 20) + ' +10 gemme</span>', null, 'ok');
     });
     wrap.appendChild(btn);
     return wrap;
@@ -145,14 +162,17 @@
 
     cats.forEach(function (c, ui) {
       var list = EX.filter(function (e) { return e.cat === c; });
-      var banner = h('div', { class: 'pc-unita' + ((ui % 4) ? ' pc-u' + (ui % 4) : '') });
-      banner.appendChild(h('div', { class: 'pc-unita-t' }, h('small', {}, 'Unità ' + (ui + 1)), h('b', {}, c)));
+      var banner = h('div', { class: 'pc-unita' });
+      var ramo = h('span', { class: 'pc-ramo' }); ramo.innerHTML = RAMO;
+      banner.appendChild(h('span', { class: 'pc-num', 'aria-hidden': 'true' }, String(ui + 1)));
+      banner.appendChild(h('div', { class: 'pc-unita-t' }, h('small', {}, 'Capitolo ' + (ui + 1) + ' · ' + list.length + (list.length === 1 ? ' esercizio' : ' esercizi')), h('b', {}, c)));
+      banner.appendChild(ramo);
       banner.appendChild(guida(c, list, banner));
-      var sez = h('section', { class: 'pc-sez' }, banner);
+      var sez = h('section', { class: 'pc-sez pc-c' + (ui % 5) }, banner);
       var strada = h('div', { class: 'pc-strada' });
       var correnteTrovato = false;
 
-      list.forEach(function (e) {
+      list.forEach(function (e, k) {
         var pool = e.pool(), cnt = pool.length, Sx = seenOf(e.n);
         var seen = pool.filter(function (x) { return Sx[x.id]; }).length;
         var lez = (S.lezioni && S.lezioni[e.n]) || 0;
@@ -163,13 +183,12 @@
         else if (lez > 0) st = 'completato';
         else if (tutto || prevOk) st = 'sbloccato';
         else st = 'bloccato';
-        if (st === 'sbloccato' && !correnteTrovato && !tutto) { st = 'corrente'; correnteTrovato = true; }
-        else if (st === 'sbloccato' && tutto && !correnteTrovato) { st = 'corrente'; correnteTrovato = true; }
+        if (st === 'sbloccato' && !correnteTrovato) { st = 'corrente'; correnteTrovato = true; }
         if (st === 'completato') nodiFatti++;
-        // un nodo spento non blocca la strada; uno non completato la blocca
+        // un esercizio spento non blocca il sentiero; uno non completato lo blocca
         if (!off) prevOk = lez > 0;
         var etichetta = { spento: 'dati insufficienti', completato: 'completato', corrente: 'da iniziare', sbloccato: 'disponibile', bloccato: 'bloccato' }[st];
-        strada.appendChild(nodo(e, { stato: st === 'sbloccato' ? 'sbloccato' : st, cnt: cnt, seen: seen, etichetta: etichetta }, OFFS[globale % OFFS.length]));
+        strada.appendChild(nodo(e, { stato: st, cnt: cnt, seen: seen, etichetta: etichetta }, k + 1));
         globale++;
         if (globale % OGNI === 0) strada.appendChild(scrigno('scrigno-' + globale, st === 'completato'));
       });
@@ -187,7 +206,7 @@
     var ct = document.querySelector('.content'); if (ct) ct.scrollTop = 0;
     var sh = $('sheet'); if (sh && !tieniSheet) sh.hidden = true;
     tieniSheet = false;
-    /* tornando da un esercizio si riporta in vista quel nodo (una volta sola), altrimenti il nodo corrente */
+    /* tornando da un esercizio si riporta in vista quella scheda (una volta sola), altrimenti la corrente */
     var cor = ultimo != null && b.querySelector('[data-ex="' + ultimo + '"]') || b.querySelector('.pc-corrente');
     ultimo = null;
     if (cor) setTimeout(function () { inVista(cor, 'center'); }, 60);

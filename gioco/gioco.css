@@ -1,94 +1,101 @@
-/* Ginestra gioco - stili comuni. Variabili --g-*, classi g-*. Tema scuro: html.dark */
+/* Ginestra gioco - stili comuni. Identita "erbario": carta, inchiostro, giallo ginestra.
+   Variabili --g-*, classi g-*. Tema scuro: html.dark. I nomi delle variabili (verde, blu...) sono ruoli, non colori:
+   verde = bosco (azione principale), blu = indaco (informazione), arancio = ruggine, giallo = ginestra, rosso = terracotta. */
 :root {
-  --g-verde: #58cc02; --g-verde-ombra: #46a302;
-  --g-blu: #1cb0f6; --g-blu-ombra: #1899d6;
-  --g-arancio: #ff9600; --g-arancio-ombra: #d97f00;
-  --g-giallo: #ffc800; --g-giallo-ombra: #d9a900;
-  --g-rosso: #ff4b4b; --g-rosso-ombra: #d93a3a;
-  --g-viola: #ce82ff;
-  --g-bg: #ffffff; --g-bg-2: #f7f7f7;
-  --g-card: #ffffff; --g-bordo: #e5e5e5;
-  --g-testo: #3c3c3c; --g-testo-2: #777777; --g-testo-3: #afafaf;
-  --g-grigio: #e5e5e5; --g-grigio-ombra: #cfcfcf; --g-grigio-testo: #afafaf;
-  --g-barra-bg: #e5e5e5;
-  --g-raggio: 16px; --g-raggio-grande: 22px;
-  --g-font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --g-verde: #2d6a4f; --g-verde-ombra: #1f4d38;
+  --g-blu: #3a5a8c; --g-blu-ombra: #2b4570;
+  --g-arancio: #d9692b; --g-arancio-ombra: #b0501b;
+  --g-giallo: #f5b800; --g-giallo-ombra: #c99400;
+  --g-rosso: #c8442f; --g-rosso-ombra: #a73a27;
+  --g-viola: #8a63b8;
+  --g-bg: #f7f1e3; --g-bg-2: #efe6d0;
+  --g-card: #fffcf4; --g-bordo: #ddd2b8;
+  --g-testo: #1d2b24; --g-testo-2: #5a6558; --g-testo-3: #9a9c8c;
+  --g-grigio: #e8dfc8; --g-grigio-ombra: #cbbf9f; --g-grigio-testo: #9a9c8c;
+  --g-barra-bg: #e8dfc8;
+  --g-contorno: #1d2b24;          /* inchiostro dei contorni delle icone */
+  --g-sel: #fdf0c0; --g-sel-bordo: #f0c94a; --g-sel-testo: #5b4300;
+  --g-ok: #dcefd9; --g-ok-bordo: #9ccb94; --g-ok-testo: #2b6a35;
+  --g-ko: #f7dcd4; --g-ko-bordo: #e3a595; --g-ko-testo: #a73a27;
+  --g-raggio: 10px; --g-raggio-grande: 14px;
+  --g-font: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --g-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
 }
 html.dark {
-  --g-bg: #131f24; --g-bg-2: #1a2a31;
-  --g-card: #1f2f36; --g-bordo: #37464f;
-  --g-testo: #f1f7fb; --g-testo-2: #a9b8c0; --g-testo-3: #6b7b84;
-  --g-grigio: #37464f; --g-grigio-ombra: #2a363d; --g-grigio-testo: #6b7b84;
-  --g-barra-bg: #37464f;
+  --g-bg: #131a16; --g-bg-2: #1b2420;
+  --g-card: #212c26; --g-bordo: #38463d;
+  --g-testo: #f0ead8; --g-testo-2: #aab3a5; --g-testo-3: #747d70;
+  --g-grigio: #323f37; --g-grigio-ombra: #2c3a32; --g-grigio-testo: #747d70;
+  --g-barra-bg: #323f37;
+  --g-verde: #3a8a65; --g-verde-ombra: #2d6a4f;
+  --g-blu: #8fa9d6; --g-blu-ombra: #8fa9d6;
+  --g-contorno: #0c110e;
+  --g-sel: #3a3410; --g-sel-bordo: #8a6d10; --g-sel-testo: #f5c842;
+  --g-ok: #1f3a28; --g-ok-bordo: #3f7a52; --g-ok-testo: #7fcf9f;
+  --g-ko: #3d2019; --g-ko-bordo: #8a4130; --g-ko-testo: #f08c78;
 }
 
-/* Pulsanti con bordo basso */
+/* Pulsanti: piatti, a contorno netto, senza rilievo. Si premono con un leggero ritiro. */
 .g-btn {
-  --b: var(--g-verde); --bo: var(--g-verde-ombra); --bt: #fff;
+  --b: var(--g-verde); --bo: var(--g-verde-ombra); --bt: #fffcf4;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   box-sizing: border-box; min-height: 48px; padding: 12px 22px;
-  font: 900 15px/1 var(--g-font); letter-spacing: .8px; text-transform: uppercase; text-decoration: none;
+  font: 700 16px/1 var(--g-font); letter-spacing: .1px; text-decoration: none;
   color: var(--bt); background: var(--b);
-  border: 0; border-radius: var(--g-raggio); box-shadow: 0 4px 0 var(--bo);
+  border: 1.5px solid var(--bo); border-radius: var(--g-raggio); box-shadow: none;
   cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-  transition: transform .08s, box-shadow .08s, filter .15s;
+  transition: transform .12s, background .15s, border-color .15s;
 }
-.g-btn:hover { filter: brightness(1.06); }
-.g-btn:active, .g-btn.g-premuto { transform: translateY(4px); box-shadow: 0 0 0 var(--bo); }
-.g-btn:focus-visible { outline: 3px solid var(--g-blu); outline-offset: 3px; }
+.g-btn:hover { filter: brightness(1.07); }
+.g-btn:active, .g-btn.g-premuto { transform: scale(.975); }
+.g-btn:focus-visible { outline: 2px solid var(--g-testo); outline-offset: 3px; }
 .g-btn-verde { --b: var(--g-verde); --bo: var(--g-verde-ombra); }
-.g-btn-blu { --b: var(--g-blu); --bo: var(--g-blu-ombra); }
+.g-btn-blu { --b: var(--g-blu); --bo: var(--g-blu-ombra); --bt: #fffcf4; }
+html.dark .g-btn-blu { --b: #3a4f78; --bo: #4a628f; --bt: #f0ead8; }
 .g-btn-rosso { --b: var(--g-rosso); --bo: var(--g-rosso-ombra); }
 .g-btn-arancio { --b: var(--g-arancio); --bo: var(--g-arancio-ombra); }
-.g-btn-grigio { --b: var(--g-card); --bo: var(--g-bordo); --bt: var(--g-blu); border: 2px solid var(--g-bordo); box-shadow: 0 4px 0 var(--g-bordo); }
+.g-btn-grigio { --b: transparent; --bo: var(--g-testo); --bt: var(--g-testo); }
 .g-btn-blocco { display: flex; width: 100%; }
-.g-btn[disabled], .g-btn.g-disabilitato { --b: var(--g-grigio); --bo: var(--g-grigio-ombra); --bt: var(--g-grigio-testo); cursor: not-allowed; filter: none; }
-.g-btn[disabled]:active, .g-btn.g-disabilitato:active { transform: none; box-shadow: 0 4px 0 var(--bo); }
+.g-btn[disabled], .g-btn.g-disabilitato { --b: var(--g-grigio); --bo: var(--g-grigio); --bt: var(--g-grigio-testo); cursor: not-allowed; filter: none; }
+.g-btn[disabled]:active, .g-btn.g-disabilitato:active { transform: none; }
 
-/* Card */
+/* Scheda: foglio di carta con contorno sottile */
 .g-card {
   background: var(--g-card); color: var(--g-testo);
-  border: 2px solid var(--g-bordo); border-radius: var(--g-raggio-grande);
-  box-shadow: 0 4px 0 var(--g-bordo); padding: 16px; font-family: var(--g-font);
+  border: 1.5px solid var(--g-bordo); border-radius: var(--g-raggio-grande);
+  box-shadow: none; padding: 16px; font-family: var(--g-font);
 }
-.g-card-verde { border-color: var(--g-verde); box-shadow: 0 4px 0 var(--g-verde-ombra); }
-.g-card-blu { border-color: var(--g-blu); box-shadow: 0 4px 0 var(--g-blu-ombra); }
-.g-card-arancio { border-color: var(--g-arancio); box-shadow: 0 4px 0 var(--g-arancio-ombra); }
+.g-card-verde { border-color: var(--g-verde); box-shadow: none; }
+.g-card-blu { border-color: var(--g-blu); box-shadow: none; }
+.g-card-arancio { border-color: var(--g-arancio); box-shadow: none; }
 
-/* Pill (contatori: streak, gemme, cuori) */
+/* Contatori (serie, gemme, cuori): numero in serif accanto all'icona */
 .g-pill {
-  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
-  font: 900 15px/1 var(--g-font); color: var(--g-testo); background: transparent;
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 8px;
+  font: 600 17px/1 var(--g-serif); color: var(--g-testo); background: transparent; font-variant-numeric: lining-nums;
 }
 .g-pill svg { display: block; flex: none; }
-.g-pill-fiamma { color: var(--g-arancio); }
-.g-pill-gemma { color: var(--g-blu); }
-.g-pill-cuore { color: var(--g-rosso); }
-.g-pill-xp { color: var(--g-giallo-ombra); }
-.g-pill-fondo { background: var(--g-bg-2); border: 2px solid var(--g-bordo); }
+.g-pill-fiamma, .g-pill-gemma, .g-pill-cuore, .g-pill-xp { color: var(--g-testo); }
+.g-pill-fondo { background: var(--g-bg-2); border: 1.5px solid var(--g-bordo); }
 
-/* Barra di progresso */
+/* Barra di progresso: filo sottile con tacche, nessun effetto lucido */
 .g-bar {
-  position: relative; height: 16px; border-radius: 999px; overflow: hidden;
+  position: relative; height: 8px; border-radius: 4px; overflow: hidden;
   background: var(--g-barra-bg);
 }
 .g-bar > i, .g-bar-riempi {
   display: block; position: relative; height: 100%; width: var(--g-pct, 0%); min-width: 0;
-  border-radius: 999px; background: var(--g-verde); transition: width .5s cubic-bezier(.2, .8, .2, 1);
+  border-radius: 4px; background: var(--g-verde); transition: width .5s cubic-bezier(.2, .8, .2, 1);
 }
-.g-bar > i::after, .g-bar-riempi::after {
-  content: ''; position: absolute; left: 8px; right: 8px; top: 3px; height: 4px;
-  border-radius: 999px; background: rgba(255, 255, 255, .35);
-}
+.g-bar > i::after, .g-bar-riempi::after { content: none; }
 .g-bar-blu > i, .g-bar-blu .g-bar-riempi { background: var(--g-blu); }
 .g-bar-arancio > i, .g-bar-arancio .g-bar-riempi { background: var(--g-arancio); }
 .g-bar-giallo > i, .g-bar-giallo .g-bar-riempi { background: var(--g-giallo); }
-.g-bar-sottile { height: 10px; }
-.g-bar-sottile > i::after, .g-bar-sottile .g-bar-riempi::after { top: 2px; height: 3px; }
+.g-bar-sottile { height: 6px; }
 
 /* Utilita */
-.g-titolo { font: 900 22px/1.2 var(--g-font); color: var(--g-testo); margin: 0; }
-.g-sotto { font: 800 14px/1.3 var(--g-font); color: var(--g-testo-2); }
+.g-titolo { font: 600 24px/1.15 var(--g-serif); color: var(--g-testo); margin: 0; }
+.g-sotto { font: 500 14px/1.35 var(--g-font); color: var(--g-testo-2); }
 .g-riga { display: flex; align-items: center; gap: 10px; }
 .g-nascosto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -103,7 +110,7 @@ html.dark {
 /* Contenitore coriandoli: aggiungere N <i class="g-confetto" style="--x:..;--c:..;--d:..;--t:.."> dentro .g-confetti */
 .g-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
 .g-confetto {
-  position: absolute; top: 0; left: var(--x, 50%); width: 9px; height: 14px; border-radius: 2px;
+  position: absolute; top: 0; left: var(--x, 50%); width: 9px; height: 9px; border-radius: 50% 0 50% 0;
   background: var(--c, var(--g-giallo)); animation: g-confetti var(--t, 2.6s) linear var(--d, 0s) both;
 }
 
