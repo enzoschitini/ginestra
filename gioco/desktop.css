@@ -30,7 +30,7 @@
   html.dark body.app .tabbar { border-right-color: #2b3a42; }
   body.app .tabbar::before {
     content: ''; display: block; height: 52px; margin: 0 0 14px;
-    background: url('../layout/assets/logo%202.png') center / contain no-repeat;
+    background: url('../layout/assets/logo-g.png') center / contain no-repeat;
   }
   body.app .tabbar .tabb.g-tab { flex: none; flex-direction: row; justify-content: center; gap: 14px; padding: 10px 8px; border-width: 2px; }
   body.app .tabbar .tabb.g-tab .ico, body.app .tabbar .tabb.g-tab svg { flex: none; }

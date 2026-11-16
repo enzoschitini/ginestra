@@ -607,7 +607,7 @@
 <body class="app">
 
   <div class="splash" id="splash" aria-hidden="true">
-    <img class="splash-logo" src="layout/assets/logo%202.png" alt="" width="1226" height="1226">
+    <img class="splash-logo" src="layout/assets/logo-g.png" alt="" width="512" height="512">
     <div class="splash-name">Ginestra</div>
     <div class="splash-bar"><div class="splash-fill" id="splash-fill"></div></div>
     <div class="splash-by">By Enzo Schitini</div>
@@ -752,17 +752,18 @@ function svg(html) { var d = document.createElement('div'); d.innerHTML = html; 
 var SPEAKER = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
 function mascotSvg(sad) {
   return '<svg viewBox="0 0 100 110" fill="none">' +
-    '<ellipse cx="50" cy="102" rx="26" ry="5" fill="#e5e5e5"/>' +
-    '<path d="M22 30L30 6L44 22Z" fill="#58cc02"/><path d="M78 30L70 6L56 22Z" fill="#58cc02"/>' +
-    '<ellipse cx="50" cy="62" rx="38" ry="40" fill="#58cc02"/>' +
-    '<ellipse cx="50" cy="78" rx="24" ry="20" fill="#89e219"/>' +
-    '<ellipse cx="36" cy="46" rx="13" ry="15" fill="#fff"/><ellipse cx="64" cy="46" rx="13" ry="15" fill="#fff"/>' +
+    '<ellipse cx="50" cy="102" rx="28" ry="5" fill="#e5e5e5"/>' +
+    '<path d="M14 46L18 8L46 28Z" fill="#ff9600"/><path d="M86 46L82 8L54 28Z" fill="#ff9600"/>' +
+    '<path d="M21 36L22 18L36 28Z" fill="#3c3c3c"/><path d="M79 36L78 18L64 28Z" fill="#3c3c3c"/>' +
+    '<path d="M50 24C76 24 94 44 94 66C94 84 76 98 50 98C24 98 6 84 6 66C6 44 24 24 50 24Z" fill="#ff9600"/>' +
+    '<path d="M6 66C6 56 14 52 28 60C38 66 42 76 50 90C42 96 32 98 24 96C12 92 6 80 6 66Z" fill="#fff"/>' +
+    '<path d="M94 66C94 56 86 52 72 60C62 66 58 76 50 90C58 96 68 98 76 96C88 92 94 80 94 66Z" fill="#fff"/>' +
     (sad
-      ? '<path d="M28 48C32 43 38 43 42 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/><path d="M58 48C62 43 68 43 72 48" stroke="#3c3c3c" stroke-width="3" stroke-linecap="round"/>' +
-        '<path d="M30 56C30 56 27 63 27 68C27 72 30 74 33 74C36 74 39 72 39 68C39 63 36 56 36 56Z" fill="#1cb0f6"/><path d="M70 56C70 56 67 63 67 68C67 72 70 74 73 74C76 74 79 72 79 68C79 63 76 56 76 56Z" fill="#1cb0f6"/>'
-      : '<ellipse cx="38" cy="48" rx="6" ry="8" fill="#3c3c3c"/><ellipse cx="62" cy="48" rx="6" ry="8" fill="#3c3c3c"/><circle cx="40" cy="45" r="2" fill="#fff"/><circle cx="64" cy="45" r="2" fill="#fff"/>') +
-    '<polygon points="50,58 42,68 58,68" fill="#ff9600"/>' +
-    '<ellipse cx="34" cy="100" rx="9" ry="4" fill="#ff9600"/><ellipse cx="66" cy="100" rx="9" ry="4" fill="#ff9600"/>' +
+      ? '<path d="M25 54C29 49 35 49 39 54" stroke="#3c3c3c" stroke-width="3.5" stroke-linecap="round"/><path d="M61 54C65 49 71 49 75 54" stroke="#3c3c3c" stroke-width="3.5" stroke-linecap="round"/>' +
+        '<path d="M30 58C30 58 27 65 27 70C27 74 30 76 33 76C36 76 39 74 39 70C39 65 36 58 36 58Z" fill="#1cb0f6"/>'
+      : '<ellipse cx="32" cy="55" rx="6" ry="8" fill="#3c3c3c"/><ellipse cx="68" cy="55" rx="6" ry="8" fill="#3c3c3c"/><circle cx="34" cy="52" r="2.2" fill="#fff"/><circle cx="70" cy="52" r="2.2" fill="#fff"/>') +
+    '<path d="M43 74C43 71 57 71 57 74C57 79 53 83 50 83C47 83 43 79 43 74Z" fill="#3c3c3c"/>' +
+    '<ellipse cx="34" cy="102" rx="9" ry="4" fill="#3c3c3c"/><ellipse cx="66" cy="102" rx="9" ry="4" fill="#3c3c3c"/>' +
     '</svg>';
 }
 function mascot(sad) { var d = h('div', { class: 'mascot', 'aria-hidden': 'true' }); d.innerHTML = mascotSvg(sad); return d; }
